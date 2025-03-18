@@ -1,4 +1,4 @@
-import Login from "../assets/fp-connect-3.svg";
+import Login from "../assets/login.svg";
 
 function PaginaInicio() {
   return (
