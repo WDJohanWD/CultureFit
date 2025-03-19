@@ -1,11 +1,12 @@
-import Login from "../assets/login.svg";
+import { useTranslation } from "react-i18next";
 
 function PaginaInicio() {
-  return (
-    <div>
-      <h1>¡Bienvenido a la aplicación de tareas!</h1>
-    </div>
-  );
-}
+  const { t } = useTranslation("inicio")
 
+  return (
+    <div className="">
+      <h2>{t("welcome")}</h2>
+    </div>
+  )
+}
 export default PaginaInicio;
