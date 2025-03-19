@@ -1,13 +1,12 @@
 import { useTranslation } from "react-i18next";
 
 function PaginaInicio() {
-  const { t } = useTranslation();  
+  const { t } = useTranslation("inicio")
 
   return (
-    <div>
-      <h1>{t("welcome")}</h1>
+    <div className="">
+      <h2>{t("welcome")}</h2>
     </div>
-  );
+  )
 }
-
 export default PaginaInicio;
