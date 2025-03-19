@@ -19,16 +19,16 @@ public class OpenApiConfig {
         proServer.setDescription("Servidor de produción");
 
         Contact contact = new Contact();
-        contact.setName("Marta");
-        contact.setEmail("marta@iesteis.es");
+        contact.setName("CultureFit");
+        contact.setEmail("culturefit.contact@gmail.com");
 
         License license = new License();
         license.setName("GNU");
         license.setUrl("https://www.gnu.org/licenses/gpl-3.0.html");
 
         Info info = new Info();
-        info.setTitle("API Empleados");
-        info.setDescription("API de empleados da empresa");
+        info.setTitle("API CultureFit");
+        info.setDescription("API de gimnasio CultureFit");
         info.setVersion("1.0.0");
         info.setContact(contact);
         info.setLicense(license);
