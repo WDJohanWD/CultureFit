@@ -20,8 +20,6 @@ public class Usuario {
     private Long id;
     private String nombre;
     private String email;
-    private LocalDate   fechaNacimiento;
-    
+    private LocalDate fechaNacimiento;
 
-   
 }
