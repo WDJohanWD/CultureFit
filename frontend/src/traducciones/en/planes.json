@@ -1,9 +1,8 @@
 { 
-  "precios":"Pricing",
-  "titulo1":"Choose your plan",
+  "titulo1":"Choose your membership",
   "subtitulo1":"Choose an affordable gym plan packed with the best features to help you stay motivated, achieve your fitness goals, and enjoy a healthier lifestyle.",
   "mes": "month",
-  "elegir": "Choose this plan",
+  "elegir": "Choose this membership",
 
   "n1": "Basic",
   "id1": "tier-basic",

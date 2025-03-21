@@ -3,6 +3,8 @@ import { useTranslation } from "react-i18next";
 function PaginaPlanes() {
   const { t } = useTranslation("planes");
 
+
+  //Lista de planes que varia segun el idioma
   const tiers = [
     {
       name: t("n1"),
@@ -30,16 +32,18 @@ function PaginaPlanes() {
     }
   ]
 
+  //Simbolos HTML que no se pueden poner en React
+  let list = String.fromCodePoint(8226);
 
   return (
     <div className="relative isolate bg-white px-6 py-24 lg:px-8">
+      <img src="/CultureFitLogoNegro.png" alt="" className="h-12 mx-auto mb-3"/>
       <div className="mx-auto max-w-4xl text-center">
-        <h2 className="text-base/7 font-semibold ">{t("precios")}</h2>
-        <p className="mt-2 text-5xl font-semibold tracking-tight text-balance text-gray-900 sm:text-6xl">
+        <p className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">
           {t("titulo1")}
         </p>
       </div>
-      <p className="mx-auto mt-6 max-w-2xl text-center text-lg font-medium text-pretty text-gray-600 sm:text-xl/8">
+      <p className="mx-auto mt-6 max-w-2xl text-center text-lg font-medium text-pretty text-gray-600 sm:text-xl">
         {t("subtitulo1")}
       </p>
       <div className=" mx-auto pt-18 grid max-w-lg grid-cols-1 gap-x-6 sm:gap-y-6 lg:max-w-6xl lg:grid-cols-3">
@@ -54,6 +58,7 @@ function PaginaPlanes() {
               </span>
               <span className='text-base text-gray-500'>/{t("mes")}</span>
             </p>
+
             <p className='mt-6 text-base/7 text-gray-600'>
               {tier.description}
             </p>
@@ -62,9 +67,11 @@ function PaginaPlanes() {
                 role="list"
                 className="mt-8 space-y-3 text-sm/6 sm:mt-10 text-gray-600 mb-15">
                 {tier.features.map((feature) => (
+                  <span className="flex"><span className="font-bold me-1">{list} </span>
                   <li key={feature} className="flex gap-x-3">
                     {feature}
                   </li>
+                  </span>
                 ))}
               </ul>
               <a
