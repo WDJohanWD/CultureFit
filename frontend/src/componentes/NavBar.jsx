@@ -22,9 +22,14 @@ function NavBar() {
     <nav className="bg-[#ff5400] sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium">
       <div className="flex justify-between align-middle">
         <div className="flex items-center">
-          <h2 className="text-4xl montserrat font-semibold">CultureFit</h2>
+          <Link to="/">
+            <div className="flex items-center">
+              <img src="/CultureFitLogoBlanco.png" alt="" className="h-12 me-2"/>
+              <h2 className="text-4xl montserrat font-semibold">CultureFit</h2>
+            </div>
+          </Link>
           <Link className="pt-1 ms-9">{t("clases")}</Link>
-          <Link className="pt-1 ms-6">{t("planes")}</Link>
+          <Link to="/planes" className="pt-1 ms-6">{t("planes")}</Link>
           <Link className="pt-1 ms-6">{t("about")}</Link>
         </div>
         <div className="flex items-center">
