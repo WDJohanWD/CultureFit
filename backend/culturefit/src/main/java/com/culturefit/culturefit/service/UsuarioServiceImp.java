@@ -12,18 +12,18 @@ import com.culturefit.culturefit.exception.ErrorSavingUserException;
 import com.culturefit.culturefit.exception.NotFoundUserException;
 import com.culturefit.culturefit.repository.UsuarioRepository;
 
+import jakarta.validation.Valid;
+
 @Service
 public class UsuarioServiceImp implements UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public Usuario guardarUsuario(Usuario usuario) throws RuntimeException {
+    public Usuario guardarUsuario(@Valid Usuario usuario) throws ErrorSavingUserException {
         try {
-            // Intentar guardar al usuario en la base de datos
             return usuarioRepository.save(usuario);
         } catch (Exception e) {
-            // Si ocurre una excepción, lanzar nuestra excepción personalizada
             throw new ErrorSavingUserException();
         }
     }

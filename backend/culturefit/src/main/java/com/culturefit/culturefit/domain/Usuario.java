@@ -2,6 +2,7 @@ package com.culturefit.culturefit.domain;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,12 +21,13 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false) // Evita valores nulos en la BD
     @NotEmpty(message = "El nombre no puede estar vacío")
     private String nombre;
 
+    @Column(nullable = false, unique = true) // Evita duplicados
     @Email(message = "El correo electrónico debe ser válido")
     private String email;
 
     private LocalDate fechaNacimiento;
 }
-
