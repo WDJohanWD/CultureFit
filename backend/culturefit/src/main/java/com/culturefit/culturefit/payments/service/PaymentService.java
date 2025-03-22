@@ -1,102 +1,89 @@
 package com.culturefit.culturefit.payments.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 import org.springframework.stereotype.Service;
 
-import com.culturefit.culturefit.domain.Usuario;
+import com.culturefit.culturefit.payments.domain.CreateCustomerRequest;
+import com.culturefit.culturefit.payments.domain.CreateSubscriptionRequest;
+import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
-import com.stripe.model.Price;
-import com.stripe.model.Product;
-import com.stripe.model.ProductCollection;
+import com.stripe.model.Event;
+import com.stripe.model.Invoice;
 import com.stripe.model.Subscription;
-import com.stripe.model.financialconnections.Session;
+import com.stripe.net.Webhook;
 import com.stripe.param.CustomerCreateParams;
-import com.stripe.param.PriceCreateParams;
-import com.stripe.param.ProductCreateParams;
-import com.stripe.param.ProductListParams;
+import com.stripe.param.InvoiceUpcomingParams;
 import com.stripe.param.SubscriptionCreateParams;
-import com.stripe.param.financialconnections.SessionCreateParams;
 
 
 @Service
 public class PaymentService {
-    public Product crearProducto(String nombre, String descripcion) throws StripeException{
-        ProductCreateParams params = ProductCreateParams.builder()
-            .setName(nombre)
-            .setDescription(descripcion)
-            .build();
-
-        Product product = Product.create(params);
-        return product;
-    }
-
-    public Price crearPrecio(String moneda, Long precio, String productId) throws StripeException{
-        PriceCreateParams params = PriceCreateParams.builder()
-            .setCurrency(moneda)
-            .setUnitAmount(precio)
-            .setRecurring(
-                PriceCreateParams.Recurring.builder()
-                    .setInterval(PriceCreateParams.Recurring.Interval.MONTH)
-                    .build()
-            )
-            .setProduct(productId)
-            .build();
-        Price price = Price.create(params);
-        return price;
-    }
-
-    public Customer crearCliente(Usuario usuario) throws StripeException{
+    
+    public Customer createCustomer(CreateCustomerRequest request) throws StripeException {
         CustomerCreateParams params = CustomerCreateParams.builder()
-            .setName(usuario.getNombre())
-            .setEmail(usuario.getEmail())
+            .setName(request.getName())
+            .setEmail(request.getEmail())
             .build();
-        Customer customer = Customer.create(params);
 
-        return customer;
+        return Customer.create(params);
+        
     }
 
-    public Subscription crearSubscripcion(String clienteId, String priceId) throws StripeException{
+    public Subscription createSubscription(CreateSubscriptionRequest request) throws StripeException {
         SubscriptionCreateParams params = SubscriptionCreateParams.builder()
-            .setCustomer(clienteId)
-            .addItem(
-                SubscriptionCreateParams.Item.builder()
-                    .setPrice(priceId)
-                    .build()
-                )
+            .setCustomer(request.getCustomerId())
+            .addItem(SubscriptionCreateParams.Item.builder().setPrice(request.getPriceId()).build())
+            .setPaymentBehavior(SubscriptionCreateParams.PaymentBehavior.DEFAULT_INCOMPLETE)
+            .addAllExpand(Arrays.asList("latest_invoice.payment_intent"))
             .build();
-        Subscription subscription = Subscription.create(params);
 
-        return subscription;
+        return Subscription.create(params);
     }
 
-    public Session crearSesionPago(String clienteId) throws StripeException{
-        SessionCreateParams params = SessionCreateParams.builder()
-        .setAccountHolder(
-            SessionCreateParams.AccountHolder.builder()
-                .setType(SessionCreateParams.AccountHolder.Type.CUSTOMER)
-                .setCustomer(clienteId)
-                .build()
-            )
-        .addPermission(SessionCreateParams.Permission.PAYMENT_METHOD)
-        .addPermission(SessionCreateParams.Permission.BALANCES)
-        .setFilters(SessionCreateParams.Filters.builder().addCountry("ES").build())
-        .build();
 
-        Session session = Session.create(params);
+    // TODO: Realizar metodos de cancelación y actualizacion de subscripcion
+    // public Subscription cancelSubscription(String subscriptionId) throws StripeException {
+    //     Subscription subscription = Subscription.retrieve(subscriptionId);
+    //     return subscription.cancel();
+    // }
 
-      return session;
+    // public Subscription updateSubscription(String subscriptionId, String newPriceId) throws StripeException {
+    //     Subscription subscription = Subscription.retrieve(subscriptionId);
+    //     SubscriptionUpdateParams params = SubscriptionUpdateParams.builder()
+    //             .addItem(SubscriptionUpdateParams.Item.builder()
+    //                     .setId(subscription.getItems().getData().get(0).getId())
+    //                     .setPrice(newPriceId)
+    //                     .build())
+    //             .setCancelAtPeriodEnd(false)
+    //             .build();
+    //     return subscription.update(params);
+    // }
+    
+    public Invoice getInvoicePreview(String subscriptionId) throws StripeException {
+        Subscription subscription = Subscription.retrieve(subscriptionId);
+
+        InvoiceUpcomingParams params = InvoiceUpcomingParams.builder()
+                .setCustomer(subscription.getCustomer())
+                .setSubscription(subscriptionId)
+                .addSubscriptionItem(InvoiceUpcomingParams.SubscriptionItem.builder()
+                        .setId(subscription.getItems().getData().get(0).getId())
+                        .setPrice(subscription.getItems().getData().get(0).getPrice().getId())
+                        .build())
+                .build();
+        return Invoice.upcoming(params);
     }
 
-    public List<Product> listarProductos() throws StripeException{
-        ProductListParams params = ProductListParams.builder().setLimit(3L).build();
-        ProductCollection products = Product.list(params);
-
-        List<Product> productList = products.getData().stream().collect(Collectors.toList());
-
-        return productList;
+    public String handleWebhook(String payload, String sigHeader) {
+        String endpointSecret = "your_webhook_secret";
+        Event event;
+        try {
+            event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
+            System.out.println(event.getObject());
+        } catch (SignatureVerificationException e) {
+            return "Invalid signature";
+        }
+        return "Webhook received";
     }
-
 }
