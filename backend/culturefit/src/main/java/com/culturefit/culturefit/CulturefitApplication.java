@@ -16,10 +16,6 @@ public class CulturefitApplication {
             System.setProperty(entry.getKey(), entry.getValue())
         );
 
-
 		SpringApplication.run(CulturefitApplication.class, args);
-
-
 	}
-
 }
