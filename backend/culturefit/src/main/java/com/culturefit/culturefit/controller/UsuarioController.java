@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
-
 @RestController
 public class UsuarioController {
 
@@ -44,8 +43,9 @@ public class UsuarioController {
     }
 
     @GetMapping("/usuario/{id}")
-    public Optional<Usuario> obtenerUsuario(@PathVariable Long id) {
-        Optional<Usuario> usuario = usuarioService.obtenerUsuario(id);
-        return usuario;
+    public ResponseEntity<Usuario> obtenerUsuario(@PathVariable Long id) {
+        Usuario usuario = usuarioService.obtenerUsuario(id);
+        return ResponseEntity.ok(usuario);
     }
+
 }

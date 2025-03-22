@@ -8,5 +8,5 @@ import com.culturefit.culturefit.domain.Usuario;
 public interface UsuarioService {
     Usuario guardarUsuario(Usuario usuario);
     List<Usuario> obtenerUsuarios();
-    Optional<Usuario> obtenerUsuario(Long id);
+    Usuario obtenerUsuario(Long id);
 }

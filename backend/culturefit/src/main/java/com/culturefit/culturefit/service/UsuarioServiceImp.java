@@ -18,7 +18,7 @@ public class UsuarioServiceImp implements UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public Usuario guardarUsuario(Usuario usuario) throws ErrorSavingUserException {
+    public Usuario guardarUsuario(Usuario usuario) throws RuntimeException {
         try {
             // Intentar guardar al usuario en la base de datos
             return usuarioRepository.save(usuario);
@@ -29,22 +29,19 @@ public class UsuarioServiceImp implements UsuarioService {
     }
 
     @Override
-    public List<Usuario> obtenerUsuarios() {
-        try{
+    public List<Usuario> obtenerUsuarios() throws RuntimeException {
+        try {
 
             return usuarioRepository.findAll();
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new NotFoundUserException();
         }
     }
 
     @Override
-    public Optional<Usuario> obtenerUsuario(Long id) {
-        try{
-            return usuarioRepository.findById(id);
-        }catch (Exception e){
-            throw new NotFoundUserException();
-        }
+    public Usuario obtenerUsuario(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(NotFoundUserException::new);
     }
 
 }
