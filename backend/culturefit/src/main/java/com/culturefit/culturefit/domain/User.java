@@ -15,7 +15,7 @@ import lombok.Data;
 @Data
 @Table(name = "usuarios")
 @Entity
-public class Usuario {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,11 +23,11 @@ public class Usuario {
 
     @Column(nullable = false) // Evita valores nulos en la BD
     @NotEmpty(message = "El nombre no puede estar vacío")
-    private String nombre;
+    private String name;
 
     @Column(nullable = false, unique = true) // Evita duplicados
     @Email(message = "El correo electrónico debe ser válido")
     private String email;
 
-    private LocalDate fechaNacimiento;
+    private LocalDate birthDate;
 }

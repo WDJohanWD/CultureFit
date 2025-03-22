@@ -2,13 +2,12 @@ package com.culturefit.culturefit.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.culturefit.culturefit.domain.Usuario;
-import com.culturefit.culturefit.service.UsuarioService;
+import com.culturefit.culturefit.domain.User;
+import com.culturefit.culturefit.service.UserService;
 
 import jakarta.validation.Valid;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,32 +21,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @Validated
-public class UsuarioController {
+public class UserController {
 
     @Autowired
-    private UsuarioService usuarioService;
+    private UserService userService;
 
-    @PostMapping("/usuario")
-    public ResponseEntity<?> nuevoUsuario(@Valid @RequestBody Usuario usuario, BindingResult bindingResult) {
+    @PostMapping("/user")
+    public ResponseEntity<?> nuevoUsuario(@Valid @RequestBody User usuario, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Si hay errores de validación, devolver un error
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         }
 
-        Usuario guardado = usuarioService.guardarUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(guardado);
+        User save = userService.guardarUsuario(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(save);
     }
 
-    @GetMapping("/usuarios")
-    public List<Usuario> obtenerUsuarios() {
-        List<Usuario> usuarios = usuarioService.obtenerUsuarios();
-        return usuarios;
+    @GetMapping("/users")
+    public List<User> obtenerUsuarios() {
+        List<User> users = userService.obtenerUsuarios();
+        return users;
     }
 
-    @GetMapping("/usuario/{id}")
-    public ResponseEntity<Usuario> obtenerUsuario(@PathVariable Long id) {
-        Usuario usuario = usuarioService.obtenerUsuario(id);
-        return ResponseEntity.ok(usuario);
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> obtenerUsuario(@PathVariable Long id) {
+        User user = userService.obtenerUsuario(id);
+        return ResponseEntity.ok(user);
     }
 
 }

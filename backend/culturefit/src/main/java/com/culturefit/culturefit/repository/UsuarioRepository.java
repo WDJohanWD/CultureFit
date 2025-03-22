@@ -5,9 +5,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.culturefit.culturefit.domain.Usuario;
+import com.culturefit.culturefit.domain.User;
 
 @Repository
-public interface UsuarioRepository  extends JpaRepository<Usuario, Long>{
-    Optional<Usuario> findById(Long id);
+public interface UsuarioRepository  extends JpaRepository<User, Long>{
+    Optional<User> findById(Long id);
 }
