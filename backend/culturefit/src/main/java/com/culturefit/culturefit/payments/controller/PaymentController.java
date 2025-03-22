@@ -1,6 +1,5 @@
 package com.culturefit.culturefit.payments.controller;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,10 +12,13 @@ import com.culturefit.culturefit.payments.domain.CreateSubscriptionRequest;
 import com.culturefit.culturefit.payments.service.PaymentService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
+import com.stripe.model.Price;
 import com.stripe.model.Subscription;
+import com.stripe.model.checkout.Session;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,13 +42,24 @@ public class PaymentController {
 
     @PostMapping("/create-subscription")
     public ResponseEntity<?> createSubscription(@RequestBody CreateSubscriptionRequest request) throws StripeException {
+
         Subscription subscription = paymentService.createSubscription(request);
         Map<String, Object> response = new HashMap<>();
         response.put("id", subscription.getId());
         response.put("customerId", subscription.getCustomer());
         response.put("priceId", subscription.getItems().getData().get(0).getPrice().getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/create-checkout-session/{priceId}")
+    public ResponseEntity<?> createCheckoutSession(@PathVariable String priceId) throws StripeException {
+        Session session = paymentService.createCheckoutSession(priceId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", session.getId());
+        response.put("url", session.getUrl());
         return ResponseEntity.ok(response);
     }
+    
 
     //TODO: Completar los siguientes endpoints
     // @GetMapping("/invoice-preview")

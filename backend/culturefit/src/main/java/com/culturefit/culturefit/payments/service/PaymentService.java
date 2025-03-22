@@ -12,10 +12,12 @@ import com.stripe.model.Customer;
 import com.stripe.model.Event;
 import com.stripe.model.Invoice;
 import com.stripe.model.Subscription;
+import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.InvoiceUpcomingParams;
 import com.stripe.param.SubscriptionCreateParams;
+import com.stripe.param.checkout.SessionCreateParams;
 
 
 @Service
@@ -40,6 +42,23 @@ public class PaymentService {
             .build();
 
         return Subscription.create(params);
+    }
+
+    public Session createCheckoutSession(String priceId) throws StripeException {
+        SessionCreateParams params = SessionCreateParams.builder()
+            //TODO: Cambiar las urls por unas válidas
+            .setSuccessUrl("https://example.com/success")
+            .setCancelUrl("https://example.com/cancel")
+            .addLineItem(
+                SessionCreateParams.LineItem.builder()
+                    .setPrice(priceId)
+                    .setQuantity(1L)
+                    .build()
+            )
+            .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+            .build();
+
+        return Session.create(params);
     }
 
 
