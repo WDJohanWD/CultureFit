@@ -32,7 +32,7 @@ function PaginaInicio() {
           if (mouseOver) return
           timeout = setTimeout(() => {
             slider.next()
-          }, 2000)
+          }, 5000)
         }
         slider.on("created", () => {
           slider.container.addEventListener("mouseover", () => {
