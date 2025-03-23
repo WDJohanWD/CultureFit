@@ -67,7 +67,7 @@ function PaginaPlanes() {
       <div className="mx-auto pt-18 grid max-w-lg grid-cols-1 gap-x-6 sm:gap-y-6 lg:max-w-6xl lg:grid-cols-3">
         {tiers.map((tier) => (
           <div key={tier.id} className='flex flex-col h-full rounded-3xl bg-white/60 sm:mx-8 lg:mx-0 p-8 ring-1 ring-gray-300 sm:p-10'>
-            <h3 id={tier.id} className='text-base/7 font-semibold text-[#ff5400]'>
+            <h3 id={tier.id} className='text-base/7 font-semibold text-primary'>
               {tier.name}
             </h3>
             <p className="mt-4 flex items-baseline gap-x-2">
@@ -87,18 +87,18 @@ function PaginaPlanes() {
                     <span className="font-bold me-1">&#8226;</span>
                     {feature}
                   </li>
-                ))}
-              </ul>
-              <button
-                onClick={() => handleCheckout(tier.priceId)}
-                className='mt-auto block w-full rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline-2 
-                    focus-visible:outline-offset-2 text-[#ff7130] ring-1 ring-[#ff7130] ring-inset 
-                    hover:ring-[#ff5400] hover:bg-[#ff5400] hover:text-white focus-visible:outline-[#ff5400] transition cursor-pointer'>
-                {t("elegir")}
-              </button>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => handleCheckout(tier.priceId)}
+                  className='mt-auto block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline-2 
+                      focus-visible:outline-offset-2 text-font ring-1 ring-font ring-inset 
+                      hover:ring-primary hover:bg-primary hover:text-white focus-visible:outline-primary transition'>
+                  {t("elegir")}
+                </button>
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );

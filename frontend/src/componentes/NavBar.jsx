@@ -13,7 +13,7 @@ function NavBar() {
   };
 
   return (
-    <nav className="bg-[#ff5400] sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium">
+    <nav className="bg-primary sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium">
       <div className="flex justify-between align-middle">
         <div className="flex items-center">
           <Link to="/">

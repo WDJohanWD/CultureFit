@@ -77,7 +77,7 @@ function PaginaInicio() {
                 key={idx}
                 onClick={() => instanceRef.current?.moveToIdx(idx)}
                 className={`w-4 h-4 rounded-full transition-colors duration-300 ${
-                  currentSlide === idx ? "bg-[#ff5400]" : "bg-white opacity-50"
+                  currentSlide === idx ? "bg-primary" : "bg-white opacity-50"
                 }`}
               ></button>
             )
