@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme{
+    /*Variables de tailwind si tiene --color- al inicio el nombre siguiente se pondra como variable de color EJ: bg-primary*/
+    --color-primary: #FF5400;
+    --color-font:#ff7130;
+}
 .montserrat {
     font-family: 'Montserrat', sans-serif;
 }
