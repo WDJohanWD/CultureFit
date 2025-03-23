@@ -1,16 +1,16 @@
 import { BrowserRouter, Routes, Route} from "react-router-dom";
 import NavBar from "./componentes/NavBar";
 import './index.css';
-import PaginaInicio from "./secciones/PaginaInicio";
-import PaginaPlanes from "./secciones/PaginaPlanes";
+import Home from "./sections/Home";
+import Memberships from "./sections/Memberships";
 
 function Layout() {
   return (
     <>
       <NavBar />
       <Routes>
-        <Route path="/" element={<PaginaInicio />} />
-        <Route path="/planes" element={<PaginaPlanes />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/memberships" element={<Memberships />} />
       </Routes>
     </>
   );

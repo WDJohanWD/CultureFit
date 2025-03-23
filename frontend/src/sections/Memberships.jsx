@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-function PaginaPlanes() {
+function Memberships() {
   const { t } = useTranslation("planes");
 
   const tiers = [
@@ -104,4 +104,4 @@ function PaginaPlanes() {
   );
 }
 
-export default PaginaPlanes;
+export default Memberships;
