@@ -11,12 +11,14 @@ import com.stripe.exception.StripeException;
 
 import com.stripe.model.checkout.Session;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/payments")
+@CrossOrigin
 public class PaymentController {
 
     @Autowired
@@ -26,7 +28,6 @@ public class PaymentController {
     public ResponseEntity<?> createCheckoutSession(@PathVariable String priceId) throws StripeException {
         Session session = paymentService.createCheckoutSession(priceId);
         Map<String, Object> response = new HashMap<>();
-        response.put("id", session.getId());
         response.put("url", session.getUrl());
         return ResponseEntity.ok(response);
     }
