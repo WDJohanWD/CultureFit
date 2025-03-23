@@ -9,8 +9,11 @@ import com.stripe.param.checkout.SessionCreateParams;
 
 @Service
 public class PaymentService {
+
+    // Método para crear el checkout-session
     public Session createCheckoutSession(String priceId) throws StripeException {
         SessionCreateParams params = SessionCreateParams.builder()
+            //TODO: Cambiar urls de exito y de cancelación 
             .setSuccessUrl("https://example.com/success")
             .setCancelUrl("https://example.com/cancel")
             .addLineItem(

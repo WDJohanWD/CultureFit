@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import { useKeenSlider } from "keen-slider/react"
-import { CgChevronLeft, CgChevronRight} from "react-icons/cg";
 import "keen-slider/keen-slider.min.css"
 import { useTranslation } from "react-i18next";
 
