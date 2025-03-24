@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.culturefit.culturefit.domain.User;
-import com.culturefit.culturefit.exception.ErrorSavingUserException;
-import com.culturefit.culturefit.exception.NotFoundUserException;
+import com.culturefit.culturefit.exception.userExceptions.ErrorSavingUserException;
+import com.culturefit.culturefit.exception.userExceptions.NotFoundUserException;
 import com.culturefit.culturefit.repository.UsuarioRepository;
 
 import jakarta.validation.Valid;

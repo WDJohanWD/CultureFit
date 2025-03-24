@@ -6,10 +6,9 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 
-
+//TODO: Añadir interfaz al servicio
 @Service
 public class PaymentService {
-
     // Método para crear el checkout-session
     public Session createCheckoutSession(String priceId) throws StripeException {
         SessionCreateParams params = SessionCreateParams.builder()
