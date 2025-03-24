@@ -1,12 +1,14 @@
 package com.culturefit.culturefit.controller;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.domain.User;
 import com.culturefit.culturefit.service.UserService;
 
 import jakarta.validation.Valid;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,17 +28,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/user")
-    public ResponseEntity<?> nuevoUsuario(@Valid @RequestBody User usuario, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            // Si hay errores de validación, devolver un error
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
-        }
-
-        User save = userService.guardarUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(save);
-    }
-
+    //Getters
     @GetMapping("/users")
     public List<User> obtenerUsuarios() {
         List<User> users = userService.obtenerUsuarios();
@@ -49,4 +41,21 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    //Posts
+    @PostMapping("/user")
+    public ResponseEntity<?> nuevoUsuario(@Valid @RequestBody User usuario, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // Si hay errores de validación, devolver un error
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
+        }
+
+        User save = userService.guardarUsuario(usuario);
+        return ResponseEntity.status(HttpStatus.CREATED).body(save);
+    }
+
+    @PostMapping("/user/upload-profile-image/{id}")
+    public ResponseEntity<?> postProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
+        userService.asignarImagen(id, image);
+        return ResponseEntity.ok("Se ha subido correctamente la imagen");
+    }
 }

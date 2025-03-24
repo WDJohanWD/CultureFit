@@ -16,8 +16,6 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.culturefit.culturefit.exception.profileImageExceptions.ErrorSavingProfileImageException;
-import com.culturefit.culturefit.exception.profileImageExceptions.NotFoundProfileImageException;
 import com.culturefit.culturefit.exception.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exception.userExceptions.NotFoundUserException;
 
@@ -46,29 +44,6 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
                 HttpStatus.NOT_FOUND,
                 e.getMessage(),
                 request.getDescription(false));
-        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
-    }
-
-    // Manejo de excepciones para las imagenes de perfil
-    @ExceptionHandler(ErrorSavingProfileImageException.class)
-    public ResponseEntity<?> handleErrorSavingProfileImageException(ErrorSavingProfileImageException e, WebRequest request) {
-        ExcepcionBody body = new ExcepcionBody(
-                LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST,
-                e.getMessage(),
-                request.getDescription(false) // Usamos WebRequest para obtener la URI
-        );
-        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(NotFoundProfileImageException.class)
-    public ResponseEntity<?> handleNotFoundProfileImageException(NotFoundProfileImageException e, WebRequest request) {
-        ExcepcionBody body = new ExcepcionBody(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND,
-                e.getMessage(),
-                request.getDescription(false)
-        );
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
