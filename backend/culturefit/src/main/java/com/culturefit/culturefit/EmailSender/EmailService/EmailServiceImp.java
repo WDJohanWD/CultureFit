@@ -11,7 +11,6 @@ import jakarta.mail.internet.MimeMessage;
 @Service
 public class EmailServiceImp implements EmailService{
    
-    private final String email = "culturefit.contact@a23johanfav.iesteis.gal";
     @Autowired
     private JavaMailSender sender;
 
@@ -20,7 +19,6 @@ public class EmailServiceImp implements EmailService{
         try { 
             MimeMessage message = sender.createMimeMessage(); 
             MimeMessageHelper helper = new MimeMessageHelper(message);
-            helper.setFrom(email); 
             helper.setTo(destination); 
             helper.setText(textMessage, true); 
             helper.setSubject(subject); 
