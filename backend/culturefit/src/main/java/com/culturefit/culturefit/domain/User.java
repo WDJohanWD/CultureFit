@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -29,5 +30,8 @@ public class User {
     @Email(message = "El correo electrónico debe ser válido")
     private String email;
 
+    @NotNull
     private LocalDate birthDate;
+
+    private String imageUrl;
 }

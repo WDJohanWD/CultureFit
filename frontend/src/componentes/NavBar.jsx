@@ -28,7 +28,7 @@ function NavBar() {
           <Link className="pt-1 ms-6 hover:underline">{t("about")}</Link>
         </div>
         <div className="flex items-center">
-          <select defaultValue={"es"} onChange={onChangeLang} style={{ cursor: "pointer"}}>
+          <select defaultValue={"es"} onChange={onChangeLang} style={{ cursor: "pointer", appearance: "none"}}>
             {LANGUAGES.map(({ code, label }) => (
               <option key={code} value={code} className="text-black">
                 {label}
