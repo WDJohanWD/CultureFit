@@ -3,6 +3,7 @@ import NavBar from "./componentes/NavBar";
 import './index.css';
 import PaginaInicio from "./secciones/PaginaInicio";
 import PaginaPlanes from "./secciones/PaginaPlanes";
+import PaginaQuienesSomos from "./secciones/PaginaQuienesSomos";
 
 function Layout() {
   return (
@@ -11,6 +12,7 @@ function Layout() {
       <Routes>
         <Route path="/" element={<PaginaInicio />} />
         <Route path="/planes" element={<PaginaPlanes />} />
+        <Route path="/aboutus" element={<PaginaQuienesSomos />}/>
       </Routes>
     </>
   );
