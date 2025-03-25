@@ -54,10 +54,6 @@ function Home() {
     ]
   )
 
-  function goToMemberships(){
-
-  }
-
   const slideImgs = [
     "fondo1.png",
     "fondo2.png",
@@ -127,8 +123,7 @@ function Home() {
           <button className="text-white bg-gradient-to-r from-light-primary to-primary 
                             transition hover:ring-6 hover:outline-none hover:ring-orange-300 shadow-lg 
                             shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
-                            text-lg px-5 py-2.5 text-center me-2 mb-2 mt-2"
-                            onClick={goToMemberships}>
+                            text-lg px-5 py-2.5 text-center me-2 mb-2 mt-2">
             {t("memberships")}
           </button>
         </Link>

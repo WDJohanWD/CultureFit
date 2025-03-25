@@ -16,7 +16,6 @@ i18n
     backend: {
       loadPath: "src/traducciones/{{lng}}/{{ns}}.json",
     },
-    ns: ["inicio", "planes", "navbar"],
     defaultNS: "inicio",
   });
 
