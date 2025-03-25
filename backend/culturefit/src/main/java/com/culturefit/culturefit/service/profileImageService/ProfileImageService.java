@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.service;
+package com.culturefit.culturefit.service.profileImageService;
 
 import java.io.IOException;
 

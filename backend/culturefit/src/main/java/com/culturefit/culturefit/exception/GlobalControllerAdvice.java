@@ -16,6 +16,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.culturefit.culturefit.exception.paymentExceptions.StripePaymentException;
+import com.culturefit.culturefit.exception.profileImageExceptions.ErrorSavingImageException;
 import com.culturefit.culturefit.exception.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exception.userExceptions.NotFoundUserException;
 
@@ -45,6 +47,30 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
                 e.getMessage(),
                 request.getDescription(false));
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    //Manejo de excepciones de Stripe
+    @ExceptionHandler(StripePaymentException.class)
+    public ResponseEntity<ExcepcionBody> handleStripePaymentException(StripePaymentException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e.getMessage(),
+                request.getDescription(false));
+    
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //Manejo de excepciones de subida de archivos
+    @ExceptionHandler(ErrorSavingImageException.class)
+    public ResponseEntity<ExcepcionBody> handleErrorSavingImageException(ErrorSavingImageException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                request.getDescription(false));
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
     // Método genérico para manejar todas las excepciones no específicas

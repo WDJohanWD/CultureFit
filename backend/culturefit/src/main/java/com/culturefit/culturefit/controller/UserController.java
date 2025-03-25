@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.domain.User;
-import com.culturefit.culturefit.service.UserService;
+import com.culturefit.culturefit.service.userService.UserService;
 
 import jakarta.validation.Valid;
 

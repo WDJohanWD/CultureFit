@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.service;
+package com.culturefit.culturefit.service.userService;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,11 +11,12 @@ import com.culturefit.culturefit.domain.User;
 import com.culturefit.culturefit.exception.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exception.userExceptions.NotFoundUserException;
 import com.culturefit.culturefit.repository.UsuarioRepository;
+import com.culturefit.culturefit.service.profileImageService.ProfileImageService;
 
 import jakarta.validation.Valid;
 
 @Service
-public class UserServiceImp implements UserService {
+public class UserServiceImpl implements UserService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
@@ -46,7 +47,6 @@ public class UserServiceImp implements UserService {
             .orElseThrow(NotFoundUserException::new);
     }
     
-    //TODO: Manejar errores al asignar imagen
     @Override
     public User asignarImagen(Long usuarioId, MultipartFile archivo) throws IOException{
         User usuario = obtenerUsuario(usuarioId);

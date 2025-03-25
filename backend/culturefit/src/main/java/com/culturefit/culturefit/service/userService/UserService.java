@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.service;
+package com.culturefit.culturefit.service.userService;
 
 import java.io.IOException;
 import java.util.List;
