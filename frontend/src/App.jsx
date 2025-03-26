@@ -6,6 +6,7 @@ import Memberships from "./sections/Memberships";
 import Error404 from "./sections/Error404"
 import Signup from "./sections/Signup"
 import Login from "./sections/Login"
+import PaginaQuienesSomos from "./secciones/PaginaQuienesSomos";
 
 function Layout() {
 
@@ -19,6 +20,7 @@ function Layout() {
         <Route path="/login" element={<Login/>} />
         <Route path="/" element={<Home />} />
         <Route path="/memberships" element={<Memberships />} />
+        <Route path="/aboutus" element={<PaginaQuienesSomos />}/>
       </Routes>
     </>
   );

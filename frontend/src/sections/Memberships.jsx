@@ -93,7 +93,7 @@ function Memberships() {
                   onClick={() => handleCheckout(tier.priceId)}
                   className='mt-auto block rounded-md px-3.5 py-2.5 text-center text-sm font-semibold focus-visible:outline-2 
                       focus-visible:outline-offset-2 text-font ring-1 ring-font ring-inset 
-                      hover:ring-primary hover:bg-primary hover:text-white focus-visible:outline-primary transition'>
+                      hover:ring-primary hover:bg-primary hover:text-white focus-visible:outline-primary transition cursor-pointer'>
                   {t("elegir")}
                 </button>
               </div>

@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.exception;
+package com.culturefit.culturefit.exception.userExceptions;
 
 public class ErrorSavingUserException extends RuntimeException {
     public ErrorSavingUserException(){

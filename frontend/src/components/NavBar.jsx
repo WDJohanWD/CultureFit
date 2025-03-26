@@ -28,7 +28,7 @@ function NavBar() {
           <Link className="pt-1 ms-9 hover:underline">{t("clases")}</Link>
           <Link className="pt-1 ms-6 hover:underline">{t("videos")}</Link>
           <Link to="/memberships" className="pt-1 ms-6 hover:underline">{t("planes")}</Link>
-          <Link className="pt-1 ms-6 hover:underline">{t("about")}</Link>
+          <Link to="/aboutus" className="pt-1 ms-6 hover:underline">{t("about")}</Link>
         </div>
         <div className="flex items-center">
           <Link to="/login">
@@ -45,7 +45,7 @@ function NavBar() {
                       {t("signup")}
                     </button>
           </Link>
-          <select defaultValue={lng} onChange={onChangeLang} style={{ cursor: "pointer"}} className="ms-4">
+          <select defaultValue={lng} onChange={onChangeLang} style={{ cursor: "pointer", appearance: "none"}} className="ms-4">
             {LANGUAGES.map(({ code, label }) => (
               <option key={code} value={code} className="text-black">
                 {label}
