@@ -1,10 +1,9 @@
-package com.culturefit.culturefit.EmailSender.EmailController;
+package com.culturefit.culturefit.emails.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.culturefit.culturefit.EmailSender.EmailDomain.EmailRequest;
-import com.culturefit.culturefit.EmailSender.EmailService.EmailService;
-import com.culturefit.culturefit.domain.User;
+import com.culturefit.culturefit.emails.domain.EmailRequest;
+import com.culturefit.culturefit.emails.service.EmailService;
 
 import jakarta.validation.Valid;
 

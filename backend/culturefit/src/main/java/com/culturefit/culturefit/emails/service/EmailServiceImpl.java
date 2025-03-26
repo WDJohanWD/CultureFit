@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.EmailSender.EmailService;
+package com.culturefit.culturefit.emails.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -9,7 +9,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 
 @Service
-public class EmailServiceImp implements EmailService{
+public class EmailServiceImpl implements EmailService{
    
     @Autowired
     private JavaMailSender sender;
@@ -24,6 +24,6 @@ public class EmailServiceImp implements EmailService{
             helper.setSubject(subject); 
             sender.send(message); 
             return true; 
-        } catch (MessagingException e) { e.printStackTrace();  return false;        } 
+        } catch (MessagingException e) { e.printStackTrace(); return false; }
     }
 }

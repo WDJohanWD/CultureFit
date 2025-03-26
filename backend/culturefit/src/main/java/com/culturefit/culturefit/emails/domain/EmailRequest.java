@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.EmailSender.EmailDomain;
+package com.culturefit.culturefit.emails.domain;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
