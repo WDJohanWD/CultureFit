@@ -3,8 +3,11 @@
 @theme{
     /*Variables de tailwind si tiene --color- al inicio el nombre siguiente se pondra como variable de color EJ: bg-primary*/
     --color-primary: #FF5400;
-    --color-font:#ff7130;
+    --color-font: #ff7130;
+    --color-light-primary: #ff8000;
+    --color-dark: #0b1e38;
 }
+
 .montserrat {
     font-family: 'Montserrat', sans-serif;
 }

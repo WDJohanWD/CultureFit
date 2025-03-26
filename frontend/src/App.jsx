@@ -1,17 +1,25 @@
-import { BrowserRouter, Routes, Route} from "react-router-dom";
-import NavBar from "./componentes/NavBar";
+import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom";
+import NavBar from "./components/NavBar";
 import './index.css';
-import PaginaInicio from "./secciones/PaginaInicio";
-import PaginaPlanes from "./secciones/PaginaPlanes";
+import Home from "./sections/Home";
+import Memberships from "./sections/Memberships";
+import Error404 from "./sections/Error404"
+import Signup from "./sections/Signup"
+import Login from "./sections/Login"
 import PaginaQuienesSomos from "./secciones/PaginaQuienesSomos";
 
 function Layout() {
+
   return (
     <>
       <NavBar />
       <Routes>
-        <Route path="/" element={<PaginaInicio />} />
-        <Route path="/planes" element={<PaginaPlanes />} />
+        <Route path="*" element={<Navigate to="/error" replace />} />
+        <Route path="/error" element={<Error404 />} />
+        <Route path="/signup" element={<Signup/>} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/" element={<Home />} />
+        <Route path="/memberships" element={<Memberships />} />
         <Route path="/aboutus" element={<PaginaQuienesSomos />}/>
       </Routes>
     </>
