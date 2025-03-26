@@ -8,3 +8,9 @@
 .montserrat {
     font-family: 'Montserrat', sans-serif;
 }
+
+/*sizing of map container*/
+.leaflet-container{
+    margin: 15px 15px 0 15px;
+    height: 100vh;
+}
