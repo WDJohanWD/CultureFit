@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 
 function Memberships() {
-  const { t } = useTranslation("planes");
+  const { t } = useTranslation("memberships");
 
   const tiers = [
     {

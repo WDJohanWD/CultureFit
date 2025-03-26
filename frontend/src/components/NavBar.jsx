@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { LANGUAGES } from "../traducciones";
+import { LANGUAGES } from "../translations";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 

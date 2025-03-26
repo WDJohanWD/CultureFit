@@ -2,7 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useTranslation } from "react-i18next";
-function PaginaQuienesSomos() {
+function AboutUs() {
 
   const { t } = useTranslation("aboutus");
 
@@ -39,4 +39,4 @@ function PaginaQuienesSomos() {
 
 }
 
-export default PaginaQuienesSomos;
+export default AboutUs;
