@@ -2,7 +2,7 @@
     "passError": "La contraseña debe tener al menos 8 caracteres, contener 1 letra mayúscula, 1 letra minúscula y 1 número.",
     "emailError": "El correo electrónico no es válido",
     "userExists": "El usuario ya existe.",
-    "passwordMarch": "Las contraseñas no coinciden",
+    "passwordMatch": "Las contraseñas no coinciden",
     "title": "Regístro",
     "username": "Nombre de usuario",
     "email": "Correo electrónico",

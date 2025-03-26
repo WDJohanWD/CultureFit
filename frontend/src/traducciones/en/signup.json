@@ -2,7 +2,7 @@
     "passError": "Password must be at least 8 characters, contain 1 uppercase letter, 1 lowercase letter, and 1 number.",
     "emailError": "Email is not valid",
     "userExists": "User already exists.",
-    "passwordMarch": "Password do not match",
+    "passwordMatch": "Password do not match",
     "title": "Sign Up",
     "username": "Username",
     "email": "Email",

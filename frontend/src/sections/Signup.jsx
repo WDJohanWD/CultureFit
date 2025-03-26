@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 
-function Signup(){
-    const { t } = useTranslation("signup"); 
+function Signup() {
+    const { t } = useTranslation("signup");
 
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
@@ -26,43 +26,38 @@ function Signup(){
         return null;
     }
 
-    async function checkUser() {    
-        // ↓↓↓ Comprobar si el usuario existe ↓↓↓
-         
-        if (userExists) {
-            document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+    const printError = (error) => {
+        document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                         <strong class="font-bold">Error!</strong>
-                        <span class="block sm:inline">${t("userExists")}</span>
+                        <span class="block sm:inline">${error}</span>
                     </div>`;
+    }
+
+    async function checkUser() {
+        // ↓↓↓ Comprobar si el usuario existe ↓↓↓
+
+        if (userExists) {
+            printError(t("userExists"))
         } else {
-            // ↓↓↓ Crear el nuevo usuario ↓↓↓
-            
+            // ↓↓↓ Enviar el correo de confirmacion y crear el nuevo usuario ↓↓↓
+
+
         }
     }
 
     // Comprobaciones de email, contraseña y que las contraseñas sean iguales
     const handleSubmit = (e) => {
-        
+
         e.preventDefault();
         const passwordError = validatePassword(password);
         const emailError = validateEmail(email);
-        const passwordMatch = t("passwordMatch");
         if (password !== passwordRepeat) {
-            document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                        <strong class="font-bold">Error!</strong>
-                        <span class="block sm:inline">${passwordMatch}</span>
-                    </div>`;
+            printError(t("passwordMatch"))
         } else if (passwordError) {
-            document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <strong class="font-bold">Error!</strong>
-                    <span class="block sm:inline">${passwordError}</span>
-                </div>`;
+            printError(passwordError)
             return;
         } else if (emailError) {
-            document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <span class="block sm:inline">${emailError}</span>
-                    </div>`;
+            printError(emailError)
             return;
         } else {
             checkUser();
@@ -71,7 +66,7 @@ function Signup(){
 
     return (
         <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
-            <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md ">
+            <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md absolute top-1/2 -translate-y-3/7">
                 <h2 className="text-2xl font-bold text-center">{t("title")}</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="my-8">
@@ -89,7 +84,7 @@ function Signup(){
                     </div>
                     <div className="my-8">
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                        {t("email")}
+                            {t("email")}
                         </label>
                         <input
                             type="email"
@@ -103,7 +98,7 @@ function Signup(){
 
                     <div className="my-8">
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                        {t("pass")}
+                            {t("pass")}
                         </label>
                         <input
                             type="password"
@@ -117,7 +112,7 @@ function Signup(){
 
                     <div className="my-8">
                         <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                        {t("repeatPass")}
+                            {t("repeatPass")}
                         </label>
                         <input
                             type="password"
@@ -129,7 +124,7 @@ function Signup(){
                         />
                     </div>
                     <button type='submit'
-                    className="text-white bg-gradient-to-r from-light-primary to-primary 
+                        className="text-white bg-gradient-to-r from-light-primary to-primary 
                             transition hover:ring-6 hover:outline-none hover:ring-orange-300 shadow-lg 
                             shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
                             text-lg px-5 py-2.5 text-center me-2 mb-2 mt-2 w-full">
