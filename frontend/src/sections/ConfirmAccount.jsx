@@ -24,11 +24,13 @@ function ConfirmAccount() {
 
                 if (data.success) {
                     alert('Account confirmed successfully!');
-                    navigate('/login');
+                    navigate("/login")
+                    window.location.reload()
                 }
             } catch (error) {
                 alert('Error confirming account: ' + error.response?.data?.message || error.message);
-                navigate('/');
+                navigate("/")
+
             }
         };
 
@@ -39,7 +41,7 @@ function ConfirmAccount() {
 
     return (
         <div>
-            <h1>Confirming your account...</h1>
+            <h1 className='absolute text-3xl top-1/2 left-1/2 -translate-x-1/2 montserrat text-primary'>Confirming your account...</h1>
         </div>
     );
 }

@@ -49,8 +49,10 @@ public class EmailController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datos inválidos en la solicitud");
         }
 
+        // Falta
+
         emailService.sendConfirmationEmail(request.getEmail());
-        return ResponseEntity.status(HttpStatus.OK).body("Email enviado correctamente");
+        return ResponseEntity.ok("Email enviado correctamente");
     }
 
     @PostMapping("/confirm-account")
