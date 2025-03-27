@@ -6,7 +6,6 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.culturefit.culturefit.emails.domain.EmailRequest;
-import com.culturefit.culturefit.emails.domain.VerifyEmailRequest;
 import com.culturefit.culturefit.emails.service.EmailService;
 
 import jakarta.validation.Valid;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 public class EmailController {
-    
     @Autowired
     private EmailService emailService;
 
@@ -42,16 +40,11 @@ public class EmailController {
         return ResponseEntity.status(HttpStatus.OK).body("Email enviado correctamente");
     }
 
+
+
     @PostMapping("/verification-email")
-    public ResponseEntity<?> sendVerifyEmail(@RequestBody VerifyEmailRequest request, BindingResult result) {
-
-        if (result.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datos inválidos en la solicitud");
-        }
-
-        // Falta
-
-        emailService.sendConfirmationEmail(request.getEmail());
+    public ResponseEntity<?> sendVerifyEmail(@RequestBody String email) {
+        emailService.sendConfirmationEmail(email);
         return ResponseEntity.ok("Email enviado correctamente");
     }
 
