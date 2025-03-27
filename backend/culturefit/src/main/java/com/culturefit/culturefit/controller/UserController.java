@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.domain.User;
+import com.culturefit.culturefit.domain.UserDTO;
+import com.culturefit.culturefit.service.userService.UserDTOConverter;
 import com.culturefit.culturefit.service.userService.UserService;
 
 import jakarta.validation.Valid;
@@ -27,6 +29,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserDTOConverter userDTOConverter;
 
     //Getters
     @GetMapping("/users")
@@ -57,5 +62,15 @@ public class UserController {
     public ResponseEntity<?> postProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
         userService.asignarImagen(id, image);
         return ResponseEntity.ok("Se ha subido correctamente la imagen");
+    }
+
+    @PostMapping("/newUserDTO")
+    public ResponseEntity<?> newUserDTO(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            // Si hay errores de validación, devolver un error
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
+        }
+        userService.guardarUsuario(userDTOConverter.DtoToUser(userDTO));
+        return ResponseEntity.ok("Se ha guardado el usuario correctamente");
     }
 }

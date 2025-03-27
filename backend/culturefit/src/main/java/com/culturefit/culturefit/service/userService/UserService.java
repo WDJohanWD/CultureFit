@@ -12,4 +12,6 @@ public interface UserService {
     List<User> obtenerUsuarios();
     User obtenerUsuario(Long id);
     User asignarImagen(Long usuarioId, MultipartFile archivo) throws IOException;
+    User getUserByEmail(String email);
+    User activateUser(User user);
 }

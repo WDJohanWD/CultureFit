@@ -9,5 +9,6 @@
     "pass": "Password",
     "repeatPass": "Repeat your password",
     "account":"Already have an account?",
-    "login": "Log In"
+    "login": "Log In",
+    "birthDate": "Birth Date"
 }
