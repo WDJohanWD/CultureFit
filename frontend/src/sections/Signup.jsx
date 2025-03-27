@@ -9,6 +9,7 @@ function Signup() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [passwordRepeat, setPasswordRepeat] = useState('');
+    const [birthDate, setBirthDate] = useState(null);
 
     const validatePassword = (password) => {
         const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -40,7 +41,15 @@ function Signup() {
         //    printError(t("userExists"))
         //} else {
             console.log("funciona")
-            sendVerificationEmail(email);
+            /// Crea el usuario
+
+
+
+
+
+
+
+
         //}
     }
 
@@ -144,6 +153,20 @@ function Signup() {
                             id="password"
                             value={passwordRepeat}
                             onChange={(e) => setPasswordRepeat(e.target.value)}
+                            required
+                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+                        />
+                    </div>
+
+                    <div className="my-8">
+                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                            {t("birthDate")}
+                        </label>
+                        <input
+                            type="date"
+                            id="date"
+                            value={birthDate}
+                            onChange={(e) => setBirthDate(e.target.value)}
                             required
                             className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
                         />

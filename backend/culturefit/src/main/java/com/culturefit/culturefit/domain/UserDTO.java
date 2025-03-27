@@ -1,7 +1,5 @@
 package com.culturefit.culturefit.domain;
 
-import java.time.LocalDate;
-
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -22,5 +20,5 @@ public class UserDTO {
     private String password;
 
     @NotNull
-    private LocalDate birthDate;
+    private String birthDate;
 }

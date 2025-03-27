@@ -9,5 +9,6 @@
     "pass": "Contraseña",
     "repeatPass": "Repite tu contraseña",
     "account": "¿Ya tienes cuenta?",
-    "login": "Iniciar sesión"
+    "login": "Iniciar sesión",
+    "birthDate": "Fecha de nacimiento"
 }
