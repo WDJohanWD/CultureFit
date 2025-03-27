@@ -36,13 +36,12 @@ function Signup() {
     async function checkUser() {
         // ↓↓↓ Comprobar si el usuario existe ↓↓↓
 
-        if (userExists) {
-            printError(t("userExists"))
-        } else {
-            // ↓↓↓ Enviar el correo de confirmacion y crear el nuevo usuario ↓↓↓
-
-
-        }
+        // if (userExists) {
+        //    printError(t("userExists"))
+        //} else {
+            console.log("funciona")
+            sendVerificationEmail(email);
+        //}
     }
 
     // Comprobaciones de email, contraseña y que las contraseñas sean iguales
@@ -63,6 +62,32 @@ function Signup() {
             checkUser();
         };
     }
+
+
+    // Enviar el email de verificación
+    const sendVerificationEmail = async (email) => {
+        try {
+          const response = await fetch('http://localhost:9000/verification-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email }),
+          });
+      
+          if (!response.ok) {
+            throw new Error('Error al enviar el email');
+          }
+      
+          const data = await response.json();
+          console.log('Respuesta:', data);
+          return data;
+        } catch (error) {
+          console.error('Error:', error);
+          throw error;
+        }
+      };
+      
 
     return (
         <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
