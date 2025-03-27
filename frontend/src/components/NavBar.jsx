@@ -45,7 +45,9 @@ function NavBar() {
                       {t("signup")}
                     </button>
           </Link>
-          <select defaultValue={lng} onChange={onChangeLang} style={{ cursor: "pointer", appearance: "none"}} className="ms-4">
+
+          <label htmlFor="language"></label>
+          <select id="language" defaultValue={lng} onChange={onChangeLang} style={{ cursor: "pointer", appearance: "none"}} className="ms-4">
             {LANGUAGES.map(({ code, label }) => (
               <option key={code} value={code} className="text-black">
                 {label}
