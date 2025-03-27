@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Signup() {
     const { t } = useTranslation("signup");
+    const navigate = useNavigate();
 
     const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
     const [passwordRepeat, setPasswordRepeat] = useState('');
-    const [birthDate, setBirthDate] = useState(null);
+    const [birthDate, setBirthDate] = useState('');
 
     const validatePassword = (password) => {
         const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
@@ -40,16 +41,23 @@ function Signup() {
         // if (userExists) {
         //    printError(t("userExists"))
         //} else {
-            console.log("funciona")
-            /// Crea el usuario
+        const newUser = {
+            name,
+            email,
+            password,
+            birthDate,
+        };
 
+        const response = await fetch('http://localhost:9000/newUserDTO', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newUser),
+        });
 
-
-
-
-
-
-
+        sendVerificationEmail(email);
+        navigate("/login");
         //}
     }
 
@@ -76,27 +84,27 @@ function Signup() {
     // Enviar el email de verificación
     const sendVerificationEmail = async (email) => {
         try {
-          const response = await fetch('http://localhost:9000/verification-email', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email }),
-          });
-      
-          if (!response.ok) {
-            throw new Error('Error al enviar el email');
-          }
-      
-          const data = await response.json();
-          console.log('Respuesta:', data);
-          return data;
+            const response = await fetch('http://localhost:9000/verification-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: ( email ),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al enviar el email');
+            }
+
+            const data = await response.json();
+            console.log('Respuesta:', data);
+            return data;
         } catch (error) {
-          console.error('Error:', error);
-          throw error;
+            console.error('Error:', error);
+            throw error;
         }
-      };
-      
+    };
+
 
     return (
         <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
@@ -110,8 +118,8 @@ function Signup() {
                         <input
                             type="text"
                             id="username"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
                             required
                             className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
                         />
@@ -150,7 +158,7 @@ function Signup() {
                         </label>
                         <input
                             type="password"
-                            id="password"
+                            id="passwordRepeat"
                             value={passwordRepeat}
                             onChange={(e) => setPasswordRepeat(e.target.value)}
                             required

@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.culturefit.culturefit.domain.User;
 import com.culturefit.culturefit.emails.domain.EmailRequest;
 import com.culturefit.culturefit.emails.service.EmailService;
+import com.culturefit.culturefit.service.userService.UserService;
 
 import jakarta.validation.Valid;
 
@@ -23,6 +25,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 public class EmailController {
+
+    @Autowired
+    private UserService userService;
+
     @Autowired
     private EmailService emailService;
 
@@ -59,8 +65,8 @@ public class EmailController {
             
             String email = jwt.getSubject();
             
-            System.out.println("Funciona me cago en dios" + email);
-            
+            User user = userService.getUserByEmail(email);
+            userService.activateUser(user);
             return ResponseEntity.ok().body(Map.of("success", true, "message", "Account confirmed successfully"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -23,14 +23,13 @@ function ConfirmAccount() {
                 }
 
                 if (data.success) {
-                    alert('Account confirmed successfully!');
+                    console.log('Account confirmed successfully!');
                     navigate("/login")
                     window.location.reload()
                 }
             } catch (error) {
-                alert('Error confirming account: ' + error.response?.data?.message || error.message);
+                console.log('Error confirming account: ' + error.response?.data?.message || error.message);
                 navigate("/")
-
             }
         };
 

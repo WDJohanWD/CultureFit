@@ -64,13 +64,13 @@ public class UserController {
         return ResponseEntity.ok("Se ha subido correctamente la imagen");
     }
 
-    @PostMapping("/userDTO")
+    @PostMapping("/newUserDTO")
     public ResponseEntity<?> newUserDTO(@Valid @RequestBody UserDTO userDTO, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Si hay errores de validación, devolver un error
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         }
-        User save = userService.guardarUsuario(userDTOConverter.DtoToUser(userDTO));
-        return ResponseEntity.status(HttpStatus.CREATED).body(save);
+        userService.guardarUsuario(userDTOConverter.DtoToUser(userDTO));
+        return ResponseEntity.ok("Se ha guardado el usuario correctamente");
     }
 }
