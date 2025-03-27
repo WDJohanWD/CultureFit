@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.exception;
+package com.culturefit.culturefit.exceptions;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,10 +16,10 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.culturefit.culturefit.exception.paymentExceptions.StripePaymentException;
-import com.culturefit.culturefit.exception.profileImageExceptions.ErrorSavingImageException;
-import com.culturefit.culturefit.exception.userExceptions.ErrorSavingUserException;
-import com.culturefit.culturefit.exception.userExceptions.NotFoundUserException;
+import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentException;
+import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingImageException;
+import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
+import com.culturefit.culturefit.exceptions.userExceptions.NotFoundUserException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

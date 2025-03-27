@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.domain;
+package com.culturefit.culturefit.domains;
 
 import java.time.LocalDate;
 
@@ -14,7 +14,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-@Table(name = "usuarios")
+@Table(name = "users")
 @Entity
 public class User {
 
@@ -23,11 +23,11 @@ public class User {
     private Long id;
 
     @Column(nullable = false) // Evita valores nulos en la BD
-    @NotEmpty(message = "El nombre no puede estar vacío")
+    @NotEmpty(message = "The name cannot be empty")
     private String name;
 
     @Column(nullable = false, unique = true) // Evita duplicados
-    @Email(message = "El correo electrónico debe ser válido")
+    @Email(message = "The email must be valid")
     private String email;
 
     @NotNull

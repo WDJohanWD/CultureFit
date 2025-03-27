@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.service.profileImageService;
+package com.culturefit.culturefit.services.profileImageService;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.culturefit.culturefit.exception.profileImageExceptions.ErrorSavingImageException;
+import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingImageException;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
@@ -19,42 +19,45 @@ public class ProfileImageServiceImpl implements ProfileImageService {
     Dotenv dotenv = Dotenv.load();
     String DIRECTORY_PROFILE_IMAGES = dotenv.get("DIRECTORY_PROFILE_IMAGES");
 
-    public String guardarImagen(Long usuarioId, MultipartFile archivo, String nombreUsuario) throws IOException {
+    @Override
+    public String saveImage(Long userId, MultipartFile file, String userName) throws IOException {
         try {
-            File directorio = new File(DIRECTORY_PROFILE_IMAGES);
+            File directory = new File(DIRECTORY_PROFILE_IMAGES);
 
-            if (!directorio.exists()) {
-                directorio.mkdirs(); // Crear directorio si no existe
+            if (!directory.exists()) {
+                directory.mkdirs(); // Crear directorio si no existe
             }
 
             // Obtener y validar la extensión
-            String extension = obtenerExtension(archivo.getOriginalFilename()).toLowerCase();
+            String extension = getExtension(file.getOriginalFilename()).toLowerCase();
             if (!extension.matches("\\.(jpg|jpeg|png|gif)$")) {
                 throw new RuntimeException();
             }
 
             // Normalizar el nombre del archivo
-            String nombreArchivo = nombreUsuario.replaceAll("\\s+", "_").toLowerCase() + "_profile" + extension;
+            String fileName = userName.replaceAll("\\s+", "_").toLowerCase() + "_profile" + extension;
 
             // Construcción correcta de la ruta
-            Path rutaArchivo = Paths.get(directorio.getAbsolutePath(), nombreArchivo);
+            Path filePath = Paths.get(directory.getAbsolutePath(), fileName);
 
             // Guardar el archivo
-            Files.write(rutaArchivo, archivo.getBytes());
+            Files.write(filePath, file.getBytes());
 
             // Devolver la URL de acceso
-            return "/uploads/profileImages/" + nombreArchivo;
+            return "/uploads/profileImages/" + fileName;
             
         } catch (Exception e) {
             throw new ErrorSavingImageException();
         }
     }
 
-    public String obtenerExtension(String nombreArchivo) {
-        int indiceExtension = nombreArchivo.lastIndexOf(".");
-        if (indiceExtension == -1) {
+    @Override
+    public String getExtension(String fileName) {
+        int extensionIndex = fileName.lastIndexOf(".");
+        if (extensionIndex == -1) {
             return ""; // Si no tiene extensión, devolver una cadena vacía
         }
-        return nombreArchivo.substring(indiceExtension);
+        return fileName.substring(extensionIndex);
     }
 }
+

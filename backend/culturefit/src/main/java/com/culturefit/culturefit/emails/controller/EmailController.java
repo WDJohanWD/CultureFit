@@ -25,10 +25,10 @@ public class EmailController {
     public ResponseEntity<?> sendEmail(@Valid @RequestBody EmailRequest request, BindingResult result) {
 
         if (result.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datos inválidos en la solicitud");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data in the request");
         }
 
         emailService.sendEmail(request.getEmail(), request.getSubject(), request.getTextMessage());
-        return ResponseEntity.status(HttpStatus.OK).body("Email enviado correctamente");
+        return ResponseEntity.status(HttpStatus.OK).body("Email sent successfully");
     }
 }

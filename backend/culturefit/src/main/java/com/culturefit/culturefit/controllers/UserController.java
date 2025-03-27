@@ -1,10 +1,10 @@
-package com.culturefit.culturefit.controller;
+package com.culturefit.culturefit.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.culturefit.culturefit.domain.User;
-import com.culturefit.culturefit.service.userService.UserService;
+import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.services.userService.UserService;
 
 import jakarta.validation.Valid;
 
@@ -30,32 +30,32 @@ public class UserController {
 
     //Getters
     @GetMapping("/users")
-    public List<User> obtenerUsuarios() {
-        List<User> users = userService.obtenerUsuarios();
+    public List<User> getUsers() {
+        List<User> users = userService.getUsers();
         return users;
     }
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<User> obtenerUsuario(@PathVariable Long id) {
-        User user = userService.obtenerUsuario(id);
+    public ResponseEntity<User> getUser(@PathVariable Long id) {
+        User user = userService.getUser(id);
         return ResponseEntity.ok(user);
     }
 
     //Posts
     @PostMapping("/user")
-    public ResponseEntity<?> nuevoUsuario(@Valid @RequestBody User usuario, BindingResult bindingResult) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             // Si hay errores de validación, devolver un error
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
         }
 
-        User save = userService.guardarUsuario(usuario);
-        return ResponseEntity.status(HttpStatus.CREATED).body(save);
+        User savedUser = userService.saveUser(user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
     }
 
     @PostMapping("/user/upload-profile-image/{id}")
-    public ResponseEntity<?> postProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
-        userService.asignarImagen(id, image);
-        return ResponseEntity.ok("Se ha subido correctamente la imagen");
+    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
+        userService.assignImage(id, image);
+        return ResponseEntity.ok("The image has been uploaded successfully");
     }
 }

@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.exception.profileImageExceptions;
+package com.culturefit.culturefit.exceptions.profileImageExceptions;
 
 public class ErrorSavingImageException extends RuntimeException{
     public ErrorSavingImageException(){

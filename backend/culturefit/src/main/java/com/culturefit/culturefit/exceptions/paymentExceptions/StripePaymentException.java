@@ -1,4 +1,4 @@
-package com.culturefit.culturefit.exception.paymentExceptions;
+package com.culturefit.culturefit.exceptions.paymentExceptions;
 
 public class StripePaymentException extends RuntimeException {
     public StripePaymentException() {

@@ -2,7 +2,7 @@ package com.culturefit.culturefit.payments.service;
 
 import org.springframework.stereotype.Service;
 
-import com.culturefit.culturefit.exception.paymentExceptions.StripePaymentException;
+import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
