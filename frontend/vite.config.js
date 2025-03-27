@@ -7,6 +7,12 @@ import compression from 'vite-plugin-compression';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    ["babel-plugin-transform-imports", {
+      "react-icons": {
+        "transform": "react-icons/io5/${member}",
+        "preventFullImport": true
+      }
+    }],
     react(),
     tailwindcss(),
     compression(
