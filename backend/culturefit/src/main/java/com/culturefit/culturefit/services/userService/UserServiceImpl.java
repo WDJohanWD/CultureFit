@@ -44,21 +44,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(Long id) {
         return userRepository.findById(id)
-            .orElseThrow(NotFoundUserException::new);
+                .orElseThrow(NotFoundUserException::new);
     }
 
     @Override
     public User assignImage(Long userId, MultipartFile file) throws IOException {
         User user = getUser(userId);
-    
-        // Guardar la imagen en la carpeta y obtener la URL con el ID del usuario en el nombre del archivo
+
+        // Guardar la imagen en la carpeta y obtener la URL con el ID del usuario en el
+        // nombre del archivo
         String imageUrl = profileImageService.saveImage(userId, file, user.getName());
-    
+
         user.setImageUrl(imageUrl);
         return userRepository.save(user);
     }
-    
 }
-
-        
-

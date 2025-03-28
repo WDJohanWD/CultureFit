@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.culturefit.culturefit.domains.User;
 
+
 @Repository
 public interface UserRepository  extends JpaRepository<User, Long>{
     Optional<User> findById(Long id);
+    Optional<User> findByName(String name);
 }
