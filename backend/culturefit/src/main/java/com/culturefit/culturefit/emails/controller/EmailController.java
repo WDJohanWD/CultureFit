@@ -5,10 +5,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.culturefit.culturefit.domain.User;
+import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.emails.domain.EmailRequest;
 import com.culturefit.culturefit.emails.service.EmailService;
-import com.culturefit.culturefit.service.userService.UserService;
+import com.culturefit.culturefit.services.userService.UserService;
 
 import jakarta.validation.Valid;
 
@@ -39,11 +39,11 @@ public class EmailController {
     public ResponseEntity<?> sendEmail(@Valid @RequestBody EmailRequest request, BindingResult result) {
 
         if (result.hasErrors()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datos inválidos en la solicitud");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data in the request");
         }
 
         emailService.sendEmail(request.getEmail(), request.getSubject(), request.getTextMessage());
-        return ResponseEntity.status(HttpStatus.OK).body("Email enviado correctamente");
+        return ResponseEntity.status(HttpStatus.OK).body("Email sent successfully");
     }
 
 

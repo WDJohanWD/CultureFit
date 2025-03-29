@@ -16,7 +16,7 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         Server proServer = new Server();
         proServer.setUrl("http://localhost:9000");
-        proServer.setDescription("Servidor de produción");
+        proServer.setDescription("Production server");
 
         Contact contact = new Contact();
         contact.setName("CultureFit");
@@ -28,7 +28,7 @@ public class OpenApiConfig {
 
         Info info = new Info();
         info.setTitle("API CultureFit");
-        info.setDescription("API de gimnasio CultureFit");
+        info.setDescription("CultureFit Gym API");
         info.setVersion("1.0.0");
         info.setContact(contact);
         info.setLicense(license);
