@@ -70,6 +70,7 @@ public class AuthController {
             signUpRequest.getEmail(),
             encoder.encode(signUpRequest.getPassword()),
             signUpRequest.getBirthDate(),
+            false,
             null,
             Role.USER
         );

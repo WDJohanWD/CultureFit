@@ -60,20 +60,4 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()); // Opcional: Deshabilita CSRF si usas APIs públicas
         return http.build();
     }
-
-    @Configuration
-    public class CorsConfig {
-        @Bean
-        public WebMvcConfigurer corsConfigurer() {
-            return new WebMvcConfigurer() {
-                @Override
-                public void addCorsMappings(CorsRegistry registry) {
-                    registry.addMapping("/**")
-                            .allowedOrigins("*")
-                            .allowedMethods("*")
-                            .allowedHeaders("*");
-                }
-            };
-        }
-    }
 }

@@ -12,5 +12,7 @@ public interface UserService {
     List<User> getUsers();
     User getUser(Long id);
     User assignImage(Long userId, MultipartFile file) throws IOException;
+    User getUserByEmail(String email);
+    User activateUser(User user);
 }
 

@@ -58,4 +58,20 @@ public class UserServiceImpl implements UserService {
         user.setImageUrl(imageUrl);
         return userRepository.save(user);
     }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(NotFoundUserException::new);
+    }
+
+    @Override
+    public User activateUser(User user) {
+        user.setActive(true);
+        try {
+            return userRepository.save(user);
+        } catch (Exception e) {
+            throw new ErrorSavingUserException();
+        }
+    }
 }

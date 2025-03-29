@@ -40,11 +40,13 @@ public class User {
 
     @Column(nullable = false)
     @Size(min = 6, max = 40)
-    @NotBlank
+    @NotBlank(message = "El correo electrónico debe ser válido")
     private String password;
 
     @NotNull
     private LocalDate birthDate;
+
+    private boolean active = false;
 
     private String imageUrl;
 
