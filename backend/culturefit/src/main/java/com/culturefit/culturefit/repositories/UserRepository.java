@@ -12,4 +12,6 @@ import com.culturefit.culturefit.domains.User;
 public interface UserRepository  extends JpaRepository<User, Long>{
     Optional<User> findById(Long id);
     Optional<User> findByName(String name);
+    boolean existsByName(String name);
+    boolean existsByEmail(String name);
 }

@@ -6,15 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.services.userService.UserService;
 
-import jakarta.validation.Valid;
-
 import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,17 +38,6 @@ public class UserController {
     }
 
     //Posts
-    @PostMapping("/user")
-    public ResponseEntity<?> createUser(@Valid @RequestBody User user, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            // Si hay errores de validación, devolver un error
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(bindingResult.getAllErrors());
-        }
-
-        User savedUser = userService.saveUser(user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
-    }
-
     @PostMapping("/user/upload-profile-image/{id}")
     public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
         userService.assignImage(id, image);
