@@ -28,7 +28,8 @@ public class JwtUtils {
 
   @Value("${jwt.expiration}")
   private int jwtExpirationMs;
-
+  
+  // Genera un token JWT a partir de la autenticación del usuario
   public String generateJwtToken(Authentication authentication) {
 
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -41,15 +42,18 @@ public class JwtUtils {
         .compact();
   }
 
+  // Genera la clave de firma del token a partir de la clave secreta
   private Key key() {
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
   }
 
+  // Extrae el nombre de usuario desde un token JWT.
   public String getUserNameFromJwtToken(String token) {
     return Jwts.parserBuilder().setSigningKey(key()).build()
         .parseClaimsJws(token).getBody().getSubject();
   }
-
+  
+  // Valida un token JWT verificando su estructura y firma
   public boolean validateJwtToken(String authToken) {
     try {
       Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
@@ -57,9 +61,9 @@ public class JwtUtils {
     } catch (MalformedJwtException e) {
       logger.error("Token JWT inválido: {}", e.getMessage());
     } catch (ExpiredJwtException e) {
-      logger.error("Token JW caducado: {}", e.getMessage());
+      logger.error("Token JWT caducado: {}", e.getMessage());
     } catch (UnsupportedJwtException e) {
-      logger.error("Token JW no soportado: {}", e.getMessage());
+      logger.error("Token JWT no soportado: {}", e.getMessage());
     } catch (IllegalArgumentException e) {
       logger.error("JWT indica que la string está vacía: {}", e.getMessage());
     }

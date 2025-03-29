@@ -63,7 +63,7 @@ public class AuthController {
                     .badRequest()
                     .body("Error: A user with that email already exists");
         }
-        // Create new user's account
+        // Crear nueva cuenta de usuario
         User user = new User(
             null,
             signUpRequest.getName(),

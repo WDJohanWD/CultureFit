@@ -13,7 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-import com.culturefit.culturefit.security.AuthEntryPointJwt;
 import com.culturefit.culturefit.security.AuthTokenFilter;
 
 @Configuration
@@ -21,15 +20,14 @@ import com.culturefit.culturefit.security.AuthTokenFilter;
 public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
-    
-    @Autowired
-    private AuthEntryPointJwt authEntryPointJwt;
 
+    // Filtro de autenticación que intercepta las solicitudes para validar el JWT
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
         return new AuthTokenFilter();
     }
 
+    // Proveedor de autenticación basado en DAO, que recupera los detalles del usuario desde la base de datos
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -38,16 +36,19 @@ public class SecurityConfig {
         return authProvider;
     }
 
+    // Administrador de autenticación que gestiona los procesos de login
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
+    // Codificador de contraseñas
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    //TODO: Configurar los requestMatchers
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

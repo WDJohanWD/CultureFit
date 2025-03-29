@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class AuthEntryPointJwt implements AuthenticationEntryPoint {
-    
+    // Envia un error HTTP 401 (Unauthorized) indicando que el acceso no está autorizado
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Error: Unauthorized access");
