@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { LANGUAGES } from "../translations";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -21,7 +21,7 @@ function NavBar() {
         <div className="flex items-center">
           <Link to="/">
             <div className="flex items-center">
-              <img src="/CultureFitLogoBlanco.png" alt="" className="h-12 me-2"/>
+              <img src="/CultureFitLogoBlanco(2).webp" alt="" className="h-12 w-16 me-2"/>
               <h2 className="text-4xl montserrat font-semibold">CultureFit</h2>
             </div>
           </Link>
@@ -45,7 +45,9 @@ function NavBar() {
                       {t("signup")}
                     </button>
           </Link>
-          <select defaultValue={lng} onChange={onChangeLang} style={{ cursor: "pointer", appearance: "none"}} className="ms-4">
+
+          <label htmlFor="language"></label>
+          <select id="language" defaultValue={lng} onChange={onChangeLang} style={{ cursor: "pointer", appearance: "none"}} className="ms-4">
             {LANGUAGES.map(({ code, label }) => (
               <option key={code} value={code} className="text-black">
                 {label}

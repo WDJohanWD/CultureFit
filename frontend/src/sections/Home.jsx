@@ -55,9 +55,9 @@ function Home() {
   )
 
   const slideImgs = [
-    "fondo1.png",
-    "fondo2.png",
-    "fondo3.png"
+    "fondo1.webp",
+    "fondo2.webp",
+    "fondo3.webp"
   ];
 
   return (

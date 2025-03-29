@@ -7,6 +7,7 @@ import Error404 from "./sections/Error404"
 import Signup from "./sections/Signup"
 import Login from "./sections/Login"
 import AboutUs from "./sections/AboutUs";
+import ConfirmAccount from "./sections/ConfirmAccount";
 
 function Layout() {
 
@@ -15,6 +16,7 @@ function Layout() {
       <NavBar />
       <Routes>
         <Route path="*" element={<Navigate to="/error" replace />} />
+        <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
         <Route path="/error" element={<Error404 />} />
         <Route path="/signup" element={<Signup/>} />
         <Route path="/login" element={<Login/>} />
