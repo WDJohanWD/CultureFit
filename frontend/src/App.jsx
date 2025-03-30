@@ -8,6 +8,7 @@ import Signup from "./sections/Signup"
 import Login from "./sections/Login"
 import AboutUs from "./sections/AboutUs";
 import ConfirmAccount from "./sections/ConfirmAccount";
+import Administration from "./sections/Admin/Administration";
 
 function Layout() {
 
@@ -23,6 +24,8 @@ function Layout() {
         <Route path="/" element={<Home />} />
         <Route path="/memberships" element={<Memberships />} />
         <Route path="/aboutus" element={<AboutUs />}/>
+        <Route path="/admin" element={<Administration />}/>
+        
       </Routes>
     </>
   );
