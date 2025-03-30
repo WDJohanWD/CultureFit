@@ -74,4 +74,14 @@ public class UserServiceImpl implements UserService {
             throw new ErrorSavingUserException();
         }
     }
+
+    @Override
+    public boolean deleteUser(Long id) {
+        try {
+            userRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw new NotFoundUserException();
+        }
+    }
 }

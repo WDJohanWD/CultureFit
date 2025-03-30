@@ -4,6 +4,21 @@ function AdminDashboard() {
     const [searchQuery, setSearchQuery] = useState('');
     const [members, setMembers] = useState([]);
 
+    async function deleteMember(id){
+        let deleteFetch = await fetch('http://localhost:9000/user/'+id,{
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id })
+        })
+        if (!deleteFetch.ok) {
+            throw new Error('Failed to delete member');
+        }
+        let deleteResponse = await deleteFetch.json();
+        console.log(deleteResponse);
+    }
+
     async function fetchMembers() {
         try {
             let membersFetch = await fetch('http://localhost:9000/users');
@@ -76,7 +91,7 @@ function AdminDashboard() {
                                     </td>
                                     <td className="px-4 py-2">
                                         <button className="text-blue-600 hover:underline mr-2">Edit</button>
-                                        <button className="text-red-600 hover:underline">Delete</button>
+                                        <button onClick={deleteMember(member.id)} className="text-red-600 hover:underline">Delete</button>
                                     </td>
                                 </tr>
                             ))
