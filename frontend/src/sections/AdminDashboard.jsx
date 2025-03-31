@@ -1,12 +1,28 @@
 import React, { useEffect, useState } from 'react';
+import { use } from "react";
 import { useTranslation } from 'react-i18next';
+
+const fetchMembers = async () =>{
+    try {
+        let membersFetch = await fetch('http://localhost:9000/users');
+        if (!membersFetch.ok) {
+            throw new Error('Failed to fetch');
+        }
+        return await membersFetch.json();
+    } catch (error) {
+        console.error("Error fetching members:", error);
+        return [];
+    }
+}
+
+const membersFetch= fetchMembers();
 
 function AdminDashboard() {
 
     const { t } = useTranslation("adminDashboard");
 
     const [searchQuery, setSearchQuery] = useState('');
-    const [members, setMembers] = useState([]);
+    const members = use(membersFetch);
 
     async function deleteMember(id) {
         let deleteFetch = await fetch('http://localhost:9000/user/' + id, {
@@ -23,27 +39,7 @@ function AdminDashboard() {
         console.log(deleteResponse);
     }
 
-    async function fetchMembers() {
-        try {
-            let membersFetch = await fetch('http://localhost:9000/users');
-            if (!membersFetch.ok) {
-                throw new Error('Failed to fetch');
-            }
-            return await membersFetch.json();
-        } catch (error) {
-            console.error("Error fetching members:", error);
-            return [];
-        }
-    }
 
-    useEffect(() => {
-        async function loadMembers() {
-            const membersData = await fetchMembers();
-            setMembers(membersData);
-        }
-
-        loadMembers();
-    }, []);
 
 
     const filteredMembers = members.filter((member) =>
