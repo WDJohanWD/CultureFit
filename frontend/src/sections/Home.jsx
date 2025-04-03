@@ -87,14 +87,14 @@ function Home() {
             )}
           </div>
         )}
-        <div className="text-white text-4xl font-medium h-72 absolute top-1/2 left-1/2 -translate-x-1/2 select-none pointer-events-none">
+        <div className="text-white text-center text-4xl font-medium h-72 absolute top-1/2 left-1/2 -translate-x-1/2 select-none pointer-events-none">
           {t("welcome")}
         </div>
       </div>
       <div className="flex flex-col items-center justify-center px-4 py-8 sm:py-12 md:px-12 lg:px-24 lg:gap-y-10 mb-18">
         <h2 className="text-3xl font-semibold">{t("find")}</h2>
         <hr className="h-px mb-4 -mt-2 w-100 sm:w-24 lg:w-100 bg-dark border-1" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-5xl text-dark text-center">
+        <div className="grid grid-cols-1  lg:grid-cols-3 gap-8 w-full max-w-5xl text-dark text-center">
           <div className="flex flex-col items-center">
             <IoBarbellOutline className="text-7xl mb-4" />
             <p>{t("machines")}</p>
@@ -109,7 +109,7 @@ function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 w-full max-w-5xl text-dark text-center mt-8 mb-8">
+        <div className="grid grid-cols-1  w-full max-w-5xl text-dark text-center mt-8 mb-8">
           <div className="flex flex-col items-center px-10 lg:ms-40">
             <IoFitnessOutline className="text-7xl mb-4" />
             <p>{t("monitor")}</p>

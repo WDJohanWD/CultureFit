@@ -11,7 +11,7 @@ import ConfirmAccount from "./sections/ConfirmAccount";
 import { AuthProvider } from "./AuthContext";
 
 function Layout() {
-
+  
   return (
     <>
       <NavBar />

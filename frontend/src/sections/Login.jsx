@@ -6,17 +6,19 @@ import { AuthContext } from "../AuthContext.jsx";
 
 function Login() {
     const { t } = useTranslation("login")
-    const {navigate} = useNavigate()
+    const navigate = useNavigate()
     const { login } = useContext(AuthContext);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    
+
 
     async function checkUser() {
         try {
-            await login(email, password)
-            navigate("(/")
+            const success = await login(email, password)
+            if (success) {
+                navigate('/');
+            }
         } catch {
             document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
             <strong class="font-bold">Error!</strong>
@@ -62,7 +64,7 @@ function Login() {
                         />
                     </div>
                     <button type='submit'
-                    className="text-white bg-gradient-to-r from-light-primary to-primary 
+                        className="text-white bg-gradient-to-r from-light-primary to-primary 
                             transition hover:ring-6 hover:outline-none hover:ring-orange-300 shadow-lg 
                             shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
                             text-lg px-5 py-2.5 text-center me-2 mb-2 mt-2 w-full">

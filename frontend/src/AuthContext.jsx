@@ -1,43 +1,63 @@
 import { createContext, useState, useEffect } from "react";
+import {jwtDecode} from "jwt-decode";
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-      setUser(null);
-    }
+    getUser();
+  }, []);
+
+  useEffect(() => {
+    getUser();
   }, [token]);
 
-  const login = async (email, password) => {
-    const loginDTO = {
-      "email": email,
-      "password": password
+  async function getUser(){
+    if (token) {
+      try {
+        const decodedUser = jwtDecode(token).sub;
+        const response = await fetch("http://localhost:9000/user/" + decodedUser);
+
+        const data = await response.json()
+        setUser(data)
+      } catch (error) {
+        console.error("Error al decodificar el token:", error);
+        setUser(null);
+      }
+    } else {
+      setUser(null);
     }
+  }
 
-    const response = await fetch("http://localhost:9000/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(loginDTO),
-    });
+  const login = async (email, password) => {
+    try {
+      const response = await fetch("http://localhost:9000/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
+      if (!response.ok) throw new Error("Error en el login");
 
-    if (data.accessToken) {
-      setToken(data.accessToken);
-      setUser({id:data.id, name: data.name, email: data.email, role: data.role });
-      localStorage.setItem("userToken", data.accessToken);
+      const data = await response.json();
+      console.log("Respuesta del backend:", data);
+
+      if (data.accessToken) {
+        setToken(data.accessToken);
+        localStorage.setItem("token", data.accessToken);
+        return true
+      }
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error.message);
     }
   };
 
   const logout = () => {
     setToken(null);
+    localStorage.removeItem("token")
   };
 
   return (
@@ -46,3 +66,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export { AuthContext, AuthProvider };
