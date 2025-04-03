@@ -16,16 +16,23 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (email, password) => {
+    const loginDTO = {
+      "email": email,
+      "password": password
+    }
+
     const response = await fetch("http://localhost:9000/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(loginDTO),
     });
 
     const data = await response.json();
-    if (data.token) {
-      setToken(data.token);
-      setUser({id:data.id, username: data.username, email: data.email, role: data.role });
+
+    if (data.accessToken) {
+      setToken(data.accessToken);
+      setUser({id:data.id, name: data.name, email: data.email, role: data.role });
+      localStorage.setItem("userToken", data.accessToken);
     }
   };
 

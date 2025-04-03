@@ -18,6 +18,10 @@ function NavBar() {
     setLng(lang_code);
   };
 
+  function handleLogout() {
+    logout();
+  }
+
   return (
     <nav className="bg-primary sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium">
       <div className="flex justify-between align-middle">
@@ -35,7 +39,16 @@ function NavBar() {
         </div>
         <div className="flex items-center">
           {user ? (
-            <span>{user.username}</span>
+            <>
+              <span>{user.name}</span>
+              <button className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
+                                      shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
+                                      text-lg px-5 py-2.5 text-center me-4 mb-2 mt-2"
+                      onClick={handleLogout()}>
+                {t("logout")}
+              </button>
+            </>
+
           ) : (
             <div>
               <Link to="/login">
