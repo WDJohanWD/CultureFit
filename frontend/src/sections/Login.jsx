@@ -1,19 +1,23 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from "../AuthContext.jsx";
 
 
 function Login() {
     const { t } = useTranslation("login")
+    const {navigate} = useNavigate()
+    const { login } = useContext(AuthContext);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    
 
     async function checkUser() {
-        // ↓↓↓ Comprobar si el usuario existe ↓↓↓
-
-        if (user) {
-            
-        } else {
+        try {
+            await login(email, password)
+            navigate("(/")
+        } catch {
             document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
             <strong class="font-bold">Error!</strong>
             <span class="block sm:inline">${t("error")}</span>

@@ -8,6 +8,7 @@ import Signup from "./sections/Signup"
 import Login from "./sections/Login"
 import AboutUs from "./sections/AboutUs";
 import ConfirmAccount from "./sections/ConfirmAccount";
+import { AuthProvider } from "./AuthContext";
 
 function Layout() {
 
@@ -30,9 +31,11 @@ function Layout() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Layout />
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Layout />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
