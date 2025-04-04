@@ -1,0 +1,13 @@
+{
+    "title": "Admin Dashboard",
+    "ID": "ID",
+    "Name": "Name",
+    "Email": "Email",
+    "Birth Date": "Birthdate",
+    "Status": "Status",
+    "Role": "Role",
+    "Actions": "Actions",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "NoFound": "No members found"
+}
