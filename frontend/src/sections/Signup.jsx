@@ -43,12 +43,12 @@ function Signup() {
         //} else {
         const newUser = {
             name,
-            email,
             password,
+            email,
             birthDate,
         };
 
-        const response = await fetch('http://localhost:9000/newUserDTO', {
+        const response = await fetch('http://localhost:9000/auth/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
