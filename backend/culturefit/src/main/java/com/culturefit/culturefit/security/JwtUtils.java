@@ -28,14 +28,14 @@ public class JwtUtils {
 
   @Value("${jwt.expiration}")
   private int jwtExpirationMs;
-  
+
   // Genera un token JWT a partir de la autenticación del usuario
   public String generateJwtToken(Authentication authentication) {
 
     UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
     return Jwts.builder()
-        .setSubject((userPrincipal.getUsername()))
+        .setSubject((userPrincipal.getId().toString()))
         .setIssuedAt(new Date())
         .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
         .signWith(key(), SignatureAlgorithm.HS256)
@@ -52,7 +52,7 @@ public class JwtUtils {
     return Jwts.parserBuilder().setSigningKey(key()).build()
         .parseClaimsJws(token).getBody().getSubject();
   }
-  
+
   // Valida un token JWT verificando su estructura y firma
   public boolean validateJwtToken(String authToken) {
     try {

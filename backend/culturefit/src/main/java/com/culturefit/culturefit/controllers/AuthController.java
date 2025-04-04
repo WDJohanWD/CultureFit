@@ -1,6 +1,7 @@
 package com.culturefit.culturefit.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +22,7 @@ import com.culturefit.culturefit.security.domain.UserDetailsImpl;
 import com.culturefit.culturefit.security.dto.JwtResponseDto;
 import com.culturefit.culturefit.security.dto.LoginDto;
 import com.culturefit.culturefit.security.dto.SignupDto;
+import com.culturefit.culturefit.services.userService.UserService;
 
 import jakarta.validation.Valid;
 
@@ -33,22 +35,37 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private UserService userService;
+    @Autowired
     private PasswordEncoder encoder;
     @Autowired
     private JwtUtils jwtUtils;
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getName(), loginDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtUtils.generateJwtToken(authentication);
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String role = userDetails.getAuthorities().stream().findFirst().map(a -> a.getAuthority()).orElse("ERROR");
-        return ResponseEntity.ok(new JwtResponseDto(jwt, "Bearer",
-                userDetails.getId(),
-                userDetails.getUsername(),
-                userDetails.getEmail(),
-                role));
+        try {
+            User user = userService.getUserByEmail(loginDto.getEmail());
+            System.out.println(user);
+            if (user.isActive()) {
+                Authentication authentication = authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(user.getName(), loginDto.getPassword()));
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                String jwt = jwtUtils.generateJwtToken(authentication);
+                UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+                String role = userDetails.getAuthorities().stream().findFirst().map(a -> a.getAuthority())
+                        .orElse("ERROR");
+                return ResponseEntity.ok(new JwtResponseDto(jwt, "Bearer",
+                        userDetails.getId(),
+                        userDetails.getUsername(),
+                        userDetails.getEmail(),
+                        role));
+            } else {
+                System.out.println("ERROR");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("El usuario no esta activo");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario o contraseña incorrectos");
+        }
     }
 
     @PostMapping("/signup")
@@ -65,15 +82,14 @@ public class AuthController {
         }
         // Crear nueva cuenta de usuario
         User user = new User(
-            null,
-            signUpRequest.getName(),
-            signUpRequest.getEmail(),
-            encoder.encode(signUpRequest.getPassword()),
-            signUpRequest.getBirthDate(),
-            false,
-            null,
-            Role.USER
-        );
+                null,
+                signUpRequest.getName(),
+                signUpRequest.getEmail(),
+                encoder.encode(signUpRequest.getPassword()),
+                signUpRequest.getBirthDate(),
+                false,
+                null,
+                Role.USER);
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
     }

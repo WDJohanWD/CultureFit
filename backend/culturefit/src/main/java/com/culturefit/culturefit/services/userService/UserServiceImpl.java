@@ -66,6 +66,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByName(String name) {
+        return userRepository.findByName(name)
+            .orElseThrow(NotFoundUserException::new);
+    }
+
+
+    @Override
     public User activateUser(User user) {
         user.setActive(true);
         try {

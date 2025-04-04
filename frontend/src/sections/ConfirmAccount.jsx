@@ -29,7 +29,8 @@ function ConfirmAccount() {
                 }
             } catch (error) {
                 console.log('Error confirming account: ' + error.response?.data?.message || error.message);
-                navigate("/")
+                window.location.href("/")
+                window.location.reload()
             }
         };
 
