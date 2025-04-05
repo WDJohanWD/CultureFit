@@ -1,36 +1,44 @@
 import { createContext, useState, useEffect } from "react";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    getUser();
-  }, []);
-
-  useEffect(() => {
-    getUser();
-  }, [token]);
-
-  async function getUser(){
     if (token) {
-      try {
-        const decodedUser = jwtDecode(token).sub;
-        const response = await fetch("http://localhost:9000/user/" + decodedUser);
-
-        const data = await response.json()
-        setUser(data)
-      } catch (error) {
-        console.error("Error al decodificar el token:", error);
-        setUser(null);
+      const decoded = jwtDecode(token);
+      const rawRoles = decoded?.role || decoded?.roles || decoded?.authorities || [];
+  
+      let roles = [];
+      if (typeof rawRoles === "string") {
+        roles = [rawRoles];
+      } else if (Array.isArray(rawRoles)) {
+        roles = rawRoles;
       }
-    } else {
+  
+      console.log("Decoded roles:", roles); 
+      setIsAdmin(roles.includes("ROLE_ADMIN"));
+  
+      fetchUser(decoded?.sub);
+    }
+  }, [token]);
+  
+
+  const fetchUser = async (username) => {
+    try {
+      const response = await fetch(`http://localhost:9000/user/${username}`);
+      if (!response.ok) throw new Error("No se pudo obtener el usuario");
+      const data = await response.json();
+      setUser(data);
+    } catch (error) {
+      console.error("Error al obtener el usuario:", error);
       setUser(null);
     }
-  }
+  };
 
   const login = async (email, password) => {
     try {
@@ -40,28 +48,29 @@ const AuthProvider = ({ children }) => {
         body: JSON.stringify({ email, password }),
       });
 
-      if (!response.ok) throw new Error("Error en el login");
+      if (!response.ok) throw new Error("Credenciales inválidas");
 
       const data = await response.json();
-      console.log("Respuesta del backend:", data);
-
       if (data.accessToken) {
-        setToken(data.accessToken);
         localStorage.setItem("token", data.accessToken);
-        return true
+        setToken(data.accessToken);
+        return true;
       }
     } catch (error) {
-      console.error("Error al iniciar sesión:", error.message);
+      console.error("Error al iniciar sesión:", error);
+      return false;
     }
   };
 
   const logout = () => {
     setToken(null);
-    localStorage.removeItem("token")
+    setUser(null);
+    setIsAdmin(false);
+    localStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, login, logout }}>
+    <AuthContext.Provider value={{ token, user, isAdmin, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
