@@ -26,6 +26,18 @@ public class LessonServiceImpl implements LessonService{
     Dotenv dotenv = Dotenv.load();
     String DIRECTORY_LESSON_VIDEOS = dotenv.get("DIRECTORY_LESSON_VIDEOS");
 
+    public Lesson createLesson(String lessonName, String lessonDescription){
+        Lesson createdLesson = new Lesson(
+            null,
+            lessonName,
+            lessonDescription,
+            null,
+            null
+        );
+
+        return createdLesson;
+    }
+
     @Override
     public Lesson save(Lesson lesson, MultipartFile file) {
         try {
