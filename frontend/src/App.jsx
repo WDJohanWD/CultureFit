@@ -15,10 +15,10 @@ import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext } from "react";
 
 function Layout() {
-  const { token, isAdmin } = useContext(AuthContext);
+  const { token, isAdmin, loading } = useContext(AuthContext);
 
-  if (token && isAdmin === false) {
-    return null; 
+  if (loading) {
+    return <div className="text-center mt-10">Cargando...</div>;
   }
 
   return (
@@ -32,7 +32,6 @@ function Layout() {
         <Route path="/login" element={<Login />} />
         <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
 
-        {/* Ruta protegida para admin */}
         <Route
           path="/admin"
           element={
@@ -50,6 +49,7 @@ function Layout() {
     </>
   );
 }
+
 
 function App() {
   return (

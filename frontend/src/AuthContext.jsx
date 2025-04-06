@@ -7,26 +7,42 @@ const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true); // ✅ NUEVO
 
   useEffect(() => {
-    if (token) {
-      const decoded = jwtDecode(token);
-      const rawRoles = decoded?.role || decoded?.roles || decoded?.authorities || [];
-  
-      let roles = [];
-      if (typeof rawRoles === "string") {
-        roles = [rawRoles];
-      } else if (Array.isArray(rawRoles)) {
-        roles = rawRoles;
+    const initializeAuth = async () => {
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          const rawRoles = decoded?.role || decoded?.roles || decoded?.authorities || [];
+
+          let roles = [];
+          if (typeof rawRoles === "string") {
+            roles = [rawRoles];
+          } else if (Array.isArray(rawRoles)) {
+            roles = rawRoles;
+          }
+
+          console.log("Decoded roles:", roles);
+          setIsAdmin(roles.includes("ROLE_ADMIN"));
+
+          await fetchUser(decoded?.sub);
+        } catch (error) {
+          console.error("Error decodificando el token", error);
+          setToken(null);
+          setUser(null);
+          setIsAdmin(false);
+        }
+      } else {
+        setUser(null);
+        setIsAdmin(false);
       }
-  
-      console.log("Decoded roles:", roles); 
-      setIsAdmin(roles.includes("ROLE_ADMIN"));
-  
-      fetchUser(decoded?.sub);
-    }
+
+      setLoading(false); // ✅ SIEMPRE TERMINA LA CARGA
+    };
+
+    initializeAuth();
   }, [token]);
-  
 
   const fetchUser = async (username) => {
     try {
@@ -70,7 +86,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, isAdmin, login, logout }}>
+    <AuthContext.Provider value={{ token, user, isAdmin, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
