@@ -9,5 +9,6 @@
     "Actions": "Actions",
     "Edit": "Edit",
     "Delete": "Delete",
-    "NoFound": "No members found"
+    "NoFound": "No members found",
+    "search": "Search members"
 }
