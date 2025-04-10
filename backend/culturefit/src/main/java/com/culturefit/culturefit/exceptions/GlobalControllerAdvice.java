@@ -49,6 +49,28 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
+    // Manejo de excepciones para los ejercicios
+    @ExceptionHandler(ErrorSavingUserException.class)
+    public ResponseEntity<?> handleErrorSavingExerciseException(ErrorSavingUserException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundUserException.class)
+    public ResponseEntity<?> handleNotFoundExerciseException(NotFoundUserException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND,
+                e.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
     //Manejo de excepciones de Stripe
     @ExceptionHandler(StripePaymentException.class)
     public ResponseEntity<ExcepcionBody> handleStripePaymentException(StripePaymentException e, WebRequest request) {
