@@ -7,6 +7,7 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.Min;
@@ -19,9 +20,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class UserExercise {
+public class ProgressPoint {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Min(value = 1)
@@ -30,7 +31,6 @@ public class UserExercise {
     @Min(value = 1)
     private Integer repetitions;
 
-    @Past
     private LocalDate date;
 
     @ManyToOne

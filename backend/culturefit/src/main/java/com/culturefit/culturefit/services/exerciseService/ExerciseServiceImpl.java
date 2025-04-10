@@ -11,7 +11,7 @@ import com.culturefit.culturefit.exceptions.exerciseExceptions.NotFoundExerciseE
 import com.culturefit.culturefit.repositories.ExerciseRepository;
 
 @Service
-public class ExerciseServixceImpl implements ExerciseService {
+public class ExerciseServiceImpl implements ExerciseService {
     @Autowired
     ExerciseRepository exerciseRepository;
 

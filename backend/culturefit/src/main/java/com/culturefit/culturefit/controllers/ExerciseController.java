@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,11 +15,12 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
 
-@Controller
+@RestController
 public class ExerciseController {
     @Autowired
     ExerciseService exerciseService;
@@ -40,9 +40,9 @@ public class ExerciseController {
 
     // Posts
     @PostMapping("/new-exercise")
-    public Exercise newExercise (@Valid @RequestBody Exercise exercise) {
+    public ResponseEntity<Exercise> newExercise (@Valid @RequestBody Exercise exercise) {
         Exercise exerciseBD = exerciseService.saveExercise(exercise);
-        return exerciseBD;
+        return ResponseEntity.ok(exerciseBD);
     }
 
     //Delete
@@ -53,8 +53,8 @@ public class ExerciseController {
 
     // Put
     @PutMapping("/edit-exercise")
-    public Exercise editExercise(@Valid @RequestBody Exercise exercise) {
+    public ResponseEntity<Exercise> editExercise(@Valid @RequestBody Exercise exercise) {
         Exercise updatedExercise = exerciseService.updateExercise(exercise);
-        return updatedExercise;
+        return ResponseEntity.ok(updatedExercise);
     }
 }

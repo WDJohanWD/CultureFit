@@ -16,10 +16,13 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.culturefit.culturefit.exceptions.exerciseExceptions.ErrorSavingExerciseException;
+import com.culturefit.culturefit.exceptions.exerciseExceptions.NotFoundExerciseException;
 import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentException;
 import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingImageException;
 import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exceptions.userExceptions.NotFoundUserException;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,8 +53,8 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     // Manejo de excepciones para los ejercicios
-    @ExceptionHandler(ErrorSavingUserException.class)
-    public ResponseEntity<?> handleErrorSavingExerciseException(ErrorSavingUserException e, WebRequest request) {
+    @ExceptionHandler(ErrorSavingExerciseException.class)
+    public ResponseEntity<?> handleErrorSavingExerciseException(ErrorSavingExerciseException e, WebRequest request) {
         ExcepcionBody body = new ExcepcionBody(
                 LocalDateTime.now(),
                 HttpStatus.BAD_REQUEST,
@@ -61,8 +64,8 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NotFoundUserException.class)
-    public ResponseEntity<?> handleNotFoundExerciseException(NotFoundUserException e, WebRequest request) {
+    @ExceptionHandler(NotFoundExerciseException.class)
+    public ResponseEntity<?> handleNotFoundExerciseException(NotFoundExerciseException e, WebRequest request) {
         ExcepcionBody body = new ExcepcionBody(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND,
