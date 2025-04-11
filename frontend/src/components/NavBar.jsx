@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { LANGUAGES } from "../translations";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../AuthContext";
@@ -7,6 +7,7 @@ import { LuLogOut, LuChevronDown } from "react-icons/lu";
 import { FaBars } from "react-icons/fa";
 
 function NavBar() {
+  const [isAdmin, setIsAdmin] = useState(false);
   // Seleccionar el NameSpace que estamos utilizando
   const { i18n, t } = useTranslation("navbar");
   const [lng, setLng] = useState(i18n.language)
@@ -25,6 +26,13 @@ function NavBar() {
     logout()
   }
 
+  useEffect(() => {
+    const isAdmin = localStorage.getItem("isAdmin");
+    if (isAdmin) {
+      setIsAdmin(true);
+    }
+  }, []);
+
   return (
     <nav className="bg-primary sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium">
       <div className="flex justify-between align-middle">
@@ -40,6 +48,11 @@ function NavBar() {
             <Link className="pt-1 ms-6 hover:underline">{t("videos")}</Link>
             <Link to="/memberships" className="pt-1 ms-6 hover:underline">{t("planes")}</Link>
             <Link to="/aboutus" className="pt-1 ms-6 hover:underline">{t("about")}</Link>
+            {
+              user?.isAdmin && (
+                <Link to="/admin" className="pt-1 ms-6 hover:underline">admin</Link>
+              )
+            }
           </div>
         </div>
 
@@ -61,7 +74,11 @@ function NavBar() {
           <Link className="block py-2 px-4 hover:underline" to="/">{t("videos")}</Link>
           <Link to="/memberships" className="block py-2 px-4 hover:underline">{t("planes")}</Link>
           <Link to="/aboutus" className="block py-2 px-4 hover:underline">{t("about")}</Link>
-
+          {
+            isAdmin && (
+              <Link to="/admin" className="block py-2 px-4 hover:underline">admin</Link>
+            )
+          }
           <div className="items-center align-middle">
             {user ? (
               <>

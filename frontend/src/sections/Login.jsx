@@ -1,83 +1,104 @@
-import { useState, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from "../AuthContext.jsx";
-
+import { useState, useContext } from "react"
+import { useTranslation } from "react-i18next"
+import { Link, useNavigate } from "react-router-dom"
+import { AuthContext } from "../AuthContext"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 function Login() {
-    const { t } = useTranslation("login")
-    const navigate = useNavigate()
-    const { login } = useContext(AuthContext);
+  const { t } = useTranslation("login")
+  const navigate = useNavigate()
+  const { login } = useContext(AuthContext)
 
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState(null)
 
-
-    async function checkUser() {
-        try {
-            const success = await login(email, password)
-            if (success) {
-                navigate('/');
-            }
-        } catch {
-            document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <strong class="font-bold">Error!</strong>
-            <span class="block sm:inline">${t("error")}</span>
-        </div>`;
-        }
+  async function checkUser() {
+    try {
+      const success = await login(email, password)
+      if (success) {
+        navigate("/")
+      }
+    } catch {
+      setError(t("error"))
     }
+  }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        checkUser()
-    };
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    checkUser()
+  }
 
-    return (
-        <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
-            <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md ">
-                <h2 className="text-2xl font-bold text-center">{t("title")}</h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="my-8">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            {t("email")}
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-                        />
-                    </div>
-                    <div className="my-8">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            {t("pass")}
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-                        />
-                    </div>
-                    <button type='submit'
-                        className="text-white bg-gradient-to-r from-light-primary to-primary 
-                            transition hover:ring-6 hover:outline-none hover:ring-orange-300 shadow-lg 
-                            shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
-                            text-lg px-5 py-2.5 text-center me-2 mb-2 mt-2 w-full">
-                        {t("title")}
-                    </button> <br />
-                    <div className="my-8 mx-auto text-center">
-                        <p>{t("account")}<Link to="/signup" className="px-2 underline font-semibold">{t("signup")}</Link></p>
-                    </div>
-                </form>
-                <span id="error"></span>
+  return (
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
+      <Card className="w-full max-w-md p-6 space-y-6 bg-white shadow-md">
+        <CardHeader className="p-0 space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">{t("title")}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                {t("email")}
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full"
+              />
             </div>
-        </div>
-    );
-};
 
-export default Login;
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                {t("pass")}
+              </Label>
+              <Input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full mt-6 text-white bg-gradient-to-r from-orange-400 to-orange-600 
+                hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5"
+            >
+              {t("title")}
+            </Button>
+          </form>
+        </CardContent>
+
+        <CardFooter className="p-0 flex flex-col items-center">
+          <p className="text-center">
+            {t("account")}
+            <Link to="/signup" className="px-2 underline font-semibold">
+              {t("signup")}
+            </Link>
+          </p>
+
+          {error && (
+            <Alert variant="destructive" className="mt-4 w-full">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error!</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </CardFooter>
+      </Card>
+    </div>
+  )
+}
+
+export default Login

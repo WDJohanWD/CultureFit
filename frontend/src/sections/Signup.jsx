@@ -1,200 +1,217 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Link, useNavigate } from 'react-router-dom';
+import { useState } from "react"
+import { useTranslation } from "react-i18next"
+import { Link, useNavigate } from "react-router-dom"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { AlertCircle } from "lucide-react"
 
 function Signup() {
-    const { t } = useTranslation("signup");
-    const navigate = useNavigate();
+  const { t } = useTranslation("signup")
+  const navigate = useNavigate()
 
-    const [email, setEmail] = useState('');
-    const [name, setName] = useState('');
-    const [password, setPassword] = useState('');
-    const [passwordRepeat, setPasswordRepeat] = useState('');
-    const [birthDate, setBirthDate] = useState('');
+  const [email, setEmail] = useState("")
+  const [name, setName] = useState("")
+  const [password, setPassword] = useState("")
+  const [passwordRepeat, setPasswordRepeat] = useState("")
+  const [birthDate, setBirthDate] = useState("")
+  const [error, setError] = useState(null)
 
-    const validatePassword = (password) => {
-        const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
-        if (!passwordPattern.test(password)) {
-            return t("passError");
-        }
-        return null;
-    };
+  const validatePassword = (password) => {
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/
+    if (!passwordPattern.test(password)) {
+      return t("passError")
+    }
+    return null
+  }
 
-    const validateEmail = (email) => {
-        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!emailPattern.test(email)) {
-            return t("emailError")
-        }
-        return null;
+  const validateEmail = (email) => {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (!emailPattern.test(email)) {
+      return t("emailError")
+    }
+    return null
+  }
+
+  async function checkUser() {
+    // ↓↓↓ Comprobar si el usuario existe ↓↓↓
+
+    // if (userExists) {
+    //    setError(t("userExists"))
+    //} else {
+    const newUser = {
+      name,
+      password,
+      email,
+      birthDate,
     }
 
-    const printError = (error) => {
-        document.getElementById('error').innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                        <strong class="font-bold">Error!</strong>
-                        <span class="block sm:inline">${error}</span>
-                    </div>`;
+    const response = await fetch("http://localhost:9000/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newUser),
+    })
+
+    sendVerificationEmail(email)
+    navigate("/login")
+    //}
+  }
+
+  // Comprobaciones de email, contraseña y que las contraseñas sean iguales
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const passwordError = validatePassword(password)
+    const emailError = validateEmail(email)
+
+    if (password !== passwordRepeat) {
+      setError(t("passwordMatch"))
+    } else if (passwordError) {
+      setError(passwordError)
+      return
+    } else if (emailError) {
+      setError(emailError)
+      return
+    } else {
+      setError(null)
+      checkUser()
     }
+  }
 
-    async function checkUser() {
-        // ↓↓↓ Comprobar si el usuario existe ↓↓↓
+  // Enviar el email de verificación
+  const sendVerificationEmail = async (email) => {
+    try {
+      const response = await fetch("http://localhost:9000/verification-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: email,
+      })
 
-        // if (userExists) {
-        //    printError(t("userExists"))
-        //} else {
-        const newUser = {
-            name,
-            password,
-            email,
-            birthDate,
-        };
+      if (!response.ok) {
+        throw new Error("Error al enviar el email")
+      }
 
-        const response = await fetch('http://localhost:9000/auth/signup', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newUser),
-        });
-
-        sendVerificationEmail(email);
-        navigate("/login");
-        //}
+      const data = await response.json()
+      console.log("Respuesta:", data)
+      return data
+    } catch (error) {
+      console.error("Error:", error)
+      throw error
     }
+  }
 
-    // Comprobaciones de email, contraseña y que las contraseñas sean iguales
-    const handleSubmit = (e) => {
-
-        e.preventDefault();
-        const passwordError = validatePassword(password);
-        const emailError = validateEmail(email);
-        if (password !== passwordRepeat) {
-            printError(t("passwordMatch"))
-        } else if (passwordError) {
-            printError(passwordError)
-            return;
-        } else if (emailError) {
-            printError(emailError)
-            return;
-        } else {
-            checkUser();
-        };
-    }
-
-
-    // Enviar el email de verificación
-    const sendVerificationEmail = async (email) => {
-        try {
-            const response = await fetch('http://localhost:9000/verification-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: ( email ),
-            });
-
-            if (!response.ok) {
-                throw new Error('Error al enviar el email');
-            }
-
-            const data = await response.json();
-            console.log('Respuesta:', data);
-            return data;
-        } catch (error) {
-            console.error('Error:', error);
-            throw error;
-        }
-    };
-
-
-    return (
-        <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
-            <div className="w-full max-w-md p-8 space-y-8 bg-white rounded shadow-md absolute top-1/2 -translate-y-3/7">
-                <h2 className="text-2xl font-bold text-center">{t("title")}</h2>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="my-8">
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                            {t("username")}
-                        </label>
-                        <input
-                            type="text"
-                            id="username"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-                        />
-                    </div>
-                    <div className="my-8">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                            {t("email")}
-                        </label>
-                        <input
-                            type="email"
-                            id="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-                        />
-                    </div>
-
-                    <div className="my-8">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            {t("pass")}
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-                        />
-                    </div>
-
-                    <div className="my-8">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            {t("repeatPass")}
-                        </label>
-                        <input
-                            type="password"
-                            id="passwordRepeat"
-                            value={passwordRepeat}
-                            onChange={(e) => setPasswordRepeat(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-                        />
-                    </div>
-
-                    <div className="my-8">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                            {t("birthDate")}
-                        </label>
-                        <input
-                            type="date"
-                            id="date"
-                            value={birthDate}
-                            onChange={(e) => setBirthDate(e.target.value)}
-                            required
-                            className="w-full px-3 py-2 mt-1 border rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
-                        />
-                    </div>
-                    <button type='submit'
-                        className="text-white bg-gradient-to-r from-light-primary to-primary 
-                            transition hover:ring-6 hover:outline-none hover:ring-orange-300 shadow-lg 
-                            shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
-                            text-lg px-5 py-2.5 text-center me-2 mb-2 mt-2 w-full">
-                        {t("title")}
-                    </button>
-                    <div className="my-8 mx-auto text-center">
-                        <p>{t("account")}<Link to="/login" className="px-2 underline font-semibold">{t("login")}</Link></p>
-                    </div>
-                </form>
-                <div id="error">
-                </div>
+  return (
+    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
+      <Card className="w-full max-w-md p-6 space-y-6 bg-white shadow-md absolute top-1/2 -translate-y-1/2">
+        <CardHeader className="p-0 space-y-1">
+          <CardTitle className="text-2xl font-bold text-center">{t("title")}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+                {t("username")}
+              </Label>
+              <Input
+                type="text"
+                id="username"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full"
+              />
             </div>
-        </div>
-    );
-};
 
-export default Signup;
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                {t("email")}
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                {t("pass")}
+              </Label>
+              <Input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="passwordRepeat" className="text-sm font-medium text-gray-700">
+                {t("repeatPass")}
+              </Label>
+              <Input
+                type="password"
+                id="passwordRepeat"
+                value={passwordRepeat}
+                onChange={(e) => setPasswordRepeat(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="date" className="text-sm font-medium text-gray-700">
+                {t("birthDate")}
+              </Label>
+              <Input
+                type="date"
+                id="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full mt-6 text-white bg-gradient-to-r from-orange-400 to-orange-600 
+                hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5"
+            >
+              {t("title")}
+            </Button>
+          </form>
+        </CardContent>
+
+        <CardFooter className="p-0 flex flex-col items-center">
+          <p className="text-center">
+            {t("account")}
+            <Link to="/login" className="px-2 underline font-semibold">
+              {t("login")}
+            </Link>
+          </p>
+
+          {error && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Error!</AlertTitle>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+        </CardFooter>
+      </Card>
+    </div>
+  )
+}
+
+export default Signup

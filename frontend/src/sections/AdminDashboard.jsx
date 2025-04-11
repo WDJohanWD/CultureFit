@@ -1,282 +1,320 @@
-import React, { useState, useEffect } from 'react';
-// Eliminamos use de 'react' ya que usaremos useState/useEffect
-import { useTranslation } from 'react-i18next';
+import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
+import { Pencil, Trash2, Search, AlertCircle, Loader2 } from "lucide-react"
+
+
 
 function AdminDashboard() {
-    const { t } = useTranslation("adminDashboard");
+    const { t } = useTranslation("adminDashboard")
 
     // --- Estado ---
-    const [members, setMembers] = useState([]); // Estado para la lista de miembros
-    const [isLoading, setIsLoading] = useState(true); // Estado para indicar carga
-    const [error, setError] = useState(null); // Estado para manejar errores de fetch
-    const [searchQuery, setSearchQuery] = useState('');
-    const [editingMemberId, setEditingMemberId] = useState(null); // ID del miembro en edición
-    const [editFormData, setEditFormData] = useState({}); // Datos del formulario de edición
+    const [members, setMembers] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const [searchQuery, setSearchQuery] = useState("")
+    const [editingMemberId, setEditingMemberId] = useState(null)
+    const [editFormData, setEditFormData] = useState({})
+    const [confirmDelete, setConfirmDelete] = useState(null)
 
     // --- Función para Cargar Miembros ---
     const fetchMembersData = async () => {
-        // No reiniciamos loading/error aquí para evitar parpadeos al refrescar
-        // setIsLoading(true);
-        // setError(null);
         try {
-            let membersFetch = await fetch('http://localhost:9000/users');
+            const membersFetch = await fetch("http://localhost:9000/users")
             if (!membersFetch.ok) {
-                throw new Error(`Failed to fetch members: ${membersFetch.statusText}`);
+                throw new Error(`Failed to fetch members: ${membersFetch.statusText}`)
             }
-            const data = await membersFetch.json();
-            setMembers(data); // Actualizamos el estado con los miembros
+            const data = await membersFetch.json()
+            setMembers(data)
         } catch (error) {
-            console.error("Error fetching members:", error);
-            setError(error.message); // Guardamos el mensaje de error
-            setMembers([]); // Dejamos la lista vacía en caso de error
+            console.error("Error fetching members:", error)
+            setError(error.message)
+            setMembers([])
         } finally {
-            setIsLoading(false); // Marcamos que la carga ha terminado (sea éxito o error)
+            setIsLoading(false)
         }
-    };
+    }
 
     // --- Carga Inicial de Datos ---
     useEffect(() => {
-        setIsLoading(true); // Indicar carga inicial
-        fetchMembersData();
-    }, []); // Array vacío para que se ejecute solo al montar el componente
+        setIsLoading(true)
+        fetchMembersData()
+    }, [])
 
     // --- Función para Borrar Miembro ---
     async function deleteMember(id) {
-        if (!window.confirm(t("confirmDelete"))) { // Preguntar confirmación
-             return;
-        }
         try {
-            let deleteFetch = await fetch(`http://localhost:9000/user/${id}`, {
-                method: 'DELETE',
-                // No necesitas headers ni body para un DELETE simple generalmente,
-                // a menos que tu API lo requiera específicamente.
-                // headers: { 'Content-Type': 'application/json' },
-                // body: JSON.stringify({ id }) // El ID ya va en la URL
-            });
+            const deleteFetch = await fetch(`http://localhost:9000/user/${id}`, {
+                method: "DELETE",
+            })
             if (!deleteFetch.ok) {
-                throw new Error(`Failed to delete member: ${deleteFetch.statusText}`);
+                throw new Error(`Failed to delete member: ${deleteFetch.statusText}`)
             }
-            // Opcional: usar la respuesta si la hay
-            // let deleteResponse = await deleteFetch.json();
-            // console.log(deleteResponse);
-            console.log(`Member ${id} deleted`);
-            // Refrescar la lista de miembros después de borrar
-            fetchMembersData();
+            console.log(`Member ${id} deleted`)
+            setConfirmDelete(null)
+            fetchMembersData()
         } catch (error) {
-            console.error("Error deleting member:", error);
-            setError(`Error deleting member: ${error.message}`); // Mostrar error al usuario
+            console.error("Error deleting member:", error)
+            setError(`Error deleting member: ${error.message}`)
         }
     }
 
     // --- Manejadores para Edición ---
     const handleEditClick = (member) => {
-        setEditingMemberId(member.id);
-        // Cargar los datos actuales en el estado del formulario
-        // Asegúrate de incluir todos los campos que quieres que sean editables
+        setEditingMemberId(member.id)
         setEditFormData({
             name: member.name,
             email: member.email,
             role: member.role,
-            birthDate: member.birthDate || '', // Manejar posible valor nulo/undefined
-            active: member.active // O el campo correspondiente si se puede editar
-            // Añade otros campos aquí si son editables
-        });
-    };
+            birthDate: member.birthDate || "",
+            active: member.active,
+        })
+    }
 
     const handleCancelEdit = () => {
-        setEditingMemberId(null); // Salir del modo edición
-        setEditFormData({}); // Limpiar datos del formulario
-    };
+        setEditingMemberId(null)
+        setEditFormData({})
+    }
 
     const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        setEditFormData(prevData => ({
+        const { name, value } = event.target
+        setEditFormData((prevData) => ({
             ...prevData,
-            [name]: value
-        }));
-    };
+            [name]: value,
+        }))
+    }
 
     // --- Función para Guardar Cambios ---
     async function handleSaveEdit(id) {
         try {
             const response = await fetch(`http://localhost:9000/user/${id}`, {
-                // Usualmente PUT para reemplazar o PATCH para actualizar parcialmente
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(editFormData) // Enviar los datos modificados
-            });
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(editFormData),
+            })
             if (!response.ok) {
-                // Intentar leer el cuerpo del error si es posible
-                 let errorBody = '';
-                try { errorBody = await response.text(); } catch {}
-                throw new Error(`Failed to update member: ${response.statusText}. ${errorBody}`);
+                let errorBody = ""
+                try {
+                    errorBody = await response.text()
+                } catch {
+
+                    throw new Error(`Failed to update member: ${response.statusText}. ${errorBody}`)
+                }
             }
-            // Opcional: usar la respuesta si la hay
-            // await response.json();
-            console.log(`Member ${id} updated successfully`);
-            setEditingMemberId(null); // Salir del modo edición
-            setEditFormData({}); // Limpiar formulario
-            // Refrescar la lista de miembros después de guardar
-            fetchMembersData();
+            console.log(`Member ${id} updated successfully`)
+            setEditingMemberId(null)
+            setEditFormData({})
+            fetchMembersData()
         } catch (error) {
-            console.error("Error updating member:", error);
-             setError(`Error updating member: ${error.message}`); // Mostrar error al usuario
+            console.error("Error updating member:", error)
+            setError(`Error updating member: ${error.message}`)
         }
     }
 
-    // --- Filtrado (ahora usa el estado 'members') ---
-    const filteredMembers = members.filter((member) =>
-        (member.name?.toLowerCase() || '').includes(searchQuery.toLowerCase()) || // Añadir optional chaining por si name/email es null
-        (member.email?.toLowerCase() || '').includes(searchQuery.toLowerCase())
-    );
+    // --- Filtrado ---
+    const filteredMembers = members.filter(
+        (member) =>
+            (member.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
+            (member.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()),
+    )
 
     // --- Renderizado ---
     if (isLoading) {
-        return <div className="p-8 text-center">{t("loading")}...</div>;
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="flex flex-col items-center space-y-2">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <p className="text-lg font-medium">{t("loading")}...</p>
+                </div>
+            </div>
+        )
     }
 
     return (
-        <div className="p-8">
-            <h2 className="text-3xl font-bold mb-6">{t("title")}</h2>
+        <Card className="w-full">
+            <CardHeader>
+                <CardTitle className="text-3xl font-bold">{t("title")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {error && (
+                    <Alert variant="destructive" className="mb-4">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                )}
 
-            {/* Mostrar error si existe */}
-            {error && <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-400 rounded">{error}</div>}
+                <div className="flex items-center mb-6 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                        type="text"
+                        className="pl-10 w-full max-w-md"
+                        placeholder={t("search")}
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                </div>
 
-            <div className="mb-4">
-                <input
-                    type="text"
-                    className="p-2 border rounded-lg w-full max-w-md"
-                    placeholder={t("search")}
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
+                <div className="rounded-md border">
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>{t("ID")}</TableHead>
+                                <TableHead>{t("Name")}</TableHead>
+                                <TableHead>{t("Email")}</TableHead>
+                                <TableHead>{t("Birth Date")}</TableHead>
+                                <TableHead>{t("Status")}</TableHead>
+                                <TableHead>{t("Role")}</TableHead>
+                                <TableHead>{t("Actions")}</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredMembers.length > 0 ? (
+                                filteredMembers.map((member) => (
+                                    <TableRow key={member.id}>
+                                        {editingMemberId === member.id ? (
+                                            // --- Modo Edición ---
+                                            <>
+                                                <TableCell className="font-medium">{member.id}</TableCell>
+                                                <TableCell>
+                                                    <Input
+                                                        type="text"
+                                                        name="name"
+                                                        value={editFormData.name}
+                                                        onChange={handleInputChange}
+                                                        className="w-full"
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input
+                                                        type="email"
+                                                        name="email"
+                                                        value={editFormData.email}
+                                                        onChange={handleInputChange}
+                                                        className="w-full"
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input
+                                                        type="text"
+                                                        name="birthDate"
+                                                        value={editFormData.birthDate}
+                                                        onChange={handleInputChange}
+                                                        className="w-full"
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant={member.active === "1" ? "success" : "destructive"} className="font-medium">
+                                                        {member.active === "1" ? t("active") : t("inactive")}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Input
+                                                        type="text"
+                                                        name="role"
+                                                        value={editFormData.role}
+                                                        onChange={handleInputChange}
+                                                        className="w-full"
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex space-x-2">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => handleSaveEdit(member.id)}
+                                                            className="text-green-600 border-green-600 hover:bg-green-50"
+                                                        >
+                                                            {t("Save")}
+                                                        </Button>
+                                                        <Button variant="ghost" size="sm" onClick={handleCancelEdit} className="text-gray-600">
+                                                            {t("Cancel")}
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </>
+                                        ) : (
+                                            // --- Modo Visualización ---
+                                            <>
+                                                <TableCell className="font-medium">{member.id}</TableCell>
+                                                <TableCell>{member.name}</TableCell>
+                                                <TableCell>{member.email}</TableCell>
+                                                <TableCell>{member.birthDate || "-"}</TableCell>
+                                                <TableCell>
+                                                    <Badge variant={member.active === "1" ? "success" : "destructive"} className="font-medium">
+                                                        {member.active === "1" ? t("active") : t("inactive")}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell>{member.role}</TableCell>
+                                                <TableCell>
+                                                    <div className="flex space-x-2">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => handleEditClick(member)}
+                                                            className="h-8 w-8 text-blue-600"
+                                                        >
+                                                            <Pencil className="h-4 w-4" />
+                                                            <span className="sr-only">{t("Edit")}</span>
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => setConfirmDelete(member.id)}
+                                                            className="h-8 w-8 text-red-600"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                            <span className="sr-only">{t("Delete")}</span>
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </>
+                                        )}
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={7} className="h-24 text-center">
+                                        {t("NoFound")}
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            </CardContent>
 
-            <div className="overflow-x-auto">
-                <table className="min-w-full table-auto border-collapse">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            {/* ... tus encabezados ... */}
-                             <th className="px-4 py-2 text-left">{t("ID")}</th>
-                             <th className="px-4 py-2 text-left">{t("Name")}</th>
-                             <th className="px-4 py-2 text-left">{t("Email")}</th>
-                             <th className='px-4 py-2 text-left'>{t("Birth Date")}</th>
-                             <th className="px-4 py-2 text-left">{t("Status")}</th>
-                             <th className="px-4 py-2 text-left">{t("Role")}</th>
-                             <th className="px-4 py-2 text-left">{t("Actions")}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {filteredMembers.length > 0 ? (
-                            filteredMembers.map((member) => (
-                                <tr key={member.id} className="border-b hover:bg-gray-50">
-                                    {editingMemberId === member.id ? (
-                                        // --- Modo Edición ---
-                                        <>
-                                            <td className="px-4 py-2">{member.id}</td>
-                                            <td className="px-4 py-2">
-                                                <input
-                                                    type="text"
-                                                    name="name"
-                                                    value={editFormData.name}
-                                                    onChange={handleInputChange}
-                                                    className="p-1 border rounded w-full"
-                                                />
-                                            </td>
-                                            <td className="px-4 py-2">
-                                                <input
-                                                    type="email"
-                                                    name="email"
-                                                    value={editFormData.email}
-                                                    onChange={handleInputChange}
-                                                    className="p-1 border rounded w-full"
-                                                />
-                                            </td>
-                                             <td className="px-4 py-2">
-                                                 {/* Podrías usar type="date" si el formato coincide */}
-                                                <input
-                                                    type="text"
-                                                    name="birthDate"
-                                                    value={editFormData.birthDate}
-                                                    onChange={handleInputChange}
-                                                    className="p-1 border rounded w-full"
-                                                />
-                                            </td>
-                                            <td className="px-4 py-2">
-                                                {/* Aquí podrías poner un select si quieres editar el estado */}
-                                                {/* O simplemente mostrarlo si no es editable */}
-                                                 <span className={`px-2 py-1 text-xs font-semibold rounded-full ${member.active === '1' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
-                                                      {member.active === '1' ? t("active") : t("inactive")}
-                                                 </span>
-                                            </td>
-                                             <td className="px-4 py-2">
-                                                <input
-                                                    type="text" // O un <select> si tienes roles predefinidos
-                                                    name="role"
-                                                    value={editFormData.role}
-                                                    onChange={handleInputChange}
-                                                    className="p-1 border rounded w-full"
-                                                />
-                                            </td>
-                                            <td className="px-4 py-2 whitespace-nowrap">
-                                                <button
-                                                    onClick={() => handleSaveEdit(member.id)}
-                                                    className="text-green-600 hover:underline mr-2"
-                                                >
-                                                    {t("Save")}
-                                                </button>
-                                                <button
-                                                    onClick={handleCancelEdit}
-                                                    className="text-gray-600 hover:underline"
-                                                >
-                                                    {t("Cancel")}
-                                                </button>
-                                            </td>
-                                        </>
-                                    ) : (
-                                        // --- Modo Visualización ---
-                                        <>
-                                            <td className="px-4 py-2">{member.id}</td>
-                                            <td className="px-4 py-2">{member.name}</td>
-                                            <td className="px-4 py-2">{member.email}</td>
-                                            <td className='px-4 py-2'>{member.birthDate || '-'}</td> {/* Mostrar guión si no hay fecha */}
-                                            <td className="px-4 py-2">
-                                                <span
-                                                    className={`px-2 py-1 text-xs font-semibold rounded-full ${member.active === '1' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}
-                                                >
-                                                    {member.active === '1' ? t("active") : t("inactive")}
-                                                </span>
-                                            </td>
-                                            <td className='px-4 py-2'>{member.role}</td>
-                                            <td className="px-4 py-2 whitespace-nowrap">
-                                                <button
-                                                    onClick={() => handleEditClick(member)} // Pasar el objeto member completo
-                                                    className="text-blue-600 hover:underline mr-2"
-                                                >
-                                                    {t("Edit")}
-                                                </button>
-                                                <button
-                                                    onClick={() => deleteMember(member.id)}
-                                                    className="text-red-600 hover:underline"
-                                                >
-                                                    {t("Delete")}
-                                                </button>
-                                            </td>
-                                        </>
-                                    )}
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                {/* Ajusta colSpan al número total de columnas */}
-                                <td colSpan="7" className="px-4 py-2 text-center text-gray-500">{t("NoFound")}</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    );
+            {/* Confirmation Dialog for Delete */}
+            <Dialog open={!!confirmDelete} onOpenChange={(open) => !open && setConfirmDelete(null)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>{t("confirmDeleteTitle")}</DialogTitle>
+                        <DialogDescription>{t("confirmDelete")}</DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setConfirmDelete(null)}>
+                            {t("Cancel")}
+                        </Button>
+                        <Button variant="destructive" onClick={() => confirmDelete && deleteMember(confirmDelete)}>
+                            {t("Delete")}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </Card>
+    )
 }
 
-export default AdminDashboard;
+export default AdminDashboard
