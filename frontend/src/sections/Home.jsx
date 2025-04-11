@@ -94,7 +94,7 @@ function Home() {
       <div className="flex flex-col items-center justify-center px-4 py-8 sm:py-12 md:px-12 lg:px-24 lg:gap-y-10 mb-18">
         <h2 className="text-3xl font-semibold">{t("find")}</h2>
         <hr className="h-px mb-4 -mt-2 w-100 sm:w-24 lg:w-100 bg-dark border-1" />
-        <div className="grid grid-cols-1  lg:grid-cols-3 gap-8 w-full max-w-5xl text-dark text-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full max-w-5xl text-dark text-center">
           <div className="flex flex-col items-center">
             <IoBarbellOutline className="text-7xl mb-4" />
             <p>{t("machines")}</p>
@@ -109,12 +109,12 @@ function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2  w-full max-w-5xl text-dark gap-8 text-center mt-8 mb-8 md:grid-cols-1">
-          <div className="flex flex-col items-center px-10 lg:ms-40">
+        <div className="grid grid-cols-4 w-full max-w-5xl text-dark gap-8 text-center mt-8 mb-8">
+          <div className="flex flex-col items-center col-start-2">
             <IoFitnessOutline className="text-7xl mb-4" />
             <p>{t("monitor")}</p>
           </div>
-          <div className="flex flex-col items-center px-10 lg:me-40">
+          <div className="flex flex-col items-center">
             <IoCar className="text-7xl mb-4" />
             <p>{t("parking")}</p>
           </div>

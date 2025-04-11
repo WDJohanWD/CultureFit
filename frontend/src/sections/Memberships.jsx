@@ -3,9 +3,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Loader2 } from "lucide-react"
+import { useState } from "react"
 
 function Memberships() {
   const { t } = useTranslation("memberships")
+  const [isLoading, setIsLoading] = useState(false)
 
   const tiers = [
     {
@@ -36,6 +46,7 @@ function Memberships() {
 
   // Metodo para redirigir al checkout-session
   const handleCheckout = async (priceId) => {
+    setIsLoading(true)
     const CHECKOUT_SESSION_URL = "http://localhost:9000/payments/create-checkout-session/"
 
     try {
@@ -54,6 +65,7 @@ function Memberships() {
       window.location.href = url // Redirige a Stripe Checkout
     } catch (error) {
       console.error("Error:", error)
+      setIsLoading(false)
     }
   }
 
@@ -106,6 +118,19 @@ function Memberships() {
           </Card>
         ))}
       </div>
+
+      {/* Loading Dialog */}
+      <Dialog open={isLoading} onOpenChange={setIsLoading}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>{t("processingPayment")}</DialogTitle>
+            <DialogDescription className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t("redirecting")}
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

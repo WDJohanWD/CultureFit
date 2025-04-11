@@ -27,10 +27,7 @@ function NavBar() {
   }
 
   useEffect(() => {
-    const isAdmin = localStorage.getItem("isAdmin");
-    if (isAdmin) {
-      setIsAdmin(true);
-    }
+    setIsAdmin(localStorage.getItem("isAdmin"));
   }, []);
 
   return (

@@ -3,6 +3,8 @@
   "subtitulo1":"Choose an affordable gym plan packed with the best features to help you stay motivated, achieve your fitness goals, and enjoy a healthier lifestyle.",
   "mes": "month",
   "elegir": "Choose this membership",
+  "processingPayment": "Processing payment",
+  "redirecting": "Redirecting to payment page...",
 
   "n1": "Basic",
   "id1": "tier-basic",
