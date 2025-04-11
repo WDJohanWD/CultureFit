@@ -5,6 +5,9 @@
   "elegir": "Elegir este plan",
   "processingPayment": "Procesando pago",
   "redirecting": "Redirigiendo a la página de pago...",
+  "warning": "Advertencia",
+  "warningDescription": "No puedes suscribirte si no eres un usuario registrado.",
+
 
   "n1": "Basic",
   "id1": "tier-basic",

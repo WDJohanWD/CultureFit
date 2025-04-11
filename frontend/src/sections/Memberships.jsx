@@ -10,12 +10,15 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Loader2 } from "lucide-react"
-import { useState } from "react"
+import { useState, useContext } from "react"
+import { AuthContext } from "../AuthContext"
 
 function Memberships() {
   const { t } = useTranslation("memberships")
   const [isLoading, setIsLoading] = useState(false)
+  const { user } = useContext(AuthContext)
 
   const tiers = [
     {
@@ -71,6 +74,17 @@ function Memberships() {
 
   return (
     <div className="relative isolate bg-white px-6 py-24 lg:px-8">
+      {!user ? (
+        <Alert variant="destructive" className="-mt-10 mb-10 w-300 mx-auto">
+          <AlertTitle>
+            {t("warning")}
+          </AlertTitle>
+          <AlertDescription>
+            {t("warningDescription")}
+          </AlertDescription>
+        </Alert>
+      ) : null}
+
       <img src="/CultureFitLogoNegro.png" alt="" className="h-12 mx-auto mb-3" />
       <div className="mx-auto max-w-4xl text-center">
         <h2 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">{t("titulo1")}</h2>
@@ -131,6 +145,7 @@ function Memberships() {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+
     </div>
   )
 }
