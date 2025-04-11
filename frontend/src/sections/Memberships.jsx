@@ -133,8 +133,8 @@ function Memberships() {
         ))}
       </div>
 
-      {/* Loading Dialog */}
-      <Dialog open={isLoading} onOpenChange={setIsLoading}>
+      {!user ?(
+        <Dialog open={isLoading} onOpenChange={setIsLoading}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{t("processingPayment")}</DialogTitle>
@@ -145,6 +145,9 @@ function Memberships() {
           </DialogHeader>
         </DialogContent>
       </Dialog>
+
+      ):null}
+      
 
     </div>
   )
