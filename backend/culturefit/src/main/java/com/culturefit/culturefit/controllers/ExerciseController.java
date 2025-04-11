@@ -32,7 +32,7 @@ public class ExerciseController {
         return exercises;
     }
 
-     @GetMapping("/exercise/{id}")
+    @GetMapping("/exercise/{id}")
     public ResponseEntity<Exercise> getExercise(@PathVariable Long id) {
         Exercise exercise = exerciseService.getExercise(id);
         return ResponseEntity.ok(exercise);
