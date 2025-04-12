@@ -13,6 +13,7 @@ import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingIm
 
 import io.github.cdimascio.dotenv.Dotenv;
 
+//TODO: Tocar el manejo de errores
 @Service
 public class ProfileImageServiceImpl implements ProfileImageService {
     // Cargar configuración del entorno

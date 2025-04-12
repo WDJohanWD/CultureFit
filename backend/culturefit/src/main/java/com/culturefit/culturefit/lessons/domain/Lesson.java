@@ -1,0 +1,28 @@
+package com.culturefit.culturefit.lessons.domain;
+
+import java.time.LocalDate;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@Table(name = "lessons")
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class Lesson{
+    @Id
+    @GeneratedValue
+    private Long id;
+    private String name;
+    private String description;
+    private String videoUrl;
+    private LocalDate uploadDate;
+}
+
+

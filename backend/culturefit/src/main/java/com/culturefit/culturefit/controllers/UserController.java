@@ -6,6 +6,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.services.userService.UserService;
 
+import jakarta.validation.Valid;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -39,6 +41,12 @@ public class UserController {
     }
 
     //Posts
+    @PostMapping("/user")
+    public ResponseEntity<User> postUser(@Valid @RequestBody User user) {
+        User userSaved = userService.saveUser(user);
+        return ResponseEntity.ok(userSaved);
+    }
+    
     @PostMapping("/user/upload-profile-image/{id}")
     public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
         userService.assignImage(id, image);
