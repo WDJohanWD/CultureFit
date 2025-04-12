@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,22 +24,32 @@ public class LessonServiceImpl implements LessonService{
     private LessonRepository repository;
 
     // Cargar configuración del entorno
-    Dotenv dotenv = Dotenv.load();
-    String DIRECTORY_LESSON_VIDEOS = dotenv.get("DIRECTORY_LESSON_VIDEOS");
+    private final Dotenv dotenv = Dotenv.load();
+    private final String DIRECTORY_LESSON_VIDEOS = dotenv.get("DIRECTORY_LESSON_VIDEOS");
 
-    public Lesson createLesson(String lessonName, String lessonDescription){
-        Lesson createdLesson = new Lesson(
-            null,
-            lessonName,
-            lessonDescription,
-            null,
-            null
+    // Crear una lección (sin guardar en BD todavía)
+    public Lesson createLesson(String lessonName, String lessonDescription) {
+        return new Lesson(
+                null,
+                lessonName,
+                lessonDescription,
+                null,
+                null
         );
-
-        return createdLesson;
     }
 
-    @Override
+    // Obtener una lección por ID
+    public Lesson getLesson(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("No se ha encontrado la lección"));
+    }
+
+    // Obtener todas las lecciones
+    public List<Lesson> getLessons() {
+        return repository.findAll();
+    }
+
+    // Guardar una lección con video
     public Lesson save(Lesson lesson, MultipartFile file) {
         try {
             String videoUrl = uploadLesson(file, lesson.getName());
@@ -46,15 +57,39 @@ public class LessonServiceImpl implements LessonService{
             lesson.setUploadDate(LocalDate.now());
             return repository.save(lesson);
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw new RuntimeException("Error al guardar la lección", e);
         }
-        
     }
 
-    private String uploadLesson(MultipartFile file, String lessonName) throws IOException{
+    public Lesson updateLesson(Long id, String lessonName, String lessonDescription, MultipartFile file) throws IOException {
+        // Obtener lección existente
+        Lesson existingLesson = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lección no encontrada"));
+
+        // Actualizar nombre y descripción
+        existingLesson.setName(lessonName);
+        existingLesson.setDescription(lessonDescription);
+
+        // Si se proporciona un archivo, actualizar el video
+        if (file != null && !file.isEmpty()) {
+            String videoUrl = uploadLesson(file, lessonName); // Subir el nuevo video
+            existingLesson.setVideoUrl(videoUrl);
+        }
+
+        // Guardar la lección actualizada
+        return repository.save(existingLesson);
+    }
+
+    // Eliminar una lección por ID
+    public void deleteLesson(Long id) {
+        getLesson(id); // Verifica existencia
+        repository.deleteById(id);
+    }
+
+    // Subir un archivo de video y devolver la URL
+    public String uploadLesson(MultipartFile file, String lessonName) throws IOException {
         try {
             File directory = new File(DIRECTORY_LESSON_VIDEOS);
-
             if (!directory.exists()) {
                 directory.mkdirs(); // Crear directorio si no existe
             }
@@ -64,27 +99,28 @@ public class LessonServiceImpl implements LessonService{
             if (!extension.matches("\\.(mp4|avi|mov|mkv|webm|flv|wmv)$")) {
                 throw new RuntimeException("Formato de video no válido");
             }
-            
+
             // Normalizar el nombre del archivo
             String fileName = lessonName.replaceAll("\\s+", "_").toLowerCase() + "_video" + extension;
 
-            // Construcción correcta de la ruta
+            // Ruta donde se guardará el archivo
             Path filePath = Paths.get(directory.getAbsolutePath(), fileName);
 
-            // Guardar el archivo
+            // Guardar el archivo en disco
             Files.write(filePath, file.getBytes());
 
-            // Devolver la URL de acceso
+            // Devolver la ruta relativa de acceso al video
             return "/uploads/profileLessons/" + fileName;
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw new RuntimeException("Error al subir el video", e);
         }
     }
 
+    // Obtener la extensión del archivo
     public String getExtension(String fileName) {
         int extensionIndex = fileName.lastIndexOf(".");
         if (extensionIndex == -1) {
-            return ""; // Si no tiene extensión, devolver una cadena vacía
+            return "";
         }
         return fileName.substring(extensionIndex);
     }
