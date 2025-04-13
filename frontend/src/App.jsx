@@ -6,7 +6,7 @@ import Home from "./sections/Home";
 import Memberships from "./sections/Memberships";
 import Error404 from "./sections/Error404";
 import Signup from "./sections/Signup";
-import Login from "./sections/Login";
+import Login from "./sections/LoginModal";
 import AboutUs from "./sections/AboutUs";
 import ConfirmAccount from "./sections/ConfirmAccount";
 import AdminDashboard from "./sections/AdminDashboard";
