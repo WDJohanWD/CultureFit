@@ -109,8 +109,8 @@ function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-4 w-full max-w-5xl text-dark gap-8 text-center mt-8 mb-8">
-          <div className="flex flex-col items-center col-start-2">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-5xl text-dark text-center mt-8 mb-8">
+          <div className="flex flex-col items-center">
             <IoFitnessOutline className="text-7xl mb-4" />
             <p>{t("monitor")}</p>
           </div>

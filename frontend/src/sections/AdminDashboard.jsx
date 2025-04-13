@@ -253,8 +253,8 @@ function AdminDashboard() {
                                                 <TableCell>{member.email}</TableCell>
                                                 <TableCell>{member.birthDate || "-"}</TableCell>
                                                 <TableCell>
-                                                    <Badge variant={member.active === "1" ? "success" : "destructive"} className="font-medium">
-                                                        {member.active === "1" ? t("active") : t("inactive")}
+                                                    <Badge variant={member.active ? "success" : "destructive"} className="font-medium">
+                                                        {member.active ? t("active") : t("inactive")}
                                                     </Badge>
                                                 </TableCell>
                                                 <TableCell>{member.role}</TableCell>

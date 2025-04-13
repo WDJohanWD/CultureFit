@@ -74,16 +74,6 @@ function Memberships() {
 
   return (
     <div className="relative isolate bg-white px-6 py-24 lg:px-8">
-      {!user ? (
-        <Alert variant="destructive" className="-mt-10 mb-10 w-300 mx-auto">
-          <AlertTitle>
-            {t("warning")}
-          </AlertTitle>
-          <AlertDescription>
-            {t("warningDescription")}
-          </AlertDescription>
-        </Alert>
-      ) : null}
 
       <img src="/CultureFitLogoNegro.png" alt="" className="h-12 mx-auto mb-3" />
       <div className="mx-auto max-w-4xl text-center">
@@ -132,6 +122,16 @@ function Memberships() {
           </Card>
         ))}
       </div>
+      {!user ? (
+        <Alert variant="destructive" className="mt-10 mb-10 w-300 mx-auto">
+          <AlertTitle>
+            {t("warning")}
+          </AlertTitle>
+          <AlertDescription>
+            {t("warningDescription")}
+          </AlertDescription>
+        </Alert>
+      ) : null}
 
       {!user ?(
         <Dialog open={isLoading} onOpenChange={setIsLoading}>

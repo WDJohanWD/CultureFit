@@ -1,10 +1,11 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { LANGUAGES } from "../translations";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../AuthContext";
 import { Link } from "react-router-dom";
 import { LuLogOut, LuChevronDown } from "react-icons/lu";
 import { FaBars } from "react-icons/fa";
+import { useClickOutside } from "@/hooks/useClickOutside";
 
 function NavBar() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -14,6 +15,7 @@ function NavBar() {
 
   const { user, logout } = useContext(AuthContext);
   const [menuOpen, setMenuOpen] = useState(false);
+  const navbarRef = useRef(null);
 
   //Cambiar el idioma de la pagina web
   const onChangeLang = (e) => {
@@ -26,12 +28,16 @@ function NavBar() {
     logout()
   }
 
+  useClickOutside(navbarRef, () => {
+    if (menuOpen) setMenuOpen(false);
+  });
+
   useEffect(() => {
     setIsAdmin(localStorage.getItem("isAdmin"));
   }, []);
 
   return (
-    <nav className="bg-primary sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium">
+    <nav className="bg-primary sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium" ref={navbarRef}>
       <div className="flex justify-between align-middle">
         <div className="flex items-center">
           <Link to="/">
@@ -46,7 +52,7 @@ function NavBar() {
             <Link to="/memberships" className="pt-1 ms-6 hover:underline">{t("planes")}</Link>
             <Link to="/aboutus" className="pt-1 ms-6 hover:underline">{t("about")}</Link>
             {
-              user?.isAdmin && (
+              isAdmin && (
                 <Link to="/admin" className="pt-1 ms-6 hover:underline">admin</Link>
               )
             }
@@ -76,6 +82,8 @@ function NavBar() {
               <Link to="/admin" className="block py-2 px-4 hover:underline">admin</Link>
             )
           }
+
+
           <div className="items-center align-middle">
             {user ? (
               <>
@@ -109,7 +117,7 @@ function NavBar() {
             )}
 
 
-            <div className="flex items-center align-middle justify-center">
+            <div className="flex items-center align-middle justify-center md:my-1">
               <label htmlFor="language"></label>
               <select id="language" defaultValue={lng} onChange={onChangeLang} style={{ cursor: "pointer", appearance: "none" }} className="ms-4 pe-4">
                 {LANGUAGES.map(({ code, label }) => (
@@ -117,7 +125,7 @@ function NavBar() {
                     {label}
                   </option>
                 ))}
-              </select><LuChevronDown className="-ml-4" />
+              </select><LuChevronDown className="-ms-4" />
             </div>
 
 
