@@ -51,6 +51,7 @@ function NavBar() {
             <Link className="pt-1 ms-6 hover:underline">{t("videos")}</Link>
             <Link to="/memberships" className="pt-1 ms-6 hover:underline">{t("planes")}</Link>
             <Link to="/aboutus" className="pt-1 ms-6 hover:underline">{t("about")}</Link>
+            <Link to="/profile" className="pt-1 ms-6 hover:underline">{t("profile")} </Link>
             {
               isAdmin && (
                 <Link to="/admin" className="pt-1 ms-6 hover:underline">admin</Link>
