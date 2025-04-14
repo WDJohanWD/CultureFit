@@ -10,6 +10,7 @@ import Login from "./sections/LoginModal";
 import AboutUs from "./sections/AboutUs";
 import ConfirmAccount from "./sections/ConfirmAccount";
 import AdminDashboard from "./sections/AdminDashboard";
+import { YourProgress } from "./sections/YourProgress";
 
 import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext } from "react";
@@ -31,6 +32,7 @@ function Layout() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
+        <Route path="/your-progress" element={<YourProgress />} />
 
         <Route
           path="/admin"
