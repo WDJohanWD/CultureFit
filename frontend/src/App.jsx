@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import './index.css';
+import { Toaster } from "@/components/ui/toaster";
 
 import Home from "./sections/Home";
 import Memberships from "./sections/Memberships";
@@ -47,6 +48,7 @@ function Layout() {
         <Route path="/error" element={<Error404 />} />
         <Route path="*" element={<Navigate to="/error" replace />} />
       </Routes>
+      <Toaster />
     </>
   );
 }
