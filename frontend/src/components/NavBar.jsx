@@ -52,7 +52,13 @@ function NavBar() {
           </Link>
           <div className="hidden lg:flex">
             <Link className="pt-1 ms-9 hover:underline">{t("clases")}</Link>
-            <Link className="pt-1 ms-6 hover:underline">{t("videos")}</Link>
+            {user ? (
+              <Link className="pt-1 ms-6 hover:underline" to="/your-progress">
+                {t("progress")}
+              </Link>
+            ) : (
+              <></>
+            )}
             <Link to="/memberships" className="pt-1 ms-6 hover:underline">
               {t("planes")}
             </Link>
@@ -93,9 +99,16 @@ function NavBar() {
           <Link className="block py-2 px-4 hover:underline" to="/">
             {t("clases")}
           </Link>
-          <Link className="block py-2 px-4 hover:underline" to="/">
-            {t("videos")}
-          </Link>
+          {user ? (
+            <Link
+              className="block py-2 px-4 hover:underline"
+              to="/your-progress"
+            >
+              {t("progress")}
+            </Link>
+          ) : (
+            <></>
+          )}
           <Link to="/memberships" className="block py-2 px-4 hover:underline">
             {t("planes")}
           </Link>
@@ -123,14 +136,14 @@ function NavBar() {
               </>
             ) : (
               <div>
-                  <button
-                    className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
+                <button
+                  className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
                                       shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
                                       text-lg px-5 py-2.5 text-center me-4 mb-2 mt-2"
-                    onClick={() => setIsLoginOpen(true)}
-                  >
-                    {t("login")}
-                  </button>
+                  onClick={() => setIsLoginOpen(true)}
+                >
+                  {t("login")}
+                </button>
                 <Link to="/signup">
                   <button
                     className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
@@ -178,14 +191,14 @@ function NavBar() {
             </>
           ) : (
             <div>
-                <button
-                  className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
+              <button
+                className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
                                       shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
                                       text-lg px-5 py-2.5 text-center me-4 mb-2 mt-2"
-                                      onClick={() => setIsLoginOpen(true)}
-                >
-                  {t("login")}
-                </button>
+                onClick={() => setIsLoginOpen(true)}
+              >
+                {t("login")}
+              </button>
               <Link to="/signup">
                 <button
                   className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
@@ -215,10 +228,10 @@ function NavBar() {
           <LuChevronDown className="-ml-4" />
         </div>
 
-        <LoginModal 
-        isOpen={isLoginOpen} 
-        onClose={() => setIsLoginOpen(false)} 
-      />
+        <LoginModal
+          isOpen={isLoginOpen}
+          onClose={() => setIsLoginOpen(false)}
+        />
       </div>
     </nav>
   );

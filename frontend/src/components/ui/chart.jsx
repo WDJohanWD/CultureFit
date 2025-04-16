@@ -196,7 +196,7 @@ function ChartTooltipContent({
                     <div className="grid gap-1.5">
                       {nestLabel ? tooltipLabel : null}
                       <div className="-ms-4 flex flex-col gap-y-2">
-                        <span>{itemConfig?.label || item.name}</span>
+                        <span>Weight</span>
                         <span>Repetitions:</span>
                       </div>
                     </div>
