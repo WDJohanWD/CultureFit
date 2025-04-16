@@ -16,5 +16,16 @@
     "tab2-confirmPassword": "Confirm password",
     "tab1-button": "Edit",
     "tab2-button": "Change password",
-    "change-image": "Change image"
+    "change-image": "Change image",
+    "tab1-button-cancel": "Cancel",
+    "tab1-button-save": "Save changes",
+    "toast-profile-success-title": "Profile updated",
+    "toast-profile-success-description": "Your information has been successfully updated.",
+    "toast-error-title": "Error",
+    "toast-password-mismatch": "New passwords do not match.",
+    "toast-password-success-title": "Password updated",
+    "toast-password-success-description": "Your password has been successfully updated.",
+    "toast-image-success-title": "Image updated",
+    "toast-image-success-description": "Your profile image has been successfully updated.",
+    "toast-image-error": "There was an error uploading the image. Please try again."
 }
