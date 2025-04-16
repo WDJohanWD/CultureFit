@@ -1,3 +1,20 @@
 {
-    "title": "Perfil"
-}
+    "title": "Mi perfil",
+    "text-image": "Imagen de perfil",
+    "tab1": "Información personal",
+    "tab2": "Cambiar contraseña",
+    "tab1-tittle": "Información personal",
+    "tab1-description": "Gestiona tu información personal",
+    "tab1-name": "Nombre",
+    "tab1-email": "Email",
+    "tab1-birthDate": "Fecha de nacimiento",
+    "tab1-dni": "DNI",
+    "tab2-tittle": "Cambiar contraseña",
+    "tab2-description": "Cambia tu contraseña",
+    "tab2-currentPassword": "Contraseña actual",
+    "tab2-newPassword": "Nueva contraseña",
+    "tab2-confirmPassword": "Confirmar contraseña",
+    "tab1-button": "Editar",
+    "tab2-button": "Cambiar contraseña",
+    "change-image": "Cambiar imagen"
+}   

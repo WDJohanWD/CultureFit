@@ -1,3 +1,20 @@
 {
-    "title": "Profile"
+    "title": "My profile",
+    "text-image": "Profile image",
+    "tab1": "Personal information",
+    "tab2": "Change password",
+    "tab1-tittle": "Personal information",
+    "tab1-description": "Manage your personal information",
+    "tab1-name": "Name",
+    "tab1-email": "Email",
+    "tab1-birthDate": "Birth date",
+    "tab1-dni": "DNI",
+    "tab2-tittle": "Change password",
+    "tab2-description": "Change your password",
+    "tab2-currentPassword": "Current password",
+    "tab2-newPassword": "New password",
+    "tab2-confirmPassword": "Confirm password",
+    "tab1-button": "Edit",
+    "tab2-button": "Change password",
+    "change-image": "Change image"
 }
