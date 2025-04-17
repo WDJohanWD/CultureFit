@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import NavBar from "./components/NavBar";
 import './index.css';
+import { Toaster } from "@/components/ui/toaster";
 
 import Home from "./sections/Home";
 import Memberships from "./sections/Memberships";
@@ -11,6 +12,7 @@ import AboutUs from "./sections/AboutUs";
 import ConfirmAccount from "./sections/ConfirmAccount";
 import AdminDashboard from "./sections/AdminDashboard";
 import YourProgress from "./sections/YourProgress";
+import Profile from "./sections/Profile";
 
 import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext } from "react";
@@ -40,6 +42,7 @@ function Layout() {
             )
           } />
 
+        <Route path="/profile" element={<Profile />} />
         <Route
           path="/admin"
           element={
@@ -54,6 +57,7 @@ function Layout() {
         <Route path="/error" element={<Error404 />} />
         <Route path="*" element={<Navigate to="/error" replace />} />
       </Routes>
+      <Toaster />
     </>
   );
 }

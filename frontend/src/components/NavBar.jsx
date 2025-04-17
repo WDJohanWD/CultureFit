@@ -7,6 +7,7 @@ import { LuLogOut, LuChevronDown } from "react-icons/lu";
 import { FaBars } from "react-icons/fa";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import LoginModal from "../sections/LoginModal";
+import Profile from "../assets/login.svg";
 
 function NavBar() {
   // Seleccionar el NameSpace que estamos utilizando
@@ -38,6 +39,7 @@ function NavBar() {
       className="bg-primary sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium"
       ref={navbarRef}
     >
+    <nav className="bg-primary sticky shadow-lg z-50 py-4 px-4 top-0 text-white montserrat font-medium" ref={navbarRef}>
       <div className="flex justify-between align-middle">
         <div className="flex items-center">
           <Link to="/">
@@ -82,8 +84,7 @@ function NavBar() {
             <FaBars className="text-white text-2xl" />
           </button>
         </div>
-        <div
-          className={`
+        <div className={`
                           lg:hidden 
                           absolute top-20 left-0 w-full bg-primary 
                           overflow-hidden 
@@ -122,11 +123,20 @@ function NavBar() {
           )}
 
           <div className="items-center align-middle">
+            {user ?(
+              <div className="flex flex-col items-center me-2">
+                <Link to="/profile" className="flex flex-col items-center pt-1 hover:underline">
+                  <img src={Profile} alt="Profile" className="h-9 w-12" />
+                  <span className="text-sm">{user.name}</span>
+                </Link>
+              </div>
+
+            ): null
+              
+          }
             {user ? (
               <>
-                <span className="me-5">{user.name}</span>
-                <button
-                  className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
+                <button className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
                                       shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
                                       text-lg px-2 py-2.5 text-center me-4 mb-2 mt-2"
                   onClick={handleLogout}
@@ -153,6 +163,7 @@ function NavBar() {
                     {t("signup")}
                   </button>
                 </Link>
+
               </div>
             )}
 
@@ -179,13 +190,15 @@ function NavBar() {
         <div className="flex items-center hidden lg:flex">
           {user ? (
             <>
-              <span className="me-5">{user.name}</span>
-              <button
-                className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
+              <div className="flex flex-col items-center me-2">
+                <Link to="/profile" className="pt-1 hover:underline"> <img src={Profile} alt="Profile" className="h-9 w-12" /> </Link>
+                <span className="text-sm">{user.name}</span>
+              </div>
+
+              <button className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
                                       shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
                                       text-lg px-2 py-2.5 text-center me-4 mb-2 mt-2"
-                onClick={handleLogout}
-              >
+                onClick={handleLogout}>
                 <LuLogOut />
               </button>
             </>
