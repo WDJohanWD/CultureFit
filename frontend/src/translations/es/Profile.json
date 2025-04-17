@@ -22,9 +22,11 @@
     "toast-profile-success-title": "Perfil actualizado",
     "toast-profile-success-description": "Tu información ha sido actualizada correctamente.",
     "toast-error-title": "Error",
+    "toast-profile-error": "Hubo un error al actualizar tu perfil. Por favor, inténtalo de nuevo.",
     "toast-password-mismatch": "Las contraseñas nuevas no coinciden.",
     "toast-password-success-title": "Contraseña actualizada",
     "toast-password-success-description": "Tu contraseña ha sido actualizada correctamente.",
+    "toast-password-error": "Hubo un error al actualizar tu contraseña. Por favor, inténtalo de nuevo.",
     "toast-image-success-title": "Imagen actualizada",
     "toast-image-success-description": "Tu imagen de perfil ha sido actualizada correctamente.",
     "toast-image-error": "Hubo un error al subir la imagen. Por favor, inténtalo de nuevo."

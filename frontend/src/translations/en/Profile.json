@@ -22,9 +22,11 @@
     "toast-profile-success-title": "Profile updated",
     "toast-profile-success-description": "Your information has been successfully updated.",
     "toast-error-title": "Error",
+    "toast-profile-error": "There was an error updating your profile. Please try again.",
     "toast-password-mismatch": "New passwords do not match.",
     "toast-password-success-title": "Password updated",
     "toast-password-success-description": "Your password has been successfully updated.",
+    "toast-password-error": "There was an error updating your password. Please try again.",
     "toast-image-success-title": "Image updated",
     "toast-image-success-description": "Your profile image has been successfully updated.",
     "toast-image-error": "There was an error uploading the image. Please try again."
