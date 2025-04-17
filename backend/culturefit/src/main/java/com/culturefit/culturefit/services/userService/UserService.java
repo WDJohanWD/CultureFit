@@ -19,5 +19,10 @@ public interface UserService {
 
     User getUserByName(String name);
 
+    User updateUser(Long id, User user);
+
+    User updatePassword(Long userId, String currentPassword, String newPassword);
+
+
 }
 
