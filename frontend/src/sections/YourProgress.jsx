@@ -27,15 +27,14 @@ function YourProgress() {
   const { t } = useTranslation("progress");
   const { user } = useContext(AuthContext);
 
-  const [selectedExercise, setSelectedExercise] = useState(1)
+  const [selectedExercise, setSelectedExercise] = useState(1);
   const [graphData, setGraphData] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
-  
 
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [exercise, setExercise] = useState('');
-  const [weight, setWeight] = useState('');
-  const [reps, setReps] = useState('');
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+  const [exercise, setExercise] = useState("");
+  const [weight, setWeight] = useState("");
+  const [reps, setReps] = useState("");
 
   const chartConfig = {
     weight: {
@@ -91,7 +90,7 @@ function YourProgress() {
       exerciseId: exercise,
       userId: user.id,
     };
-    console.log(newPP)
+    console.log(newPP);
 
     const response = await fetch("http://localhost:9000/new-progress-point", {
       method: "POST",
@@ -101,13 +100,13 @@ function YourProgress() {
       body: JSON.stringify(newPP),
     });
 
-    setSelectedExercise(exercise)
-    obtainData(selectedExercise)
+    setSelectedExercise(exercise);
+    obtainData(selectedExercise);
   }
 
   return (
-    <>
-      <div className="mx-auto my-5 w-120 sm:w-150 md:w-200 lg:w-240 xl:w-240">
+    <div className="flex flex-col lg:flex-row">
+      <div className="ms-5 my-5 w-120 sm:w-150 md:w-200 lg:w-240 xl:w-240">
         <select
           name=""
           className="bg-gray-50 mb-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-50 p-2"
@@ -146,13 +145,18 @@ function YourProgress() {
                     dataKey="date"
                     tickLine={true}
                     axisLine={true}
-                    tickMargin={8}
+                    tickMargin={10}
                     tickFormatter={(value) => ""}
                   />
                   <YAxis
-                    domain={["auto", "auto"]}
+                    domain={[
+                      (dataMin) => dataMin * 0.9,
+                      (dataMax) => dataMax * 1.05,
+                    ]}
                     tickLine={false}
                     axisLine={false}
+                    tickCount={5}
+                    tickFormatter={(value) => Math.round(value / 10) * 10}
                   />
                   <ChartTooltip
                     cursor={false}
@@ -186,8 +190,8 @@ function YourProgress() {
           </Card>
         )}
       </div>
-      <div className="mt-3 text-primary mx-auto my-5 w-full max-w-7xl px-4">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 flex-wrap">
+      <div className="mt-15 text-primary mx-auto my-5 px-4 w-120">
+        <div className="flex-row md:items-end justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <label
               htmlFor="exercise"
@@ -201,7 +205,9 @@ function YourProgress() {
               value={exercise}
               onChange={(e) => setExercise(e.target.value)}
             >
-              <option value="" disabled>Selecciona un ejercicio</option>
+              <option value="" disabled>
+                Selecciona un ejercicio
+              </option>
               {exerciseList.map((exercise) => (
                 <option key={exercise.id} value={exercise.id}>
                   {exercise.name}
@@ -286,7 +292,7 @@ function YourProgress() {
 
           <Button
             type="submit"
-            className="w-full md:w-auto mt-2 md:mt-0 text-white bg-gradient-to-r from-orange-400 to-orange-600 
+            className="w-full md:w-auto mt-3 md:mt-3 text-white bg-gradient-to-r from-orange-400 to-orange-600 
       hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5 px-6"
             onClick={createProgressPoint}
           >
@@ -294,7 +300,7 @@ function YourProgress() {
           </Button>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
