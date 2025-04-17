@@ -31,7 +31,7 @@ export default function Profile() {
   useEffect(() => {
     if (!loading && authUser) {
       setUser(authUser)
-      setFormData({ ...authUser })
+      setFormData(authUser)
     }
   }, [authUser, loading])
 
@@ -51,17 +51,42 @@ export default function Profile() {
     }))
   }
 
-  const handleProfileUpdate = (e) => {
+  const handleProfileUpdate = async (e) => {
     e.preventDefault()
-    setUser({ ...formData })
-    setIsEditing(false)
-    toast({
-      title: t("toast-profile-success-title"),
-      description: t("toast-profile-success-description"),
-    })
+    try {
+      console.log('Datos enviados al servidor:', formData)
+
+      const response = await fetch(`${API_URL}/user/${user.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to update profile: ${response.statusText}`)
+      }
+
+      const updatedUser = await response.json()
+      console.log('Respuesta del servidor:', updatedUser)
+
+      setUser(updatedUser)
+      setFormData(updatedUser)
+      setIsEditing(false)
+      toast({
+        title: t("toast-profile-success-title"),
+        description: t("toast-profile-success-description"),
+      })
+    } catch (error) {
+      console.error("Error updating profile:", error)
+      toast({
+        title: t("toast-error-title"),
+        description: t("toast-profile-error"),
+        variant: "destructive",
+      })
+    }
   }
 
-  const handlePasswordUpdate = (e) => {
+  const handlePasswordUpdate = async (e) => {
     e.preventDefault()
 
     if (passwords.newPassword !== passwords.confirmPassword) {
@@ -73,16 +98,38 @@ export default function Profile() {
       return
     }
 
-    toast({
-      title: t("toast-password-success-title"),
-      description: t("toast-password-success-description"),
-    })
+    try {
+      const response = await fetch(`${API_URL}/user/${user.id}/password`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          currentPassword: passwords.currentPassword,
+          newPassword: passwords.newPassword
+        }),
+      })
 
-    setPasswords({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    })
+      if (!response.ok) {
+        throw new Error(`Failed to update password: ${response.statusText}`)
+      }
+
+      toast({
+        title: t("toast-password-success-title"),
+        description: t("toast-password-success-description"),
+      })
+
+      setPasswords({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      })
+    } catch (error) {
+      console.error("Error updating password:", error)
+      toast({
+        title: t("toast-error-title"),
+        description: t("toast-password-error"),
+        variant: "destructive",
+      })
+    }
   }
 
   const handleImageUpload = async (e) => {
@@ -276,7 +323,7 @@ export default function Profile() {
                               type="email"
                               value={isEditing ? formData.email : user.email}
                               onChange={handleInputChange}
-                              readOnly={!isEditing}
+                              readOnly
                               className={!isEditing ? "bg-muted/50" : ""}
                             />
                           </div>
@@ -294,7 +341,6 @@ export default function Profile() {
                               type="date"
                               value={isEditing ? formData.birthDate : user.birthDate}
                               onChange={handleInputChange}
-                              readOnly={!isEditing}
                               className={!isEditing ? "bg-muted/50" : ""}
                             />
                           </div>
@@ -309,7 +355,7 @@ export default function Profile() {
                               name="dni"
                               value={isEditing ? formData.dni : user.dni}
                               onChange={handleInputChange}
-                              readOnly={!isEditing}
+                              readOnly
                               className={!isEditing ? "bg-muted/50" : ""}
                             />
                           </div>

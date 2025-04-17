@@ -19,5 +19,7 @@ public interface UserService {
 
     User getUserByName(String name);
 
+    User updateUser(Long id, User user);
+
 }
 

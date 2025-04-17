@@ -91,4 +91,15 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundUserException();
         }
     }
+
+    @Override
+    public User updateUser(Long id, User user) {
+        User userToUpdate = getUser(id);
+        userToUpdate.setName(user.getName());
+        userToUpdate.setEmail(user.getEmail());
+        userToUpdate.setBirthDate(user.getBirthDate());
+        userToUpdate.setPassword(user.getPassword());
+        userToUpdate.setActive(user.isActive());
+        return userRepository.save(userToUpdate);
+    }
 }
