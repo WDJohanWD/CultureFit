@@ -1,8 +1,19 @@
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
-
-import { Card, CardContent } from "@/components/ui/card";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "@/AuthContext";
+import { useTranslation } from "react-i18next";
+
+import { format, set } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Card, CardContent } from "@/components/ui/card";
 
 import {
   ChartContainer,
@@ -10,11 +21,21 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useState } from "react";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 function YourProgress() {
+  const { t } = useTranslation("progress");
+  const { user } = useContext(AuthContext);
+
+  const [selectedExercise, setSelectedExercise] = useState(1)
   const [graphData, setGraphData] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
-  const { user } = useContext(AuthContext);
+  
+
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [exercise, setExercise] = useState('');
+  const [weight, setWeight] = useState('');
+  const [reps, setReps] = useState('');
 
   const chartConfig = {
     weight: {
@@ -55,91 +76,225 @@ function YourProgress() {
   }, []);
 
   const handleChange = (event) => {
-    const idExercise = event.target.value;
-    obtainData(idExercise);
+    setSelectedExercise(event.target.value);
   };
 
-  // TODO: Añadir que puedas poner tus propios PRs
+  useEffect(() => {
+    obtainData(selectedExercise);
+  }, [selectedExercise]);
+
+  async function createProgressPoint() {
+    const newPP = {
+      date: date,
+      repetitions: reps,
+      weight: weight,
+      exerciseId: exercise,
+      userId: user.id,
+    };
+    console.log(newPP)
+
+    const response = await fetch("http://localhost:9000/new-progress-point", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newPP),
+    });
+
+    setSelectedExercise(exercise)
+    obtainData(selectedExercise)
+  }
 
   return (
-    <div className="mx-auto my-10 w-120 sm:w-150 md:w-200 lg:w-240 xl:w-240">
-      <select
-        name=""
-        className="bg-gray-50 mb-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-50 p-2"
-        onChange={handleChange}
-      >
-        {exerciseList.map((exercise) => (
-          <option key={exercise.id} value={exercise.id}>
-            {exercise.name}
-          </option>
-        ))}
-      </select>
+    <>
+      <div className="mx-auto my-5 w-120 sm:w-150 md:w-200 lg:w-240 xl:w-240">
+        <select
+          name=""
+          className="bg-gray-50 mb-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-50 p-2"
+          value={selectedExercise}
+          onChange={handleChange}
+        >
+          {exerciseList.map((exercise) => (
+            <option key={exercise.id} value={exercise.id}>
+              {exercise.name}
+            </option>
+          ))}
+        </select>
 
-      {graphData.length === 0 ? (
-        <Card className="w-full h-max">
-          <CardContent className="flex items-center justify-center h-60.5 sm:h-77.5 md:h-105.5 lg:h-128">
-            <h1 className="text-primary uppercase montserrat font-semibold text-center text-2xl">
-              You haven't started your progress in this exercise
-            </h1>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="">
-          <CardContent>
-            <ChartContainer config={chartConfig}>
-              <LineChart
-                accessibilityLayer
-                data={graphData}
-                margin={{
-                  left: 12,
-                  right: 12,
-                }}
-              >
-                <CartesianGrid vertical={false} />
-                <XAxis
-                  dataKey="date"
-                  tickLine={true}
-                  axisLine={true}
-                  tickMargin={8}
-                  tickFormatter={(value) => ""}
-                />
-                <YAxis
-                  domain={["auto", "auto"]}
-                  tickLine={false}
-                  axisLine={false}
-                />
-                <ChartTooltip
-                  cursor={false}
-                  trigger="item"
-                  content={<ChartTooltipContent />}
-                  isAnimationActive={false}
-                  filterNull={true}
-                  activeDot={{ r: 8 }}
-                />
-                <Line
-                  dataKey="weight"
-                  type="natural"
-                  stroke="gray"
-                  strokeWidth={1}
-                  animationDuration={300}
-                  dot={{
-                    stroke: "var(--dot-light-color)",
-                    fill: "var(--dot-light-color)",
-                    r: 4,
+        {graphData.length === 0 ? (
+          <Card className="w-full h-max">
+            <CardContent className="flex items-center justify-center h-60.5 sm:h-77.5 md:h-105.5 lg:h-128">
+              <h1 className="text-primary uppercase montserrat font-semibold text-center text-2xl">
+                {t("noData")}
+              </h1>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="">
+            <CardContent>
+              <ChartContainer config={chartConfig}>
+                <LineChart
+                  accessibilityLayer
+                  data={graphData}
+                  margin={{
+                    left: 12,
+                    right: 12,
                   }}
-                  activeDot={{
-                    stroke: "var(--dot-color)",
-                    fill: "var(--dot-color)",
-                    strokeWidth: 2,
-                    r: 5,
-                  }}
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={true}
+                    axisLine={true}
+                    tickMargin={8}
+                    tickFormatter={(value) => ""}
+                  />
+                  <YAxis
+                    domain={["auto", "auto"]}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    trigger="item"
+                    content={<ChartTooltipContent />}
+                    isAnimationActive={false}
+                    filterNull={true}
+                    activeDot={{ r: 8 }}
+                  />
+                  <Line
+                    dataKey="weight"
+                    type="natural"
+                    stroke="gray"
+                    strokeWidth={1}
+                    animationDuration={300}
+                    dot={{
+                      stroke: "var(--dot-light-color)",
+                      fill: "var(--dot-light-color)",
+                      r: 4,
+                    }}
+                    activeDot={{
+                      stroke: "var(--dot-color)",
+                      fill: "var(--dot-color)",
+                      strokeWidth: 2,
+                      r: 5,
+                    }}
+                  />
+                </LineChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+      <div className="mt-3 text-primary mx-auto my-5 w-full max-w-7xl px-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <label
+              htmlFor="exercise"
+              className="montserrat font-semibold block mb-1"
+            >
+              Exercise
+            </label>
+            <select
+              name="exercise"
+              className="border border-gray-300 text-gray-500 text-sm rounded-lg hover:bg-gray-100 block w-full p-2"
+              value={exercise}
+              onChange={(e) => setExercise(e.target.value)}
+            >
+              <option value="" disabled>Selecciona un ejercicio</option>
+              {exerciseList.map((exercise) => (
+                <option key={exercise.id} value={exercise.id}>
+                  {exercise.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex-1 min-w-[200px]">
+            <label
+              htmlFor="date"
+              className="montserrat font-semibold block mb-1"
+            >
+              Date
+            </label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full justify-start text-left font-normal text-gray-500 border border-gray-300",
+                    !date && "text-muted-foreground"
+                  )}
+                  id="date"
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                  disabled={(date) => date > new Date()}
                 />
-              </LineChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex-1 min-w-[150px] relative">
+            <label
+              htmlFor="weight"
+              className="montserrat font-semibold block mb-1"
+            >
+              Weight
+            </label>
+            <div className="flex">
+              <input
+                type="number"
+                id="weight"
+                min={1}
+                placeholder="0"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value)}
+                className="border border-gray-300 text-gray-500 text-sm rounded-lg hover:bg-gray-100 block w-full p-2 pr-10 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <span className="absolute right-3 bottom-2 text-gray-400">
+                kg
+              </span>
+            </div>
+          </div>
+
+          <div className="flex-1 min-w-[150px]">
+            <label
+              htmlFor="repetitions"
+              className="montserrat font-semibold block mb-1"
+            >
+              Repetitions
+            </label>
+            <input
+              type="number"
+              id="repetitions"
+              min={1}
+              placeholder="0"
+              value={reps}
+              onChange={(e) => setReps(e.target.value)}
+              className="border border-gray-300 text-gray-500 text-sm rounded-lg hover:bg-gray-100 block w-full p-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            />
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full md:w-auto mt-2 md:mt-0 text-white bg-gradient-to-r from-orange-400 to-orange-600 
+      hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5 px-6"
+            onClick={createProgressPoint}
+          >
+            {t("add")}
+          </Button>
+        </div>
+      </div>
+    </>
   );
 }
 

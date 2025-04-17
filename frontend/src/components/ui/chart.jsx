@@ -37,7 +37,7 @@ function ChartContainer({ id, className, children, config, ...props }) {
         {...props}
       >
         <ChartStyle id={chartId} config={config} />
-        <RechartsPrimitive.ResponsiveContainer>
+        <RechartsPrimitive.ResponsiveContainer >
           {children}
         </RechartsPrimitive.ResponsiveContainer>
       </div>
@@ -203,7 +203,7 @@ function ChartTooltipContent({
                     {item.value && (
                       <span className="text-foreground font-mono font-medium tabular-nums">
                         <div className="-ms-4 flex flex-col gap-y-2">
-                          <span className="font-bold">{item.value.toLocaleString()}</span>
+                          <span className="font-bold">{item.value.toLocaleString()}<span className="ps-1">kg</span></span>
                           <span className="font-bold">{item.payload.repetitions}</span>
                         </div>
                       </span>
