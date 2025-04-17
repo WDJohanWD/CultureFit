@@ -87,11 +87,15 @@ function NavBar() {
 
 
           <div className="items-center align-middle">
-            <Link to="/profile" className="pt-1 ms-6 hover:underline"> <img src={Profile} alt="Profile" className="h-12 w-16 me-2" /> </Link>
+            <div className="flex flex-col items-center me-2">
+              <Link to="/profile" className="flex flex-col items-center pt-1 hover:underline">
+                <img src={Profile} alt="Profile" className="h-9 w-12" />
+                <span className="text-sm">{user.name}</span>
+              </Link>
+            </div>
 
             {user ? (
               <>
-                <span className="me-5">{user.name}</span>
                 <button className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
                                       shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
                                       text-lg px-2 py-2.5 text-center me-4 mb-2 mt-2"

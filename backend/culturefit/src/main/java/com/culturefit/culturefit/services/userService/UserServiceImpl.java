@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +18,10 @@ import jakarta.validation.Valid;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -102,4 +107,20 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setActive(user.isActive());
         return userRepository.save(userToUpdate);
     }
+
+    @Override
+    public User updatePassword(Long userId, String currentPassword, String newPassword) {
+        User user = getUser(userId); // esto ya lanza la excepción si no existe
+    
+        // Verificar contraseña actual
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new RuntimeException("La contraseña actual no es correcta.");// Hacer luego excepción personalizada
+        }
+    
+        // Establecer nueva contraseña encriptada
+        user.setPassword(passwordEncoder.encode(newPassword));
+    
+        return userRepository.save(user);
+    }
+    
 }

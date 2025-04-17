@@ -20,11 +20,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import com.culturefit.culturefit.dto.PasswordUpdateDto;
 
 @RestController
 @Validated
 public class UserController {
 
+    
     @Autowired
     private UserService userService;
 
@@ -61,10 +63,19 @@ public class UserController {
         return ResponseEntity.ok(userUpdated);
     }
 
+    @PutMapping("/updatePassword/{userId}")
+    public ResponseEntity<User> updatePassword(@PathVariable Long userId, @RequestBody PasswordUpdateDto passwordUpdateDTO) {
+        User updatedUser = userService.updatePassword(userId, passwordUpdateDTO.getCurrentPassword(), passwordUpdateDTO.getNewPassword());
+        return ResponseEntity.ok(updatedUser);
+    }
+
     //Delete
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("The user has been deleted successfully");
     }
+
+
+
 }
