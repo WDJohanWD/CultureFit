@@ -1,5 +1,6 @@
 {
-    "title": "Admin Dashboard",
+    "h1":"Admin Dashboard",
+    "title": "Users",
     "ID": "ID",
     "Name": "Name",
     "Email": "Email",
@@ -10,5 +11,16 @@
     "Edit": "Edit",
     "Delete": "Delete",
     "NoFound": "No members found",
-    "search": "Search members"
+    "search": "Search members",
+
+    "exercisesTitle":"Exercises",
+    "addExercise":"Add exercise",
+    "addExerciseDescription":"Add a new exercise to the database",
+    "searchExercises":"Search exercises",
+    "nameEs":"Name (ES)",
+    "nameEn":"Name (EN)",
+    "actions":"Actions",
+    "NoExercisesFound":"No exercises found"
+    
+    
 }

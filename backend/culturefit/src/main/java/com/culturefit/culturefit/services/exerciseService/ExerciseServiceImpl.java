@@ -45,8 +45,14 @@ public class ExerciseServiceImpl implements ExerciseService {
         }
     }
 
-    public Exercise updateExercise(Exercise exercise){
-        getExercise(exercise.getId()); // Para comprobar si existe
+    public Exercise updateExercise(Long id, Exercise exercise) {
+        if (exercise.getId() != null && !exercise.getId().equals(id)) {
+            throw new IllegalArgumentException("Exercise ID in the path and body do not match.");
+        }
+        if (!exerciseRepository.existsById(id)) {
+            throw new NotFoundExerciseException();
+        }
+        exercise.setId(id);
         return exerciseRepository.save(exercise);
     }
 }

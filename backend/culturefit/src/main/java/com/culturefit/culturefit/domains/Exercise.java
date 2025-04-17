@@ -22,5 +22,9 @@ public class Exercise {
 
     @NotBlank
     @Column(nullable = false, unique = true)
-    private String name;
+    private String nameES;
+
+    @NotBlank
+    @Column(nullable = false, unique = true)
+    private String nameEN;
 }

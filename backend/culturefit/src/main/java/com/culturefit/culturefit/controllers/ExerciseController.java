@@ -52,9 +52,9 @@ public class ExerciseController {
     }
 
     // Put
-    @PutMapping("/edit-exercise")
-    public ResponseEntity<Exercise> editExercise(@Valid @RequestBody Exercise exercise) {
-        Exercise updatedExercise = exerciseService.updateExercise(exercise);
+    @PutMapping("/edit-exercise/{id}")
+    public ResponseEntity<Exercise> editExercise(@PathVariable Long id, @Valid @RequestBody Exercise exercise) {
+        Exercise updatedExercise = exerciseService.updateExercise(id, exercise);
         return ResponseEntity.ok(updatedExercise);
     }
 }

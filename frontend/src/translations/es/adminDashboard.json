@@ -1,5 +1,6 @@
 {
-    "title": "Panel de administración",
+    "h1": "Panel de administración",
+    "title": "Usuarios ",
     "ID": "ID",
     "Name": "Nombre",
     "Email": "Email",
@@ -10,5 +11,16 @@
     "Edit": "Editar",
     "Delete": "Eliminar",
     "NoFound": "Miembros no encontrados",
-    "search": "Buscar miembros"
+    "search": "Buscar miembros",
+
+
+    "exercisesTitle": "Ejercicios",
+    "addExercise": "Añadir ejercicio",
+    "addExerciseDescription": "Añadir un nuevo ejercicio a la base de datos",
+    "searchExercises": "Buscar ejercicios",
+    "nameEs": "Nombre (ES)",
+    "nameEn": "Nombre (EN)",
+    "actions": "Acciones",
+    "NoExercisesFound": "No se encontraron ejercicios"
+        
 }

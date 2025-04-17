@@ -38,9 +38,8 @@ function AdminDashboard() {
   const [confirmDeleteExercise, setConfirmDeleteExercise] = useState(null)
   const [showAddExerciseDialog, setShowAddExerciseDialog] = useState(false)
   const [newExerciseData, setNewExerciseData] = useState({
-    nameEs: "",
-    nameEn: "",
-    idAttachment: "",
+    nameES: "",
+    nameEN: "",
   })
 
   // --- Función para Cargar Miembros ---
@@ -64,7 +63,7 @@ function AdminDashboard() {
   // Add this function after fetchMembersData
   const fetchExercisesData = async () => {
     try {
-      const exercisesFetch = await fetch("http://localhost:9000/exercises")
+      const exercisesFetch = await fetch("http://localhost:9000/exercise")
       if (!exercisesFetch.ok) {
         throw new Error(`Failed to fetch exercises: ${exercisesFetch.statusText}`)
       }
@@ -155,7 +154,7 @@ function AdminDashboard() {
 
   async function handleSaveExerciseEdit(id) {
     try {
-      const response = await fetch(`http://localhost:9000/exercise/${id}`, {
+      const response = await fetch(`http://localhost:9000/edit-exercise/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(exerciseFormData),
@@ -181,7 +180,7 @@ function AdminDashboard() {
 
   async function handleAddExercise() {
     try {
-      const response = await fetch("http://localhost:9000/exercises", {
+      const response = await fetch("http://localhost:9000/new-exercise", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newExerciseData),
@@ -198,9 +197,8 @@ function AdminDashboard() {
       console.log("Exercise added successfully")
       setShowAddExerciseDialog(false)
       setNewExerciseData({
-        nameEs: "",
-        nameEn: "",
-        idAttachment: "",
+        nameES: "",
+        nameEN: "",
       })
       fetchExercisesData()
     } catch (error) {
@@ -263,8 +261,8 @@ function AdminDashboard() {
   // Add this for filtering exercises
   const filteredExercises = exercises.filter(
     (exercise) =>
-      (exercise.nameEs?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()) ||
-      (exercise.nameEn?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()),
+      (exercise.nameES?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()) ||
+      (exercise.nameEN?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()),
   )
 
   // --- Filtrado ---
@@ -288,6 +286,7 @@ function AdminDashboard() {
 
   return (
     <>
+        <h1 className="text-4xl font-bold">{t("h1")}</h1>
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{t("title")}</CardTitle>
@@ -499,7 +498,6 @@ function AdminDashboard() {
                     <TableHead>{t("ID") || "ID"}</TableHead>
                     <TableHead>{t("nameEs") || "Name (Spanish)"}</TableHead>
                     <TableHead>{t("nameEn") || "Name (English)"}</TableHead>
-                    <TableHead>{t("idAttachment") || "ID Attachment"}</TableHead>
                     <TableHead>{t("Actions") || "Actions"}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -514,8 +512,8 @@ function AdminDashboard() {
                             <TableCell>
                               <Input
                                 type="text"
-                                name="nameEs"
-                                value={exerciseFormData.nameEs}
+                                name="nameES"
+                                value={exerciseFormData.nameES}
                                 onChange={handleExerciseInputChange}
                                 className="w-full"
                               />
@@ -523,21 +521,13 @@ function AdminDashboard() {
                             <TableCell>
                               <Input
                                 type="text"
-                                name="nameEn"
-                                value={exerciseFormData.nameEn}
+                                name="nameEN"
+                                value={exerciseFormData.nameEN}
                                 onChange={handleExerciseInputChange}
                                 className="w-full"
                               />
                             </TableCell>
-                            <TableCell>
-                              <Input
-                                type="text"
-                                name="idAttachment"
-                                value={exerciseFormData.idAttachment}
-                                onChange={handleExerciseInputChange}
-                                className="w-full"
-                              />
-                            </TableCell>
+                            
                             <TableCell>
                               <div className="flex space-x-2">
                                 <Button
@@ -563,9 +553,8 @@ function AdminDashboard() {
                           // --- View Mode ---
                           <>
                             <TableCell className="font-medium">{exercise.id}</TableCell>
-                            <TableCell>{exercise.nameEs}</TableCell>
-                            <TableCell>{exercise.nameEn}</TableCell>
-                            <TableCell>{exercise.idAttachment || "-"}</TableCell>
+                            <TableCell>{exercise.nameES}</TableCell>
+                            <TableCell>{exercise.nameEN}</TableCell>
                             <TableCell>
                               <div className="flex space-x-2">
                                 <Button
@@ -621,9 +610,9 @@ function AdminDashboard() {
                 {t("nameEs") || "Name (Spanish)"}
               </label>
               <Input
-                id="nameEs"
-                name="nameEs"
-                value={newExerciseData.nameEs}
+                id="nameES"
+                name="nameES"
+                value={newExerciseData.nameES}
                 onChange={handleNewExerciseInputChange}
                 className="col-span-3"
               />
@@ -633,21 +622,9 @@ function AdminDashboard() {
                 {t("nameEn") || "Name (English)"}
               </label>
               <Input
-                id="nameEn"
-                name="nameEn"
-                value={newExerciseData.nameEn}
-                onChange={handleNewExerciseInputChange}
-                className="col-span-3"
-              />
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="idAttachment" className="text-right">
-                {t("idAttachment") || "ID Attachment"}
-              </label>
-              <Input
-                id="idAttachment"
-                name="idAttachment"
-                value={newExerciseData.idAttachment}
+                id="nameEN"
+                name="nameEN"
+                value={newExerciseData.nameEN}
                 onChange={handleNewExerciseInputChange}
                 className="col-span-3"
               />
