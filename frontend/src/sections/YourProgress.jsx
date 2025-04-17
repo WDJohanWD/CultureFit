@@ -193,7 +193,7 @@ function YourProgress() {
               htmlFor="exercise"
               className="montserrat font-semibold block mb-1"
             >
-              Exercise
+              {t("exercise")}
             </label>
             <select
               name="exercise"
@@ -215,7 +215,7 @@ function YourProgress() {
               htmlFor="date"
               className="montserrat font-semibold block mb-1"
             >
-              Date
+              {t("date")}
             </label>
             <Popover>
               <PopoverTrigger asChild>
@@ -248,7 +248,7 @@ function YourProgress() {
               htmlFor="weight"
               className="montserrat font-semibold block mb-1"
             >
-              Weight
+              {t("weight")}
             </label>
             <div className="flex">
               <input
@@ -271,7 +271,7 @@ function YourProgress() {
               htmlFor="repetitions"
               className="montserrat font-semibold block mb-1"
             >
-              Repetitions
+              {t("reps")}
             </label>
             <input
               type="number"
