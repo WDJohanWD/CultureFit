@@ -25,7 +25,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
     public List<Exercise> getExercise() {
         try{
-            return exerciseRepository.findAll();
+            return exerciseRepository.findAllByOrderByIdAsc();
         } catch (Exception e){
             throw new NotFoundExerciseException();
         }

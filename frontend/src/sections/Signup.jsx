@@ -106,12 +106,8 @@ function Signup() {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
-      <Card className="w-full max-w-md p-6 space-y-6 bg-white shadow-md absolute top-1/2 -translate-y-1/2">
-        <CardHeader className="p-0 space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="p-0">
+    <div className="flex flex-col mx-10 my-10 sm:mx-10 md:mx-10 lg-mx-20 xl:mx-20 overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
+          <h2 className="text-2xl font-bold text-primary mb-5">{t("title")}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username" className="text-sm font-medium text-gray-700">
@@ -188,12 +184,10 @@ function Signup() {
               className="w-full mt-6 text-white bg-gradient-to-r from-orange-400 to-orange-600 
                 hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5"
             >
-              {t("title")}
+              {t("btn")}
             </Button>
           </form>
-        </CardContent>
 
-        <CardFooter className="p-0 flex flex-col items-center">
           <p className="text-center">
             {t("account")}
             <Link to="/login" className="px-2 underline font-semibold">
@@ -208,8 +202,6 @@ function Signup() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-        </CardFooter>
-      </Card>
     </div>
   )
 }

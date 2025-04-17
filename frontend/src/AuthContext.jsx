@@ -25,7 +25,6 @@ const AuthProvider = ({ children }) => {
 
           console.log("Decoded roles:", roles);
           setIsAdmin(roles.includes("ROLE_ADMIN"));
-          localStorage.setItem("isAdmin", roles.includes("ROLE_ADMIN"));
           await fetchUser(decoded?.sub);
         } catch (error) {
           console.error("Error decodificando el token", error);
