@@ -39,7 +39,6 @@ function NavBar() {
       className="bg-primary sticky shadow-lg relative z-50 py-4 px-4 top-0 text-white montserrat font-medium"
       ref={navbarRef}
     >
-    <nav className="bg-primary sticky shadow-lg z-50 py-4 px-4 top-0 text-white montserrat font-medium" ref={navbarRef}>
       <div className="flex justify-between align-middle">
         <div className="flex items-center">
           <Link to="/">
