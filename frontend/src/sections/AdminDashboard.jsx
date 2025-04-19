@@ -4,6 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
@@ -28,7 +29,6 @@ function AdminDashboard() {
   const [editFormData, setEditFormData] = useState({})
   const [confirmDelete, setConfirmDelete] = useState(null)
 
-  // Add these new state variables after the existing state declarations
   const [exercises, setExercises] = useState([])
   const [isLoadingExercises, setIsLoadingExercises] = useState(true)
   const [exerciseError, setExerciseError] = useState(null)
@@ -60,7 +60,6 @@ function AdminDashboard() {
     }
   }
 
-  // Add this function after fetchMembersData
   const fetchExercisesData = async () => {
     try {
       const exercisesFetch = await fetch("http://localhost:9000/exercise")
@@ -104,10 +103,9 @@ function AdminDashboard() {
     }
   }
 
-  // Add these functions for exercise management
   async function deleteExercise(id) {
     try {
-      const deleteFetch = await fetch(`http://localhost:9000/exercise/${id}`, {
+      const deleteFetch = await fetch(`http://localhost:9000/delete-exercise/${id}`, {
         method: "DELETE",
       })
       if (!deleteFetch.ok) {
@@ -164,9 +162,9 @@ function AdminDashboard() {
         try {
           errorBody = await response.text()
         } catch {
-          // Ignore error parsing response body
+          throw new Error(`Failed to update exercise: ${response.statusText}. ${errorBody}`)
         }
-        throw new Error(`Failed to update exercise: ${response.statusText}. ${errorBody}`)
+
       }
       console.log(`Exercise ${id} updated successfully`)
       setEditingExerciseId(null)
@@ -190,9 +188,8 @@ function AdminDashboard() {
         try {
           errorBody = await response.text()
         } catch {
-          // Ignore error parsing response body
+          throw new Error(`Failed to add exercise: ${response.statusText}. ${errorBody}`)
         }
-        throw new Error(`Failed to add exercise: ${response.statusText}. ${errorBody}`)
       }
       console.log("Exercise added successfully")
       setShowAddExerciseDialog(false)
@@ -235,7 +232,7 @@ function AdminDashboard() {
   // --- Función para Guardar Cambios ---
   async function handleSaveEdit(id) {
     try {
-      const response = await fetch(`http://localhost:9000/user/${id}`, {
+      const response = await fetch(`http://localhost:9000/user-edit/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editFormData),
@@ -258,7 +255,6 @@ function AdminDashboard() {
     }
   }
 
-  // Add this for filtering exercises
   const filteredExercises = exercises.filter(
     (exercise) =>
       (exercise.nameES?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()) ||
@@ -286,7 +282,7 @@ function AdminDashboard() {
 
   return (
     <>
-        <h1 className="text-4xl font-bold">{t("h1")}</h1>
+      <h1 className="text-4xl font-bold">{t("h1")}</h1>
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{t("title")}</CardTitle>
@@ -337,6 +333,7 @@ function AdminDashboard() {
                               name="name"
                               value={editFormData.name}
                               onChange={handleInputChange}
+                              readOnly
                               className="w-full"
                             />
                           </TableCell>
@@ -346,12 +343,13 @@ function AdminDashboard() {
                               name="email"
                               value={editFormData.email}
                               onChange={handleInputChange}
+                              readOnly
                               className="w-full"
                             />
                           </TableCell>
                           <TableCell>
                             <Input
-                              type="text"
+                              type="date"
                               name="birthDate"
                               value={editFormData.birthDate}
                               onChange={handleInputChange}
@@ -359,18 +357,48 @@ function AdminDashboard() {
                             />
                           </TableCell>
                           <TableCell>
-                            <Badge variant={member.active === "1" ? "success" : "destructive"} className="font-medium">
-                              {member.active === "1" ? t("active") : t("inactive")}
-                            </Badge>
+                            <Select
+                              name="active"
+                              value={editFormData.active ? "true" : "false"}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'active', value: value === "true" }})}
+                              className="w-full"
+                            >
+                              <SelectTrigger>
+                                <SelectValue>
+                                  <Badge variant={editFormData.active ? "success" : "destructive"} className="font-medium">
+                                    {editFormData.active ? t("active") : t("inactive")}
+                                  </Badge>
+                                </SelectValue>
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="true">
+                                  <Badge variant="success" className="font-medium">
+                                    {t("active")}
+                                  </Badge>
+                                </SelectItem>
+                                <SelectItem value="false">
+                                  <Badge variant="destructive" className="font-medium">
+                                    {t("inactive")}
+                                  </Badge>
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
                           </TableCell>
                           <TableCell>
-                            <Input
-                              type="text"
+                            <Select 
                               name="role"
                               value={editFormData.role}
-                              onChange={handleInputChange}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'role', value }})}
                               className="w-full"
-                            />
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select role" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="ADMIN">ADMIN</SelectItem>
+                                <SelectItem value="USER">USER</SelectItem>
+                              </SelectContent>
+                            </Select>
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
@@ -527,7 +555,7 @@ function AdminDashboard() {
                                 className="w-full"
                               />
                             </TableCell>
-                            
+
                             <TableCell>
                               <div className="flex space-x-2">
                                 <Button

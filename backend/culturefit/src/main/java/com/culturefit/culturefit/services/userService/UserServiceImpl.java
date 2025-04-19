@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.dto.UserEditDto;
 import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exceptions.userExceptions.NotFoundUserException;
 import com.culturefit.culturefit.repositories.UserRepository;
@@ -122,5 +123,12 @@ public class UserServiceImpl implements UserService {
     
         return userRepository.save(user);
     }
-    
+
+    @Override
+    public User updateUserEdit(Long id, UserEditDto user) throws RuntimeException {
+        User userToUpdate = getUser(id);
+        userToUpdate.setActive(user.isActive());
+        userToUpdate.setRole(user.getRole());
+        return userRepository.save(userToUpdate);
+    }
 }

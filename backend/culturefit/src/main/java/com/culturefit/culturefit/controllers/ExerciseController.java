@@ -47,8 +47,9 @@ public class ExerciseController {
 
     //Delete
     @DeleteMapping ("/delete-exercise/{id}")
-    public void deleteExercise(Long id) {
+    public ResponseEntity<?> deleteExercise(@PathVariable Long id) {
         exerciseService.deleteExercise(id);
+        return ResponseEntity.noContent().build();
     }
 
     // Put

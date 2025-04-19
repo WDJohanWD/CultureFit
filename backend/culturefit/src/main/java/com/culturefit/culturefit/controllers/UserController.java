@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import com.culturefit.culturefit.dto.PasswordUpdateDto;
+import com.culturefit.culturefit.dto.UserEditDto;
 
 @RestController
 @Validated
@@ -69,6 +70,13 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    @PutMapping("/user-edit/{id}")
+    public ResponseEntity<User> updateUserEdit(@PathVariable Long id, @Valid @RequestBody UserEditDto user) throws Exception {
+        User userUpdated = userService.updateUserEdit(id, user);
+        return ResponseEntity.ok(userUpdated);
+    }
+
+    
     //Delete
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
