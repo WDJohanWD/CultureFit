@@ -282,7 +282,7 @@ function AdminDashboard() {
 
   return (
     <>
-      <h1 className="text-4xl font-bold">{t("h1")}</h1>
+      <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">{t("h1")}</h1>
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{t("title")}</CardTitle>
@@ -352,6 +352,7 @@ function AdminDashboard() {
                               type="date"
                               name="birthDate"
                               value={editFormData.birthDate}
+                              readOnly
                               onChange={handleInputChange}
                               className="w-full"
                             />

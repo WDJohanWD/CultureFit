@@ -20,7 +20,20 @@
     "nameEs":"Name (ES)",
     "nameEn":"Name (EN)",
     "actions":"Actions",
-    "NoExercisesFound":"No exercises found"
+    "NoExercisesFound":"No exercises found",
+
+    "active":"Active",
+    "inactive":"Inactive",
+
+    "confirmDeleteTitle":"Are you sure you want to delete this member?",
+    "confirmDelete": "This action cannot be undone.",
+
+    "confirmDeleteExerciseTitle":"Are you sure you want to delete this exercise?",
+    "confirmDeleteExercise": "This action cannot be undone.",
+
+    "save":"Save",
+    "cancel":"Cancel"
+
     
     
 }

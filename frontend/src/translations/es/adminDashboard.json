@@ -21,6 +21,18 @@
     "nameEs": "Nombre (ES)",
     "nameEn": "Nombre (EN)",
     "actions": "Acciones",
-    "NoExercisesFound": "No se encontraron ejercicios"
+    "NoExercisesFound": "No se encontraron ejercicios",
+
+    "active":"Activo",
+    "inactive":"Inactivo",
+
+    "confirmDeleteTitle":"¿Estás seguro de eliminar este miembro?",
+    "confirmDelete": "Esta acción no se puede deshacer.",
+
+    "confirmDeleteExerciseTitle":"¿Estás seguro de eliminar este ejercicio?",
+    "confirmDeleteExercise": "Esta acción no se puede deshacer.",
+
+    "Save":"Guardar",
+    "Cancel":"Cancelar"
         
 }
