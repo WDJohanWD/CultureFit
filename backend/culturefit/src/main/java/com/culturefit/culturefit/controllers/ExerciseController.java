@@ -47,14 +47,15 @@ public class ExerciseController {
 
     //Delete
     @DeleteMapping ("/delete-exercise/{id}")
-    public void deleteExercise(Long id) {
+    public ResponseEntity<?> deleteExercise(@PathVariable Long id) {
         exerciseService.deleteExercise(id);
+        return ResponseEntity.noContent().build();
     }
 
     // Put
-    @PutMapping("/edit-exercise")
-    public ResponseEntity<Exercise> editExercise(@Valid @RequestBody Exercise exercise) {
-        Exercise updatedExercise = exerciseService.updateExercise(exercise);
+    @PutMapping("/edit-exercise/{id}")
+    public ResponseEntity<Exercise> editExercise(@PathVariable Long id, @Valid @RequestBody Exercise exercise) {
+        Exercise updatedExercise = exerciseService.updateExercise(id, exercise);
         return ResponseEntity.ok(updatedExercise);
     }
 }

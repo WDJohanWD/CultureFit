@@ -9,6 +9,6 @@ public interface ExerciseService {
     List<Exercise> getExercise();
     Exercise getExercise(Long id);
     boolean deleteExercise(Long id);
-    Exercise updateExercise(Exercise exercise);
+    Exercise updateExercise(Long id, Exercise exercise);
 }
 

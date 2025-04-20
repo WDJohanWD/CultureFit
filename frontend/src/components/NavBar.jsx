@@ -68,7 +68,7 @@ function NavBar() {
             </Link>
             {isAdmin && (
               <Link to="/admin" className="pt-1 ms-6 hover:underline">
-                admin
+                Admin
               </Link>
             )}
           </div>

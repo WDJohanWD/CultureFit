@@ -115,7 +115,7 @@ function YourProgress() {
         >
           {exerciseList.map((exercise) => (
             <option key={exercise.id} value={exercise.id}>
-              {exercise.name}
+              {exercise.nameES    }
             </option>
           ))}
         </select>
@@ -210,7 +210,7 @@ function YourProgress() {
               </option>
               {exerciseList.map((exercise) => (
                 <option key={exercise.id} value={exercise.id}>
-                  {exercise.name}
+                  {exercise.nameES}
                 </option>
               ))}
             </select>
