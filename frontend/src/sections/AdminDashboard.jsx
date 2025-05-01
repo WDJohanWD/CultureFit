@@ -7,14 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import {  Dialog,  DialogContent,  DialogDescription,  DialogFooter,  DialogHeader,  DialogTitle,} from "@/components/ui/dialog"
 import { Pencil, Trash2, Search, AlertCircle, Loader2 } from "lucide-react"
 
 function AdminDashboard() {
@@ -313,6 +306,8 @@ function AdminDashboard() {
                   <TableHead>{t("ID")}</TableHead>
                   <TableHead>{t("Name")}</TableHead>
                   <TableHead>{t("Email")}</TableHead>
+                  <TableHead>{t("DNI")}</TableHead>
+                  <TableHead>{t("Plan")}</TableHead>
                   <TableHead>{t("Birth Date")}</TableHead>
                   <TableHead>{t("Status")}</TableHead>
                   <TableHead>{t("Role")}</TableHead>
@@ -346,6 +341,30 @@ function AdminDashboard() {
                               readOnly
                               className="w-full"
                             />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="text"
+                              name="dni"
+                              value={editFormData.dni}
+                              onChange={handleInputChange}
+                              readOnly
+                              className="w-full"
+                            />
+                          </TableCell>
+                          <TableCell>
+                          <Select 
+                              name="plan"
+                              value={editFormData.plan}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'plan', value }})}
+                              className="w-full"
+                              readOnly
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder={editFormData.plan} />
+                              </SelectTrigger>
+                            </Select>
+                            
                           </TableCell>
                           <TableCell>
                             <Input
@@ -423,6 +442,8 @@ function AdminDashboard() {
                           <TableCell className="font-medium">{member.id}</TableCell>
                           <TableCell>{member.name}</TableCell>
                           <TableCell>{member.email}</TableCell>
+                          <TableCell>{member.dni} </TableCell>
+                          <TableCell>{member.plan} </TableCell>
                           <TableCell>{member.birthDate || "-"}</TableCell>
                           <TableCell>
                             <Badge variant={member.active ? "success" : "destructive"} className="font-medium">
