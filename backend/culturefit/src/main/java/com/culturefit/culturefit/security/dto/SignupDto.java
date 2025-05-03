@@ -27,4 +27,6 @@ public class SignupDto {
 
     @NotNull
     private LocalDate birthDate;
+
+    private String dni;
 }

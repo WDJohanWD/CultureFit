@@ -89,7 +89,8 @@ public class AuthController {
                 signUpRequest.getBirthDate(),
                 false,
                 null,
-                Role.USER);
+                Role.USER,
+                signUpRequest.getDni());
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
     }

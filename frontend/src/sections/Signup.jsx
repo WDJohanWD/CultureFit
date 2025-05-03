@@ -13,6 +13,7 @@ function Signup() {
   const navigate = useNavigate()
 
   const [email, setEmail] = useState("")
+  const [dni, setDni] = useState("")
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [passwordRepeat, setPasswordRepeat] = useState("")
@@ -46,6 +47,7 @@ function Signup() {
       password,
       email,
       birthDate,
+      dni,
     }
 
     const response = await fetch("http://localhost:9000/auth/signup", {
@@ -136,7 +138,19 @@ function Signup() {
                 className="w-full"
               />
             </div>
-
+            <div className="space-y-2">
+              <Label htmlFor="dni" className="text-sm font-medium text-gray-700">
+                {t("dni")}
+              </Label>
+              <Input
+                type="text"
+                id="dni"
+                value={dni}
+                onChange={(e) => setDni(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-medium text-gray-700">
                 {t("pass")}
