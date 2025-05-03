@@ -1,6 +1,11 @@
 package com.culturefit.culturefit.services.appointmentService;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,10 +24,20 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private UserRepository userRepository;
 
+    private static final LocalTime START_TIME = LocalTime.of(9, 0);
+    private static final LocalTime END_TIME = LocalTime.of(21, 0);
+    private static final int SLOT_DURATION_MINUTES = 30;
+
+    @Override
+    public List<Appointment> getAllAppointments() {
+        return appointmentRepository.findAll();
+    }
+
     @Override
     public Appointment saveAppointment(AppointmentDto dto) {
         User user = userRepository.findById(dto.getUserId()).orElseThrow();
-        Appointment appointment = new Appointment(null, dto.getDate(), user, dto.getNote(), dto.getAppointmentType());
+        Appointment appointment = new Appointment(null, dto.getDate(), dto.getTime(), user, dto.getNote(),
+                dto.getAppointmentType(), dto.isCanceled());
 
         return appointmentRepository.save(appointment);
     }
@@ -39,7 +54,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public void deleteAppointment(Long id) {
-        appointmentRepository.deleteById(id);
+        Appointment appointment = appointmentRepository.findById(id).orElseThrow();
+        appointment.setCanceled(true);
+        appointmentRepository.save(appointment);
     }
 
     @Override
@@ -48,4 +65,23 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentRepository.findByUser(user);
     }
 
+    @Override
+    public List<LocalTime> getAvailableSlots(LocalDate date) {
+        List<Appointment> appointments = appointmentRepository.findByDate(date);
+        Set<LocalTime> reservedTimes = appointments.stream()
+                .map(Appointment::getTime)
+                .collect(Collectors.toSet());
+
+        List<LocalTime> availableSlots = new ArrayList<>();
+        LocalTime current = START_TIME;
+
+        while (!current.isAfter(END_TIME.minusMinutes(SLOT_DURATION_MINUTES))) {
+            if (!reservedTimes.contains(current)) {
+                availableSlots.add(current);
+            }
+            current = current.plusMinutes(SLOT_DURATION_MINUTES);
+        }
+
+        return availableSlots;
+    }
 }

@@ -33,5 +33,8 @@
     "errorFetchingServices": "Error fetching services",
     "errorBookingAppointment": "Error booking appointment",
     "errorCancellingAppointment": "Error cancelling appointment",
-    "pleaseSelectTimeAndService": "Please select a time slot and service"
+    "pleaseSelectTimeAndService": "Please select a time slot and service",
+    "scheduledFor": "scheduled for",
+    "active": "Active",
+    "canceled": "Cancelled"
 }

@@ -33,5 +33,8 @@
     "errorFetchingServices": "Error al cargar los servicios",
     "errorBookingAppointment": "Error al reservar la cita",
     "errorCancellingAppointment": "Error al cancelar la cita",
-    "pleaseSelectTimeAndService": "Por favor selecciona una hora y un servicio"
-} 
+    "pleaseSelectTimeAndService": "Por favor selecciona una hora y un servicio",
+    "scheduledFor": "Agendado para",
+    "active": "Activa",
+    "canceled": "Cancelada"
+}

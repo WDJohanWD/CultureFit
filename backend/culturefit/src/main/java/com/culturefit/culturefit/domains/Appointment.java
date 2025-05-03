@@ -1,6 +1,8 @@
 package com.culturefit.culturefit.domains;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -26,10 +28,14 @@ public class Appointment {
 
     private LocalDate date;
 
+    private LocalTime time;
+
     @ManyToOne(cascade = CascadeType.ALL)
     private User user;
-    
+
     private String note;
 
     private AppointmentEnum appointmentType;
+
+    private boolean isCanceled = false;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { useTranslation } from "react-i18next"
 import { CalendarIcon, Clock, MapPin, CheckCircle, X, Loader2 } from "lucide-react"
 import { format, addDays, startOfDay, isBefore, isAfter, parseISO } from "date-fns"
@@ -12,13 +12,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
-import { Dialog,  DialogContent,  DialogDescription,  DialogFooter,  DialogHeader,  DialogTitle,} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
+import { AuthContext } from "@/AuthContext"
 
-export function Appointment(){
-    const { t } = useTranslation("appointments")
-    const API_URL = "http://localhost:9000"
+export function Appointment() {
+  const { t } = useTranslation("appointments")
+  const API_URL = "http://localhost:9000/appointment"
+  const { user } = useContext(AuthContext)
 
   // --- State ---
   const [date, setDate] = useState(startOfDay(new Date()))
@@ -34,12 +36,6 @@ export function Appointment(){
   const [userAppointments, setUserAppointments] = useState([])
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(true)
 
-  // Mock user data - in a real app, this would come from your auth context
-  const user = {
-    id: 1,
-    name: "John Doe",
-    email: "john@example.com",
-  }
 
   // --- Fetch Services ---
   useEffect(() => {
@@ -47,18 +43,10 @@ export function Appointment(){
       try {
         setIsLoading(true)
         // In a real app, fetch from your API
-        // const response = await fetch(`${API_URL}/services`)
-        // const data = await response.json()
 
-        // Mock data for services
-        const mockServices = [
-          { id: 1, name: "Consulta inicial", duration: 60, price: 50 },
-          { id: 2, name: "Sesión de fisioterapia", duration: 45, price: 40 },
-          { id: 3, name: "Evaluación física", duration: 30, price: 35 },
-          { id: 4, name: "Masaje terapéutico", duration: 60, price: 45 },
-        ]
-
-        setServices(mockServices)
+        const response = await fetch(`${API_URL}/services`)
+        let servicesData = await response.json()
+        setServices(servicesData)
         setError(null)
       } catch (err) {
         console.error("Error fetching services:", err)
@@ -76,31 +64,21 @@ export function Appointment(){
     const fetchUserAppointments = async () => {
       try {
         setIsLoadingAppointments(true)
-        // In a real app, fetch from your API
-        // const response = await fetch(`${API_URL}/appointments/user/${user.id}`)
-        // const data = await response.json()
-
-        // Mock data for user appointments
-        const mockAppointments = [
-          {
-            id: 101,
-            date: addDays(new Date(), 2).toISOString(),
-            time: "10:00",
-            service: "Consulta inicial",
-            status: "confirmed",
-            location: "Clínica Central",
+        const response = await fetch(`http://localhost:9000/appointment/byuser/${user.id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
           },
-          {
-            id: 102,
-            date: addDays(new Date(), 7).toISOString(),
-            time: "15:30",
-            service: "Sesión de fisioterapia",
-            status: "pending",
-            location: "Clínica Norte",
-          },
-        ]
+        })
 
-        setUserAppointments(mockAppointments)
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch appointments")
+        }
+
+        const data = await response.json()
+
+        setUserAppointments(data)
       } catch (err) {
         console.error("Error fetching user appointments:", err)
       } finally {
@@ -108,46 +86,36 @@ export function Appointment(){
       }
     }
 
-    fetchUserAppointments()
-  }, [API_URL, user.id])
+    if (user?.id) {
+      fetchUserAppointments()
+    }
+  }, [user?.id])
+
 
   // --- Generate Time Slots ---
   useEffect(() => {
-    const generateTimeSlots = () => {
-      const slots = []
-      const startHour = 9 // 9 AM
-      const endHour = 18 // 6 PM
-      const now = new Date()
-      const isToday =
-        date.getDate() === now.getDate() &&
-        date.getMonth() === now.getMonth() &&
-        date.getFullYear() === now.getFullYear()
+    const fetchSlotsFromBackend = async () => {
+      if (!date) return
 
-      for (let hour = startHour; hour < endHour; hour++) {
-        for (let minutes = 0; minutes < 60; minutes += 30) {
-          const slotTime = new Date(date)
-          slotTime.setHours(hour, minutes, 0, 0)
+      try {
+        const formattedDate = format(date, "yyyy-MM-dd")
+        const response = await fetch(`http://localhost:9000/appointment/slots?date=${formattedDate}`)
+        const data = await response.json()
 
-          // Skip time slots in the past if it's today
-          if (isToday && isBefore(slotTime, now)) {
-            continue
-          }
+        // Transformamos el array de strings en objetos { time, available: true }
+        const slots = data.map((timeString) => ({
+          time: timeString.slice(0, 5), // "HH:mm:ss" => "HH:mm"
+          available: true,
+        }))
 
-          // In a real app, you would check against booked appointments
-          // and only add available slots
-          const isAvailable = Math.random() > 0.3 // Randomly make some slots unavailable for demo
-
-          slots.push({
-            time: format(slotTime, "HH:mm"),
-            available: isAvailable,
-          })
-        }
+        setTimeSlots(slots)
+      } catch (error) {
+        console.error("Error fetching time slots from backend:", error)
+        setTimeSlots([]) // o manejar error como prefieras
       }
-
-      setTimeSlots(slots)
     }
 
-    generateTimeSlots()
+    fetchSlotsFromBackend()
   }, [date])
 
   // --- Handle Booking Submission ---
@@ -160,56 +128,38 @@ export function Appointment(){
     try {
       setIsLoading(true)
 
-      // In a real app, send to your API
-      // const response = await fetch(`${API_URL}/appointments`, {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({
-      //     userId: user.id,
-      //     serviceId: selectedService,
-      //     date: format(date, "yyyy-MM-dd"),
-      //     time: selectedTimeSlot,
-      //     notes
-      //   })
-      // })
-
-      // if (!response.ok) throw new Error("Failed to book appointment")
-
-      // Mock successful booking
-      console.log("Booking submitted:", {
+      const payload = {
         userId: user.id,
-        serviceId: selectedService,
+        appointmentType: selectedService,
         date: format(date, "yyyy-MM-dd"),
-        time: selectedTimeSlot,
-        notes,
+        time: `${selectedTimeSlot}:00`, 
+        notes: notes || ""
+      }
+
+      const response = await fetch("http://localhost:9000/appointment/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload),
       })
 
-      // Reset form
+      if (!response.ok) {
+        throw new Error("Failed to book appointment")
+      }
+
+      const newAppointment = await response.json()
+
       setSuccess(true)
       setConfirmDialog(false)
       setSelectedTimeSlot(null)
       setSelectedService("")
       setNotes("")
 
-      // In a real app, refresh user appointments
-      // fetchUserAppointments()
-
-      // Add the new appointment to the list for demo purposes
-      const selectedServiceObj = services.find((s) => s.id.toString() === selectedService.toString())
-      setUserAppointments((prev) => [
-        ...prev,
-        {
-          id: Math.floor(Math.random() * 1000),
-          date: date.toISOString(),
-          time: selectedTimeSlot,
-          service: selectedServiceObj?.name || "Service",
-          status: "pending",
-          location: "Clínica Central",
-        },
-      ])
+      setUserAppointments((prev) => [...prev, newAppointment])
     } catch (err) {
       console.error("Error booking appointment:", err)
-      setError(t("errorBookingAppointment") || "Error booking appointment")
+      setError(t("errorBookingAppointment") || "Error al reservar la cita")
     } finally {
       setIsLoading(false)
     }
@@ -220,21 +170,26 @@ export function Appointment(){
     try {
       setIsLoading(true)
 
-      // In a real app, send to your API
-      // const response = await fetch(`${API_URL}/appointments/${appointmentId}`, {
-      //   method: "DELETE"
-      // })
+      const response = await fetch(`http://localhost:9000/appointment/cancel/${appointmentId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
 
-      // if (!response.ok) throw new Error("Failed to cancel appointment")
+      if (!response.ok) {
+        throw new Error("Failed to cancel appointment")
+      }
 
-      // Mock successful cancellation
-      console.log("Appointment cancelled:", appointmentId)
-
-      // Update the local state by removing the cancelled appointment
-      setUserAppointments((prev) => prev.filter((app) => app.id !== appointmentId))
+      // Actualizamos localmente el appointment cancelado
+      setUserAppointments((prev) =>
+        prev.map((app) =>
+          app.id === appointmentId ? { ...app, canceled: true } : app
+        )
+      )
     } catch (err) {
       console.error("Error cancelling appointment:", err)
-      setError(t("errorCancellingAppointment") || "Error cancelling appointment")
+      setError(t("errorCancellingAppointment") || "Error al cancelar la cita")
     } finally {
       setIsLoading(false)
     }
@@ -379,11 +334,11 @@ export function Appointment(){
                       </SelectTrigger>
                       <SelectContent>
                         {services.map((service) => (
-                          <SelectItem key={service.id} value={service.id.toString()}>
+                          <SelectItem key={service} value={service}>
                             <div className="flex justify-between items-center w-full">
-                              <span>{service.name}</span>
-                              <span className="text-muted-foreground text-sm">
-                                {service.duration} min - ${service.price}
+                              <span>{service}</span>
+                              <span className="text-muted-foreground text-sm ms-2">
+                                30min - $15
                               </span>
                             </div>
                           </SelectItem>
@@ -449,7 +404,16 @@ export function Appointment(){
                   </div>
                 ) : userAppointments.length > 0 ? (
                   <div className="space-y-4">
-                    {userAppointments.map((appointment) => (
+                    {userAppointments.filter((appointment) => {
+                      const now = new Date()
+                      const [hours, minutes, seconds] = appointment.time.split(":").map(Number)
+
+                      const appointmentDateTime = new Date(appointment.date)
+                      appointmentDateTime.setHours(hours, minutes, seconds || 0, 0)
+
+                      return appointmentDateTime >= now
+
+                    }).map((appointment) => (
                       <Card key={appointment.id} className="overflow-hidden">
                         <div className="flex flex-col sm:flex-row">
                           <div className="bg-primary/10 p-4 sm:p-6 flex flex-col justify-center items-center sm:w-1/4">
@@ -459,43 +423,49 @@ export function Appointment(){
                           <div className="p-4 sm:p-6 flex-1">
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                               <div>
-                                <h3 className="text-lg font-semibold">{appointment.service}</h3>
-                                <div className="flex items-center gap-2 mt-2 text-muted-foreground">
-                                  <MapPin className="h-4 w-4" />
-                                  <span>{appointment.location}</span>
-                                </div>
+                                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                                  {appointment.appointmentType}
+                                </h3>
+                                <p className="text-sm text-muted-foreground">
+                                  {t("scheduledFor") || "Scheduled for"} {appointment.time}
+                                </p>
                               </div>
+
                               <div className="flex items-center gap-2">
                                 <Badge
-                                  variant={appointment.status === "confirmed" ? "default" : "outline"}
                                   className={cn(
-                                    appointment.status === "confirmed"
-                                      ? "bg-green-100 text-green-800 hover:bg-green-100"
-                                      : appointment.status === "pending"
-                                        ? "bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
-                                        : "",
+                                    "px-3 py-1 rounded-full text-sm font-medium transition-colors",
+                                    appointment.canceled
+                                      ? "bg-destructive/10 text-destructive"
+                                      : "bg-green-100 text-green-800"
                                   )}
                                 >
-                                  {appointment.status === "confirmed"
-                                    ? t("confirmed") || "Confirmed"
-                                    : t("pending") || "Pending"}
+                                  {appointment.canceled
+                                    ? t("canceled") || "Canceled"
+                                    : t("active") || "Active"}
                                 </Badge>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
-                                  onClick={() => handleCancelAppointment(appointment.id)}
-                                >
-                                  <X className="h-4 w-4 mr-1" />
-                                  {t("cancel") || "Cancel"}
-                                </Button>
+
+
+                                {!appointment.canceled && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 border border-transparent hover:border-red-200 transition"
+                                    onClick={() => handleCancelAppointment(appointment.id)}
+                                  >
+                                    <X className="h-4 w-4 mr-1" />
+                                    {t("cancel") || "Cancel"}
+                                  </Button>
+                                )}
                               </div>
                             </div>
                           </div>
+
                         </div>
                       </Card>
                     ))}
                   </div>
+
                 ) : (
                   <div className="text-center py-12">
                     <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
@@ -540,7 +510,7 @@ export function Appointment(){
                 </div>
                 <div className="col-span-2">
                   <p className="text-sm font-medium text-muted-foreground">{t("service") || "Service"}</p>
-                  <p className="text-base">{services.find((s) => s.id.toString() === selectedService)?.name || ""}</p>
+                  <p className="text-base">{services.find((s) => s === selectedService) || ""}</p>
                 </div>
                 {notes && (
                   <div className="col-span-2">
