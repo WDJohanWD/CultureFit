@@ -90,7 +90,8 @@ public class AuthController {
                 false,
                 null,
                 Role.USER,
-                signUpRequest.getDni());
+                signUpRequest.getDni(),
+                signUpRequest.getAppointmentsAvailables());
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
     }

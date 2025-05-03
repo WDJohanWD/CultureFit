@@ -1,9 +1,14 @@
+/*REACT*/
 import { useState, useEffect, useContext } from "react"
 import { useTranslation } from "react-i18next"
-import { CalendarIcon, Clock, MapPin, CheckCircle, X, Loader2 } from "lucide-react"
+import { AuthContext } from "@/AuthContext"
+
+/*UTILIDADES */
 import { format, addDays, startOfDay, isBefore, isAfter, parseISO } from "date-fns"
 import { es } from "date-fns/locale"
+import { cn } from "@/lib/utils"
 
+/*COMPONENTES UI*/
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -14,15 +19,17 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { cn } from "@/lib/utils"
-import { AuthContext } from "@/AuthContext"
+
+/*ICONOS */
+import { CalendarIcon, Clock, CheckCircle, X, Loader2, CreditCard } from "lucide-react"
 
 export function Appointment() {
+  // --- Imports ---
   const { t } = useTranslation("appointments")
   const API_URL = "http://localhost:9000/appointment"
   const { user } = useContext(AuthContext)
 
-  // --- State ---
+  // --- Estados Generales ---
   const [date, setDate] = useState(startOfDay(new Date()))
   const [timeSlots, setTimeSlots] = useState([])
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
@@ -33,19 +40,49 @@ export function Appointment() {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
   const [confirmDialog, setConfirmDialog] = useState(false)
+
+  // --- Estados de Citas del Usuario ---
   const [userAppointments, setUserAppointments] = useState([])
   const [isLoadingAppointments, setIsLoadingAppointments] = useState(true)
 
+  // --- Estados de Compra de Cupones ---
+  const [selectedCouponAmount, setSelectedCouponAmount] = useState(null)
+  const [paymentSuccess, setPaymentSuccess] = useState(false)
+  const [paymentError, setPaymentError] = useState("")
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  // --- Fetch Services ---
+
+  // ==========================
+  // = Función: Comprar Cupones =
+  // ==========================
+  const handlePurchaseCoupons = async () => {
+    try {
+      setIsProcessing(true)
+      setPaymentError("")
+      setPaymentSuccess(false)
+
+      // Aquí llamas a tu endpoint de compra en el backend
+
+      setPaymentSuccess(true)
+      setSelectedCouponAmount(null)
+
+      // Opcional: Actualizar citas disponibles del usuario
+      // fetchUserData() o similar
+    } catch (err) {
+      setPaymentError(t("purchaseFailed") || "Something went wrong.")
+    } finally {
+      setIsProcessing(false)
+    }
+  }
+
+
+  // = Fetch: Servicios Disponibles =
   useEffect(() => {
     const fetchServices = async () => {
       try {
         setIsLoading(true)
-        // In a real app, fetch from your API
-
         const response = await fetch(`${API_URL}/services`)
-        let servicesData = await response.json()
+        const servicesData = await response.json()
         setServices(servicesData)
         setError(null)
       } catch (err) {
@@ -59,7 +96,10 @@ export function Appointment() {
     fetchServices()
   }, [API_URL, t])
 
-  // --- Fetch User Appointments ---
+
+  // ==========================
+  // = Fetch: Citas del Usuario =
+  // ==========================
   useEffect(() => {
     const fetchUserAppointments = async () => {
       try {
@@ -71,13 +111,9 @@ export function Appointment() {
           },
         })
 
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch appointments")
-        }
+        if (!response.ok) throw new Error("Failed to fetch appointments")
 
         const data = await response.json()
-
         setUserAppointments(data)
       } catch (err) {
         console.error("Error fetching user appointments:", err)
@@ -92,7 +128,9 @@ export function Appointment() {
   }, [user?.id])
 
 
-  // --- Generate Time Slots ---
+  // ==========================
+  // = Fetch: Horarios Disponibles por Día =
+  // ==========================
   useEffect(() => {
     const fetchSlotsFromBackend = async () => {
       if (!date) return
@@ -102,23 +140,23 @@ export function Appointment() {
         const response = await fetch(`http://localhost:9000/appointment/slots?date=${formattedDate}`)
         const data = await response.json()
 
-        // Transformamos el array de strings en objetos { time, available: true }
         const slots = data.map((timeString) => ({
-          time: timeString.slice(0, 5), // "HH:mm:ss" => "HH:mm"
+          time: timeString.slice(0, 5),
           available: true,
         }))
 
         setTimeSlots(slots)
       } catch (error) {
         console.error("Error fetching time slots from backend:", error)
-        setTimeSlots([]) // o manejar error como prefieras
+        setTimeSlots([])
       }
     }
 
     fetchSlotsFromBackend()
   }, [date])
 
-  // --- Handle Booking Submission ---
+
+  // = Acción: Reservar Cita =
   const handleBookAppointment = async () => {
     if (!selectedTimeSlot || !selectedService) {
       setError(t("pleaseSelectTimeAndService") || "Please select a time slot and service")
@@ -132,21 +170,17 @@ export function Appointment() {
         userId: user.id,
         appointmentType: selectedService,
         date: format(date, "yyyy-MM-dd"),
-        time: `${selectedTimeSlot}:00`, 
+        time: `${selectedTimeSlot}:00`,
         notes: notes || ""
       }
 
       const response = await fetch("http://localhost:9000/appointment/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
 
-      if (!response.ok) {
-        throw new Error("Failed to book appointment")
-      }
+      if (!response.ok) throw new Error("Failed to book appointment")
 
       const newAppointment = await response.json()
 
@@ -155,7 +189,6 @@ export function Appointment() {
       setSelectedTimeSlot(null)
       setSelectedService("")
       setNotes("")
-
       setUserAppointments((prev) => [...prev, newAppointment])
     } catch (err) {
       console.error("Error booking appointment:", err)
@@ -165,23 +198,19 @@ export function Appointment() {
     }
   }
 
-  // --- Handle Appointment Cancellation ---
+
+  // = Acción: Cancelar Cita =
   const handleCancelAppointment = async (appointmentId) => {
     try {
       setIsLoading(true)
 
-      const response = await fetch(`http://localhost:9000/appointment/cancel/${appointmentId}`, {
+      const response = await fetch(`http://localhost:9000/appointment/${appointmentId}/cancel`, {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        }
+        headers: { "Content-Type": "application/json" }
       })
 
-      if (!response.ok) {
-        throw new Error("Failed to cancel appointment")
-      }
+      if (!response.ok) throw new Error("Failed to cancel appointment")
 
-      // Actualizamos localmente el appointment cancelado
       setUserAppointments((prev) =>
         prev.map((app) =>
           app.id === appointmentId ? { ...app, canceled: true } : app
@@ -195,7 +224,8 @@ export function Appointment() {
     }
   }
 
-  // --- Format Date Helper ---
+
+  // = Utilidad: Formatear Fecha =
   const formatAppointmentDate = (dateString) => {
     try {
       const date = parseISO(dateString)
@@ -206,7 +236,8 @@ export function Appointment() {
     }
   }
 
-  // --- Render Loading State ---
+
+  // = Render: Estado de Carga =
   if (isLoading && services.length === 0) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -226,7 +257,14 @@ export function Appointment() {
         </h1>
 
         <Tabs defaultValue="book" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-6">
+            <TabsTrigger
+              value="buy-coupons"
+              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <CreditCard className="h-4 w-4 mr-2" />
+              {t("buyCoupons") || "Buy Coupons"}
+            </TabsTrigger>
             <TabsTrigger
               value="book"
               className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -245,6 +283,12 @@ export function Appointment() {
 
           {/* Book Appointment Tab */}
           <TabsContent value="book">
+            {typeof user?.appointmentsAvailables === "number" && (
+              <div className="mb-4 text-sm text-muted-foreground font-medium">
+                {t("appointmentsRemaining") || "Appointments remaining"}:{" "}
+                <span className="font-semibold text-foreground">{user.appointmentsAvailables}</span>
+              </div>
+            )}
             <Card className="border-muted/40 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-2xl font-bold">
@@ -387,105 +431,182 @@ export function Appointment() {
 
           {/* My Appointments Tab */}
           <TabsContent value="my-appointments">
-            <Card className="border-muted/40 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold">{t("myAppointments") || "My Appointments"}</CardTitle>
-                <CardDescription>
-                  {t("myAppointmentsDescription") || "View and manage your upcoming appointments."}
-                </CardDescription>
+            <Card className="border-muted/40 shadow-md overflow-hidden">
+              <CardHeader className="bg-background/50 backdrop-blur-sm border-b">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-2xl font-bold">{t("myAppointments") || "My Appointments"}</CardTitle>
+                    <CardDescription>
+                      {t("myAppointmentsDescription") || "View and manage your upcoming appointments."}
+                    </CardDescription>
+                  </div>
+                  <CalendarIcon className="h-6 w-6 text-primary opacity-80" />
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-0">
                 {isLoadingAppointments ? (
-                  <div className="flex items-center justify-center h-64">
-                    <div className="flex flex-col items-center space-y-2">
+                  <div className="flex items-center justify-center h-64 bg-muted/10">
+                    <div className="flex flex-col items-center space-y-3 p-6 rounded-lg bg-background/80 shadow-sm">
                       <Loader2 className="h-8 w-8 animate-spin text-primary" />
                       <p className="text-lg font-medium">{t("loading") || "Loading"}...</p>
                     </div>
                   </div>
                 ) : userAppointments.length > 0 ? (
-                  <div className="space-y-4">
-                    {userAppointments.filter((appointment) => {
-                      const now = new Date()
-                      const [hours, minutes, seconds] = appointment.time.split(":").map(Number)
+                  <div className="divide-y divide-border/50">
+                    {userAppointments
+                      .filter((appointment) => {
+                        const now = new Date()
+                        const [hours, minutes, seconds] = appointment.time.split(":").map(Number)
 
-                      const appointmentDateTime = new Date(appointment.date)
-                      appointmentDateTime.setHours(hours, minutes, seconds || 0, 0)
+                        const appointmentDateTime = new Date(appointment.date)
+                        appointmentDateTime.setHours(hours, minutes, seconds || 0, 0)
 
-                      return appointmentDateTime >= now
+                        return appointmentDateTime >= now
+                      })
+                      .map((appointment) => (
+                        <div key={appointment.id} className="group hover:bg-muted/20 transition-colors">
+                          <div className="flex flex-col sm:flex-row p-1">
+                            <div className="bg-primary/5 rounded-lg m-3 p-4 flex flex-col justify-center items-center sm:w-1/5 border border-primary/10">
+                              <p className="text-sm font-medium text-muted-foreground">
+                                {formatAppointmentDate(appointment.date)}
+                              </p>
+                              <p className="text-2xl font-bold text-primary">{appointment.time}</p>
+                            </div>
+                            <div className="p-4 flex-1 flex flex-col justify-center">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div>
+                                  <h3 className="text-xl font-bold text-foreground">{appointment.appointmentType}</h3>
+                                  <p className="text-sm text-muted-foreground flex items-center mt-1">
+                                    <Clock className="h-3.5 w-3.5 mr-1 opacity-70" />
+                                    {t("scheduledFor") || "Scheduled for"} {appointment.time}
+                                  </p>
+                                </div>
 
-                    }).map((appointment) => (
-                      <Card key={appointment.id} className="overflow-hidden">
-                        <div className="flex flex-col sm:flex-row">
-                          <div className="bg-primary/10 p-4 sm:p-6 flex flex-col justify-center items-center sm:w-1/4">
-                            <p className="text-lg font-bold">{formatAppointmentDate(appointment.date)}</p>
-                            <p className="text-2xl font-bold text-primary">{appointment.time}</p>
-                          </div>
-                          <div className="p-4 sm:p-6 flex-1">
-                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                              <div>
-                                <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                                  {appointment.appointmentType}
-                                </h3>
-                                <p className="text-sm text-muted-foreground">
-                                  {t("scheduledFor") || "Scheduled for"} {appointment.time}
-                                </p>
-                              </div>
-
-                              <div className="flex items-center gap-2">
-                                <Badge
-                                  className={cn(
-                                    "px-3 py-1 rounded-full text-sm font-medium transition-colors",
-                                    appointment.canceled
-                                      ? "bg-destructive/10 text-destructive"
-                                      : "bg-green-100 text-green-800"
-                                  )}
-                                >
-                                  {appointment.canceled
-                                    ? t("canceled") || "Canceled"
-                                    : t("active") || "Active"}
-                                </Badge>
-
-
-                                {!appointment.canceled && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 border border-transparent hover:border-red-200 transition"
-                                    onClick={() => handleCancelAppointment(appointment.id)}
+                                <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                                  <Badge
+                                    className={cn(
+                                      "px-3 py-1 rounded-full text-sm font-medium transition-colors",
+                                      appointment.canceled
+                                        ? "bg-destructive/10 text-destructive border border-destructive/20"
+                                        : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/30",
+                                    )}
                                   >
-                                    <X className="h-4 w-4 mr-1" />
-                                    {t("cancel") || "Cancel"}
-                                  </Button>
-                                )}
+                                    {appointment.canceled ? t("canceled") || "Canceled" : t("active") || "Active"}
+                                  </Badge>
+
+                                  {!appointment.canceled && (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-destructive hover:bg-destructive/10 hover:text-destructive dark:hover:bg-destructive/20 border border-muted hover:border-destructive/30 transition-colors"
+                                      onClick={() => handleCancelAppointment(appointment.id)}
+                                    >
+                                      <X className="h-4 w-4 mr-1" />
+                                      {t("cancel") || "Cancel"}
+                                    </Button>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </div>
-
                         </div>
-                      </Card>
-                    ))}
+                      ))}
                   </div>
-
                 ) : (
-                  <div className="text-center py-12">
-                    <CalendarIcon className="mx-auto h-12 w-12 text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-semibold">{t("noAppointments") || "No appointments found"}</h3>
-                    <p className="mt-2 text-muted-foreground">
-                      {t("noAppointmentsDescription") || "You don't have any appointments scheduled yet."}
-                    </p>
-                    <Button
-                      variant="outline"
-                      className="mt-4"
-                      onClick={() => document.querySelector('[data-state="inactive"][value="book"]')?.click()}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {t("bookNow") || "Book Now"}
-                    </Button>
+                  <div className="text-center py-16 px-4 bg-muted/5">
+                    <div className="max-w-md mx-auto">
+                      <div className="bg-primary/5 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/10">
+                        <CalendarIcon className="h-10 w-10 text-primary opacity-80" />
+                      </div>
+                      <h3 className="text-xl font-semibold">{t("noAppointments") || "No appointments found"}</h3>
+                      <p className="mt-2 text-muted-foreground max-w-sm mx-auto">
+                        {t("noAppointmentsDescription") || "You don't have any appointments scheduled yet."}
+                      </p>
+                      <Button
+                        variant="default"
+                        className="mt-6"
+                        onClick={() => document.querySelector('[data-state="inactive"][value="book"]')?.click()}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {t("bookNow") || "Book Now"}
+                      </Button>
+                    </div>
                   </div>
                 )}
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Buy Coupons Tab */}
+          <TabsContent value="buy-coupons">
+            {typeof user?.appointmentsAvailables === "number" && (
+              <div className="mb-4 text-sm text-muted-foreground font-medium">
+                {t("appointmentsRemaining") || "Appointments remaining"}:{" "}
+                <span className="font-semibold text-foreground">{user.appointmentsAvailables}</span>
+              </div>
+            )}
+            <Card className="border-muted/40 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-2xl font-bold">{t("buyCoupons") || "Buy Appointment Coupons"}</CardTitle>
+                <CardDescription>
+                  {t("buyCouponsDescription") || "Increase your available appointments by purchasing extra coupons."}
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid sm:grid-cols-3 gap-4">
+                  {[1, 3, 5, 10].map((count) => (
+                    <Button
+                      key={count}
+                      variant={selectedCouponAmount === count ? "default" : "outline"}
+                      onClick={() => setSelectedCouponAmount(count)}
+                      className="flex flex-col items-center p-6 h-full"
+                    >
+                      <span className="text-3xl font-bold">{count}</span>
+                      <span className="text-muted-foreground text-sm mt-1">
+                        ${count * 5} USD
+                      </span>
+                    </Button>
+                  ))}
+                </div>
+
+                {paymentError && (
+                  <Alert variant="destructive">
+                    <AlertTitle>{t("error") || "Error"}</AlertTitle>
+                    <AlertDescription>{paymentError}</AlertDescription>
+                  </Alert>
+                )}
+
+                {paymentSuccess && (
+                  <Alert>
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertTitle className="text-green-800">{t("success") || "Success"}</AlertTitle>
+                    <AlertDescription className="text-green-700">
+                      {t("couponsAdded") || "Coupons purchased successfully!"}
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+              <CardFooter className="justify-end">
+                <Button
+                  disabled={!selectedCouponAmount || isProcessing}
+                  onClick={handlePurchaseCoupons}
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t("processing") || "Processing"}
+                    </>
+                  ) : (
+                    <>
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      {t("buyNow") || "Buy Now"}
+                    </>
+                  )}
+                </Button>
+              </CardFooter>
+            </Card>
+          </TabsContent>
+
         </Tabs>
 
         {/* Confirmation Dialog */}

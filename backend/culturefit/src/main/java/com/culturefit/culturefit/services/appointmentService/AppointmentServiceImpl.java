@@ -25,7 +25,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private UserRepository userRepository;
 
     private static final LocalTime START_TIME = LocalTime.of(9, 0);
-    private static final LocalTime END_TIME = LocalTime.of(21, 0);
+    private static final LocalTime END_TIME = LocalTime.of(17, 30);
     private static final int SLOT_DURATION_MINUTES = 30;
 
     @Override

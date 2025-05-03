@@ -29,4 +29,6 @@ public class SignupDto {
     private LocalDate birthDate;
 
     private String dni;
+
+    private Long appointmentsAvailables = 0L;
 }
