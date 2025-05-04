@@ -61,31 +61,6 @@ public class LessonServiceImpl implements LessonService{
         }
     }
 
-    public Lesson updateLesson(Long id, String lessonName, String lessonDescription, MultipartFile file) throws IOException {
-        // Obtener lección existente
-        Lesson existingLesson = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lección no encontrada"));
-
-        // Actualizar nombre y descripción
-        existingLesson.setName(lessonName);
-        existingLesson.setDescription(lessonDescription);
-
-        // Si se proporciona un archivo, actualizar el video
-        if (file != null && !file.isEmpty()) {
-            String videoUrl = uploadLesson(file, lessonName); // Subir el nuevo video
-            existingLesson.setVideoUrl(videoUrl);
-        }
-
-        // Guardar la lección actualizada
-        return repository.save(existingLesson);
-    }
-
-    // Eliminar una lección por ID
-    public void deleteLesson(Long id) {
-        getLesson(id); // Verifica existencia
-        repository.deleteById(id);
-    }
-
     // Subir un archivo de video y devolver la URL
     public String uploadLesson(MultipartFile file, String lessonName) throws IOException {
         try {
@@ -114,6 +89,31 @@ public class LessonServiceImpl implements LessonService{
         } catch (Exception e) {
             throw new RuntimeException("Error al subir el video", e);
         }
+    }
+
+    public Lesson updateLesson(Long id, String lessonName, String lessonDescription, MultipartFile file) throws IOException {
+        // Obtener lección existente
+        Lesson existingLesson = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Lección no encontrada"));
+
+        // Actualizar nombre y descripción
+        existingLesson.setName(lessonName);
+        existingLesson.setDescription(lessonDescription);
+
+        // Si se proporciona un archivo, actualizar el video
+        if (file != null && !file.isEmpty()) {
+            String videoUrl = uploadLesson(file, lessonName); // Subir el nuevo video
+            existingLesson.setVideoUrl(videoUrl);
+        }
+
+        // Guardar la lección actualizada
+        return repository.save(existingLesson);
+    }
+
+    // Eliminar una lección por ID
+    public void deleteLesson(Long id) {
+        getLesson(id); // Verifica existencia
+        repository.deleteById(id);
     }
 
     // Obtener la extensión del archivo
