@@ -12,6 +12,7 @@ import AboutUs from "./sections/AboutUs";
 import ConfirmAccount from "./sections/ConfirmAccount";
 import AdminDashboard from "./sections/AdminDashboard";
 import YourProgress from "./sections/YourProgress";
+import Workout from "./sections/Workout"
 import Profile from "./sections/Profile";
 
 import { AuthProvider, AuthContext } from "./AuthContext";
@@ -34,13 +35,21 @@ function Layout() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
-        <Route path="/your-progress" element={
+        <Route path="/progress" element={
             user != null ? (
               <YourProgress />
             ) : (
               <Navigate to="/error" replace />
             )
           } />
+
+        <Route path="/workout" element={
+          user != null ? (
+            <Workout />
+          ) : (
+            <Navigate to="/error" replace />
+          )
+        } />
 
         <Route path="/profile" element={<Profile />} />
         <Route
