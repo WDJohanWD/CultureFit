@@ -22,7 +22,8 @@ import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentExcep
 import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingImageException;
 import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exceptions.userExceptions.NotFoundUserException;
-
+import com.culturefit.culturefit.exceptions.workoutExceptions.ErrorSavingWorkoutException;
+import com.culturefit.culturefit.exceptions.workoutExceptions.NotFoundWorkoutException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -66,6 +67,28 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NotFoundExerciseException.class)
     public ResponseEntity<?> handleNotFoundExerciseException(NotFoundExerciseException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND,
+                e.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    // Manejo de excepciones para los workouts
+    @ExceptionHandler(ErrorSavingWorkoutException.class)
+    public ResponseEntity<?> handleErrorSavingWorkoutException(ErrorSavingWorkoutException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundWorkoutException.class)
+    public ResponseEntity<?> handleNotFoundWorkoutException(NotFoundWorkoutException e, WebRequest request) {
         ExcepcionBody body = new ExcepcionBody(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND,
