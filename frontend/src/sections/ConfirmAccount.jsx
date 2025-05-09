@@ -24,7 +24,7 @@ function ConfirmAccount() {
 
                 if (data.success) {
                     console.log('Account confirmed successfully!');
-                    navigate("/login")
+                    navigate("/")
                     window.location.reload()
                 }
             } catch (error) {
