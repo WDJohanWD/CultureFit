@@ -55,6 +55,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                 updated.setDayNumber(workout.getDayNumber());
                 updated.setSets(workout.getSets());
                 updated.setExercise(workout.getExercise());
+                updated.setWorkoutOrder(workout.getWorkoutOrder());
                 workoutRepository.save(updated);
             }
         }

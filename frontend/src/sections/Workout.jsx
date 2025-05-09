@@ -32,11 +32,12 @@ function Workout() {
         const data = await response.json();
 
         const transformedData = data.map((item) => ({
-          id: `item${item.id}`,
+          id: item.id,
           content: item.exercise.nameES,
           containerId: item.dayNumber.toString(),
           sets: item.sets,
           exercise: item.exercise.id,
+          order: item.workoutOrder,
         }));
 
         setItems(transformedData);
@@ -61,8 +62,9 @@ function Workout() {
     const bodyPost = {
       userId: user.id,
       workoutList: items.map((item) => ({
-      id: item.id.startsWith("item") ? parseInt(item.id.replace("item", ""), 10) : null,
+      id: null,
       dayNumber: parseInt(item.containerId, 10),
+      workoutOrder: item.order,
       sets: item.sets,
       user: {
         id: user.id,
@@ -72,6 +74,8 @@ function Workout() {
       },
       })),
     };
+
+    console.log(bodyPost)
 
     const response = await fetch("http://localhost:9000/workout/update-workout", {
       method: "POST",
@@ -97,11 +101,16 @@ function Workout() {
     setActiveDragId(null);
 
     if (over?.id) {
-      setItems((prevItems) =>
-        prevItems.map((item) =>
-          item.id === active.id ? { ...item, containerId: over.id } : item
-        )
-      );
+      setItems((prevItems) => {
+        const draggedItem = prevItems.find((item) => item.id === active.id);
+        const remainingItems = prevItems.filter((item) => item.id !== active.id);
+
+        const overIndex = remainingItems.findIndex((item) => item.id === over.id);
+        const updatedItems = [...remainingItems];
+        updatedItems.splice(overIndex + 1, 0, { ...draggedItem, containerId: over.id });
+
+        return updatedItems.map((item, index) => ({ ...item, order: index }));
+      });
 
       setHoveredContainer(over.id);
     }
@@ -110,6 +119,21 @@ function Workout() {
   const handleContainerHover = (id) => {
     setHoveredContainer(id);
   };
+
+  function addNewExercise(id){
+    const firstExercise = exerciseList[0];
+    if (firstExercise) {
+      const exercise = {
+        id: `item${Date.now()}`,
+        content: firstExercise.nameES,
+        containerId: id,
+        sets: 1,
+        exercise: firstExercise.id,
+        order: 30,
+      };
+      setItems((prevItems) => [...prevItems, exercise]);
+    }
+  }
 
   const DraggableItem = ({ id, content, isExpanded, sets, exercise, activeDragId }) => {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
@@ -212,23 +236,26 @@ function Workout() {
       onMouseLeave={() => setHoveredContainer("")}
       >
       <h3 className="mb-2">{title}</h3>
-      {containerItems.map((item) => ( 
+      {containerItems
+        .sort((a, b) => a.order - b.order) // Sort by the 'order' property in ascending order
+        .map((item) => (
         <DraggableItem
-        key={item.id}
-        id={item.id}
-        content={item.content}
-        isExpanded={isExpanded}
-        sets={item.sets}
-        exercise={item.exercise}
-        activeDragId={activeDragId}
+          key={item.id}
+          id={item.id}
+          content={item.content}
+          isExpanded={isExpanded}
+          sets={item.sets}
+          exercise={item.exercise}
+          activeDragId={activeDragId}
         />
-      ))}
+        ))}
       {isExpanded && (
         <button
         type="button"
         className="filter text-green-600 hover:scale-105 borde hover:backdrop-contrast-110
-            font-medium rounded-lg text-sm px-3 py-2.5 hover:shadow
-            transition text-center inline-block items-center mb-2"
+        font-medium rounded-lg text-sm px-3 py-2.5 hover:shadow
+        transition text-center inline-block items-center mb-2"
+        onClick={() => addNewExercise(id)}
         >
         + Add New Exercise
         </button>
@@ -261,6 +288,17 @@ function Workout() {
           }}
         >
           Save Workout
+        </Button>
+      </div>
+          <div className="flex justify-center mt-4">
+        <Button
+          variant="outline"
+          className="w-1/2"
+          onClick={() => {
+            console.log(items)
+          }}
+        >
+          Log
         </Button>
       </div>
     </div>

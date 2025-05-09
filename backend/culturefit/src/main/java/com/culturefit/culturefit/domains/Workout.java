@@ -37,4 +37,6 @@ public class Workout {
     @ManyToOne
     @OnDelete (action = OnDeleteAction.CASCADE)
     private Exercise exercise;
+
+    private Integer workoutOrder;
 }
