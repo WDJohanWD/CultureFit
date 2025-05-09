@@ -40,10 +40,10 @@ public class WorkoutController {
         return workoutService.saveWorkout(workout);
     }
 
-    @PutMapping("/update-workout")
-    public ResponseEntity<Void> updateWorkoutList(@RequestBody WorkoutDto dto) {
-        workoutService.updateWorkout(dto);
-        return ResponseEntity.ok().build();
+    @PostMapping("/update-workout")
+    public ResponseEntity<List<Workout>> updateWorkoutList(@RequestBody WorkoutDto dto) {
+        List<Workout> fullWorkout = workoutService.updateWorkout(dto);
+        return ResponseEntity.ok(fullWorkout);
     }
     
     @DeleteMapping("/delete/{id}")

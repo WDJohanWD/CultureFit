@@ -19,7 +19,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Autowired
     WorkoutRepository workoutRepository;
 
-    public void updateWorkout(WorkoutDto workoutDto){
+    public List<Workout> updateWorkout(WorkoutDto workoutDto){
         List<Workout> oldList = workoutRepository.findByUserId(workoutDto.getUserId());
         List<Workout> updatedList = workoutDto.getWorkoutList();
 
@@ -58,6 +58,8 @@ public class WorkoutServiceImpl implements WorkoutService {
                 workoutRepository.save(updated);
             }
         }
+
+        return workoutRepository.findByUserId(workoutDto.getUserId());
     }
 
     public Workout getWorkoutById(Long id) {

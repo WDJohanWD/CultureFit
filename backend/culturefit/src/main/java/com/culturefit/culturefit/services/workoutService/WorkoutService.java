@@ -9,7 +9,7 @@ import com.culturefit.culturefit.dto.WorkoutDto;
 
 @Service
 public interface WorkoutService {
-    public void updateWorkout(WorkoutDto workoutDto);
+    public List<Workout> updateWorkout(WorkoutDto workoutDto);
     public Workout getWorkoutById(Long id);
     public Workout saveWorkout(Workout workout);
     public void deleteWorkout(Long id);

@@ -3,15 +3,9 @@ import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import { IoReorderThreeOutline } from "react-icons/io5";
 import { AuthContext } from "@/AuthContext";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2, Search, AlertCircle, Loader2 } from "lucide-react";
+import { set } from "date-fns";
 
 const initialContainers = [
   { id: "1", title: "Monday", color: "bg-orange-200" },
@@ -25,12 +19,11 @@ const initialContainers = [
 
 function Workout() {
   const [items, setItems] = useState([]);
-  const [lastHoveredContainer, setLastHoveredContainer] = useState("");
+  const [exerciseList, setExerciseList] = useState([]);
+  
+  const [hoveredContainer, setHoveredContainer] = useState("");
   const [activeDragId, setActiveDragId] = useState(null);
   const { user } = useContext(AuthContext);
-
-  const [exerciseList, setExerciseList] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +57,37 @@ function Workout() {
     setExerciseList(data);
   }
 
+  async function saveWorkout() {
+    const bodyPost = {
+      userId: user.id,
+      workoutList: items.map((item) => ({
+      id: item.id.startsWith("item") ? parseInt(item.id.replace("item", ""), 10) : null,
+      dayNumber: parseInt(item.containerId, 10),
+      sets: item.sets,
+      user: {
+        id: user.id,
+      },
+      exercise: {
+        id: parseInt(item.exercise, 10),
+      },
+      })),
+    };
+
+    const response = await fetch("http://localhost:9000/workout/update-workout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bodyPost),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+  }
+
   useEffect(() => {
     getExercises();
   }, []);
@@ -71,24 +95,20 @@ function Workout() {
   const handleDragEnd = (event) => {
     const { active, over } = event;
     setActiveDragId(null);
-  
+
     if (over?.id) {
       setItems((prevItems) =>
         prevItems.map((item) =>
           item.id === active.id ? { ...item, containerId: over.id } : item
         )
       );
-  
-      setLastHoveredContainer(over.id);
+
+      setHoveredContainer(over.id);
     }
   };
 
   const handleContainerHover = (id) => {
-    if (id !== lastHoveredContainer) {
-      setTimeout(() => {
-        setLastHoveredContainer(id);
-      }, 100);
-    }
+    setHoveredContainer(id);
   };
 
   const DraggableItem = ({ id, content, isExpanded, sets, exercise, activeDragId }) => {
@@ -129,7 +149,14 @@ function Workout() {
               className="border border-gray-300 bg-gray-100 text-gray-500 text-sm rounded-lg hover:bg-gray-100 block w-full p-2"
               defaultValue={exercise || ""}
               onChange={(e) => {
-                // Lógica para actualizar el ejercicio
+                const selectedExercise = exerciseList.find((ex) => ex.id === parseInt(e.target.value, 10));
+                setItems((prevItems) =>
+                  prevItems.map((item) =>
+                    item.id === id
+                      ? { ...item, exercise: e.target.value, content: selectedExercise?.nameES || item.content }
+                      : item
+                  )
+                );
               }}
             >
               {exerciseList.map((ex) => (
@@ -143,7 +170,11 @@ function Workout() {
               className="border border-gray-300 bg-gray-100 text-gray-500 text-sm rounded-lg hover:bg-gray-100 block w-20 p-2"
               value={sets || 1}
               onChange={(e) => {
-                // Lógica para actualizar las series
+                setItems((prevItems) =>
+                  prevItems.map((item) =>
+                  item.id === id ? { ...item, sets: parseInt(e.target.value, 10) } : item
+                  )
+                );
               }}
             >
               {[1, 2, 3, 4, 5, 6, 7].map((num) => (
@@ -157,7 +188,7 @@ function Workout() {
               size="icon"
               className="h-10 w-10 text-red-600"
               onClick={() => {
-                // Lógica para eliminar el ejercicio
+                setItems((prevItems) => prevItems.filter((item) => item.id !== id));
               }}
             >
               <Trash2 className="h-5 w-5" />
@@ -171,40 +202,37 @@ function Workout() {
   const DroppableContainer = ({ id, title, color }) => {
     const { setNodeRef } = useDroppable({ id });
     const containerItems = items.filter((item) => item.containerId === id);
-    const isExpanded = isEditing && lastHoveredContainer === id;
+    const isExpanded = hoveredContainer === id;
 
     return (
       <div
-        ref={setNodeRef}
-        className={`${color} ${
-          isEditing ? (isExpanded ? "w-132" : "w-26") : "w-full"
-        } h-100 px-2 py-4 transition-all duration-300 ease-in-out`}
-        onClick={() => {
-          if (isEditing && !activeDragId) handleContainerHover(id);
-        }}
+      ref={setNodeRef}
+      className={`${color} hover:w-132 hover:flex-shrink-0 w-full h-100 px-2 py-4 transition-all duration-300 ease-in-out`}
+      onMouseEnter={() => handleContainerHover(id)}
+      onMouseLeave={() => setHoveredContainer("")}
       >
-        <h3 className="mb-2">{title}</h3>
-        {containerItems.map((item) => (
-          <DraggableItem
-            key={item.id}
-            id={item.id}
-            content={item.content}
-            isExpanded={isExpanded}
-            sets={item.sets}
-            exercise={item.exercise}
-            activeDragId={activeDragId}
-          />
-        ))}
-        {isEditing && isExpanded && (
-          <button
-            type="button"
-            className="filter text-green-600 hover:scale-105 borde hover:backdrop-contrast-110
-                    font-medium rounded-lg text-sm px-3 py-2.5 hover:shadow
-                    transition text-center inline-block items-center mb-2"
-          >
-            + Add New Exercise
-          </button>
-        )}
+      <h3 className="mb-2">{title}</h3>
+      {containerItems.map((item) => ( 
+        <DraggableItem
+        key={item.id}
+        id={item.id}
+        content={item.content}
+        isExpanded={isExpanded}
+        sets={item.sets}
+        exercise={item.exercise}
+        activeDragId={activeDragId}
+        />
+      ))}
+      {isExpanded && (
+        <button
+        type="button"
+        className="filter text-green-600 hover:scale-105 borde hover:backdrop-contrast-110
+            font-medium rounded-lg text-sm px-3 py-2.5 hover:shadow
+            transition text-center inline-block items-center mb-2"
+        >
+        + Add New Exercise
+        </button>
+      )}
       </div>
     );
   };
@@ -222,33 +250,19 @@ function Workout() {
             />
           ))}
         </div>
-        <div className="flex mt-3 justify-between">
-          <Button
-            variant="outline"
-            onClick={() => {
-              setIsEditing((prev) => !prev);
-              if (lastHoveredContainer == ""){
-                setLastHoveredContainer("1");
-
-              } else {
-                setLastHoveredContainer("");
-              }
-            }}
-          >
-            {isEditing ? "Exit Edit Mode" : "Edit Workout"}
-          </Button> 
-          <Button
-            variant="outline"
-            onClick={() => {
-              setIsEditing((prev) => !prev);
-              setLastHoveredContainer("");
-              // Falta guardar la lista de ejercicios
-            }}
-          >
-            Save
-          </Button>
-        </div>
       </DndContext>
+
+      <div className="flex justify-center mt-4">
+        <Button
+          variant="outline"
+          className="w-1/2"
+          onClick={() => {
+            saveWorkout()
+          }}
+        >
+          Save Workout
+        </Button>
+      </div>
     </div>
   );
 }
