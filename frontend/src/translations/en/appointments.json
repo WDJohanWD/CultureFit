@@ -41,5 +41,7 @@
     "buyCouponsDescription" : "Buy coupons to use in your appointments.",
     "buyNow": "Buy now",
     "appointmentCancelled": "Your appointment has been cancelled successfully!",
-    "appointmentsRemaining": "Appointments remaining"
+    "appointmentsRemaining": "Appointments remaining",
+    "noAppointmentsRemaining": "No appointments remaining",
+    "couponsAdded": "Coupons added successfully!"
 }

@@ -123,6 +123,12 @@ function NavBar() {
           <Link to="/aboutus" className="block py-2 px-4 hover:underline">
             {t("about")}
           </Link>
+          {user ? (<Link to="/appointment" className="pt-1 ms-6 hover:underline">
+              {t("appointment")}
+            </Link>) :
+              (
+                <></>
+              )}
           {isAdmin && (
             <Link to="/admin" className="block py-2 px-4 hover:underline">
               Admin

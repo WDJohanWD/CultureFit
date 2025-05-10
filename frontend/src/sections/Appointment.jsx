@@ -27,7 +27,7 @@ export function Appointment() {
   // --- Imports ---
   const { t } = useTranslation("appointments")
   const API_URL = "http://localhost:9000/appointment"
-  const { user } = useContext(AuthContext)
+  const { user, fetchUser } = useContext(AuthContext)
 
   // --- Estados Generales ---
   const [date, setDate] = useState(startOfDay(new Date()))
@@ -55,19 +55,28 @@ export function Appointment() {
   // ==========================
   // = Función: Comprar Cupones =
   // ==========================
-  const handlePurchaseCoupons = async () => {
+  const handlePurchaseCoupons = async (amount) => {
     try {
       setIsProcessing(true)
       setPaymentError("")
       setPaymentSuccess(false)
 
       // Aquí llamas a tu endpoint de compra en el backend
-
+      const response = await fetch(`${API_URL}/manageAppointment`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: user.id,
+          num: amount
+        }),
+      });
+      await fetchUser(user.id);
       setPaymentSuccess(true)
       setSelectedCouponAmount(null)
 
-      // Opcional: Actualizar citas disponibles del usuario
-      // fetchUserData() o similar
+
     } catch (err) {
       setPaymentError(t("purchaseFailed") || "Something went wrong.")
     } finally {
@@ -163,6 +172,12 @@ export function Appointment() {
       return
     }
 
+    if (user?.appointmentsAvailables === 0) {
+      setError(t("noAppointmentsRemaining") || "No appointments remaining")
+      setConfirmDialog(false)
+      return
+    }
+
     try {
       setIsLoading(true)
 
@@ -181,6 +196,16 @@ export function Appointment() {
       })
 
       if (!response.ok) throw new Error("Failed to book appointment")
+      const response1 = await fetch(`${API_URL}/manageAppointment`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: user.id,
+          num: -1
+        }),
+      });
 
       const newAppointment = await response.json()
 
@@ -190,6 +215,7 @@ export function Appointment() {
       setSelectedService("")
       setNotes("")
       setUserAppointments((prev) => [...prev, newAppointment])
+      fetchUser(user.id);
     } catch (err) {
       console.error("Error booking appointment:", err)
       setError(t("errorBookingAppointment") || "Error al reservar la cita")
@@ -589,7 +615,7 @@ export function Appointment() {
               <CardFooter className="justify-end">
                 <Button
                   disabled={!selectedCouponAmount || isProcessing}
-                  onClick={handlePurchaseCoupons}
+                  onClick={() => handlePurchaseCoupons(selectedCouponAmount)}
                 >
                   {isProcessing ? (
                     <>
