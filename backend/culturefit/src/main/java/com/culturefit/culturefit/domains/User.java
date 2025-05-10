@@ -57,4 +57,8 @@ public class User {
     private String dni;
 
     private int appointmentsAvailables = 0;
+
+    @Column(unique = true)
+    private String stripeId;
+
 }
