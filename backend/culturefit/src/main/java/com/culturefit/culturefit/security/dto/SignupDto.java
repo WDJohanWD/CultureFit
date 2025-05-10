@@ -30,5 +30,5 @@ public class SignupDto {
 
     private String dni;
 
-    private Long appointmentsAvailables = 0L;
+    private int appointmentsAvailables = 0;
 }

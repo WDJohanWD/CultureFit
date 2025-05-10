@@ -56,5 +56,5 @@ public class User {
     @Column( unique = true)
     private String dni;
 
-    private Long appointmentsAvailables = 0L;
+    private int appointmentsAvailables = 0;
 }

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.dto.AppointmentAvailableDto;
 import com.culturefit.culturefit.dto.AppointmentDto;
 
 public interface AppointmentService {
@@ -22,4 +23,7 @@ public interface AppointmentService {
     List<LocalTime> getAvailableSlots(LocalDate date);
 
     List<Appointment> getAllAppointments();
+
+    User manageAppointment(AppointmentAvailableDto dto);
+
 }

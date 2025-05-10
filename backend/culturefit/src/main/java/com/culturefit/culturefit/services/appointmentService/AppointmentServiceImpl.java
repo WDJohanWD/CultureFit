@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.dto.AppointmentAvailableDto;
 import com.culturefit.culturefit.dto.AppointmentDto;
 import com.culturefit.culturefit.repositories.AppointmentRepository;
 import com.culturefit.culturefit.repositories.UserRepository;
@@ -83,5 +84,14 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return availableSlots;
+    }
+
+    @Override
+    public User manageAppointment(AppointmentAvailableDto dto) {
+        Long userId = dto.getId();
+        User user = userRepository.findById(userId).orElseThrow();
+        int newAppointmentAvailable = user.getAppointmentsAvailables() + dto.getNum();
+        user.setAppointmentsAvailables(newAppointmentAvailable);
+        return  userRepository.save(user);
     }
 }

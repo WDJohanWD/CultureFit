@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.AppointmentEnum;
+import com.culturefit.culturefit.dto.AppointmentAvailableDto;
 import com.culturefit.culturefit.dto.AppointmentDto;
 import com.culturefit.culturefit.services.appointmentService.AppointmentService;
 
@@ -68,4 +69,9 @@ public class AppointmentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PatchMapping("/manageAppointment")
+    public ResponseEntity<?> manageAppointment(@RequestBody AppointmentAvailableDto dto) {
+        appointmentService.manageAppointment(dto);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
