@@ -34,12 +34,13 @@ public class LessonController {
 
     @PostMapping("/save-lesson")
     public ResponseEntity<?> postLesson(
+        @RequestParam("thumbnail") MultipartFile thumbnail,
         @RequestParam("file") MultipartFile file,
         @RequestParam("name") String lessonName,
         @RequestParam("description") String lessonDescription) {
 
         Lesson createdLesson = lessonService.createLesson(lessonName, lessonDescription);
-        Lesson savedLesson = lessonService.save(createdLesson, file);
+        Lesson savedLesson = lessonService.save(createdLesson, file, thumbnail);
         
         return ResponseEntity.ok(savedLesson);
     }
