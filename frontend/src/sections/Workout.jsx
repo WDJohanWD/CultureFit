@@ -4,8 +4,9 @@ import { IoReorderThreeOutline } from "react-icons/io5";
 import { AuthContext } from "@/AuthContext";
 
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Search, AlertCircle, Loader2 } from "lucide-react";
-import { set } from "date-fns";
+import { Trash2 } from "lucide-react";
+import { LuRotateCcw } from "react-icons/lu";
+
 
 const initialContainers = [
   { id: "1", title: "Monday", color: "bg-orange-200" },
@@ -20,15 +21,18 @@ const initialContainers = [
 function Workout() {
   const [items, setItems] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
-  
-  const [hoveredContainer, setHoveredContainer] = useState("");
-  const [activeDragId, setActiveDragId] = useState(null);
+
   const { user } = useContext(AuthContext);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(`http://localhost:9000/workout/user/${user.id}`);
+    fetchWorkoutData();
+  }, [user.id]);
+
+  async function fetchWorkoutData(){
+    try {
+        const response = await fetch(
+          `http://localhost:9000/workout/user/${user.id}`
+        );
         const data = await response.json();
 
         const transformedData = data.map((item) => ({
@@ -44,10 +48,7 @@ function Workout() {
       } catch (error) {
         console.error("Error fetching data:", error);
       }
-    };
-
-    fetchData();
-  }, [user.id]);
+  };
 
   async function getExercises() {
     const response = await fetch(`http://localhost:9000/exercise`);
@@ -62,28 +63,31 @@ function Workout() {
     const bodyPost = {
       userId: user.id,
       workoutList: items.map((item) => ({
-      id: null,
-      dayNumber: parseInt(item.containerId, 10),
-      workoutOrder: item.order,
-      sets: item.sets,
-      user: {
-        id: user.id,
-      },
-      exercise: {
-        id: parseInt(item.exercise, 10),
-      },
+        id: null,
+        dayNumber: parseInt(item.containerId, 10),
+        workoutOrder: item.order,
+        sets: item.sets,
+        user: {
+          id: user.id,
+        },
+        exercise: {
+          id: parseInt(item.exercise, 10),
+        },
       })),
     };
 
-    console.log(bodyPost)
+    console.log(bodyPost);
 
-    const response = await fetch("http://localhost:9000/workout/update-workout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(bodyPost),
-    });
+    const response = await fetch(
+      "http://localhost:9000/workout/update-workout",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyPost),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -98,29 +102,29 @@ function Workout() {
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
-    setActiveDragId(null);
 
     if (over?.id) {
       setItems((prevItems) => {
         const draggedItem = prevItems.find((item) => item.id === active.id);
-        const remainingItems = prevItems.filter((item) => item.id !== active.id);
+        const remainingItems = prevItems.filter(
+          (item) => item.id !== active.id
+        );
 
-        const overIndex = remainingItems.findIndex((item) => item.id === over.id);
+        const overIndex = remainingItems.findIndex(
+          (item) => item.id === over.id
+        );
         const updatedItems = [...remainingItems];
-        updatedItems.splice(overIndex + 1, 0, { ...draggedItem, containerId: over.id });
+        updatedItems.splice(overIndex + 1, 0, {
+          ...draggedItem,
+          containerId: over.id,
+        });
 
         return updatedItems.map((item, index) => ({ ...item, order: index }));
       });
-
-      setHoveredContainer(over.id);
     }
   };
 
-  const handleContainerHover = (id) => {
-    setHoveredContainer(id);
-  };
-
-  function addNewExercise(id){
+  function addNewExercise(id) {
     const firstExercise = exerciseList[0];
     if (firstExercise) {
       const exercise = {
@@ -135,17 +139,22 @@ function Workout() {
     }
   }
 
-  const DraggableItem = ({ id, content, isExpanded, sets, exercise, activeDragId }) => {
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
-
-    const isDragging = activeDragId === id;
-    const forceCollapsed = isDragging;
+  const DraggableItem = ({
+    id,
+    content,
+    isExpanded,
+    sets,
+    exercise,
+  }) => {
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+      id,
+    });
 
     const style = transform
       ? {
           transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
           opacity: 0.8,
-          width: isExpanded ? "112px" : "auto",
+          width: "112px",
         }
       : undefined;
 
@@ -156,33 +165,40 @@ function Workout() {
           ...style,
           zIndex: 11,
         }}
-        className={`bg-white px-4 py-2 rounded my-1 flex ${
-          forceCollapsed || !isExpanded ? "justify-center items-center h-8" : "gap-2"
-        }`}
+        className={`bg-white px-4 py-2 rounded my-1 flex group`}
         {...attributes}
       >
-        {forceCollapsed || !isExpanded ? (
-          <span className="text-sm truncate">{content}</span>
-        ) : (
-          <>
-            <div className="my-auto" {...listeners} style={{ cursor: "grab" }}>
-              <IoReorderThreeOutline className="h-5 w-5" />
-            </div>
+        <div className="flex transition-all duration-200 delay-100 flex-col">
+          <div
+            className="my-auto flex"
+            {...listeners}
+            style={{ cursor: "grab" }}
+          >
+            <IoReorderThreeOutline className="h-5 w-5" />
+            <span className="text-sm truncate delay:20">{content} x {sets}</span>
+          </div>
+          <div className="flex flex-col gap-y-2 max-h-0 w-0 group-hover:w-full overflow-hidden group-hover:max-h-[200px] transition-all duration-200 ease-in-out group-hover:duration-400">
             <select
-              name="exercise"
-              className="border border-gray-300 bg-gray-100 text-gray-500 text-sm rounded-lg hover:bg-gray-100 block w-full p-2"
-              defaultValue={exercise || ""}
-              onChange={(e) => {
-                const selectedExercise = exerciseList.find((ex) => ex.id === parseInt(e.target.value, 10));
-                setItems((prevItems) =>
-                  prevItems.map((item) =>
-                    item.id === id
-                      ? { ...item, exercise: e.target.value, content: selectedExercise?.nameES || item.content }
-                      : item
-                  )
-                );
-              }}
-            >
+            name="exercise"
+            className="border border-gray-300 bg-gray-100 text-gray-500 text-sm rounded-lg hover:bg-gray-100 block w-full p-2"
+            defaultValue={exercise || ""}
+            onChange={(e) => {
+              const selectedExercise = exerciseList.find(
+                (ex) => ex.id === parseInt(e.target.value, 10)
+              );
+              setItems((prevItems) =>
+                prevItems.map((item) =>
+                  item.id === id
+                    ? {
+                        ...item,
+                        exercise: e.target.value,
+                        content: selectedExercise?.nameES || item.content,
+                      }
+                    : item
+                )
+              );
+            }}
+          >
               {exerciseList.map((ex) => (
                 <option key={ex.id} value={ex.id}>
                   {ex.nameES}
@@ -196,14 +212,17 @@ function Workout() {
               onChange={(e) => {
                 setItems((prevItems) =>
                   prevItems.map((item) =>
-                  item.id === id ? { ...item, sets: parseInt(e.target.value, 10) } : item
+                    item.id === id
+                      ? { ...item, sets: parseInt(e.target.value, 10) }
+                      : item
                   )
                 );
               }}
             >
-              {[1, 2, 3, 4, 5, 6, 7].map((num) => (
+                <option key={1} value={1}>1 set</option>
+              {[2, 3, 4, 5, 6, 7].map((num) => (
                 <option key={num} value={num}>
-                  {num}
+                  {num} sets
                 </option>
               ))}
             </select>
@@ -212,13 +231,15 @@ function Workout() {
               size="icon"
               className="h-10 w-10 text-red-600"
               onClick={() => {
-                setItems((prevItems) => prevItems.filter((item) => item.id !== id));
+                setItems((prevItems) =>
+                  prevItems.filter((item) => item.id !== id)
+                );
               }}
             >
               <Trash2 className="h-5 w-5" />
             </Button>
-          </>
-        )}
+          </div>
+        </div>
       </div>
     );
   };
@@ -226,49 +247,35 @@ function Workout() {
   const DroppableContainer = ({ id, title, color }) => {
     const { setNodeRef } = useDroppable({ id });
     const containerItems = items.filter((item) => item.containerId === id);
-    const isExpanded = hoveredContainer === id;
 
     return (
       <div
-      ref={setNodeRef}
-      className={`${color} hover:w-132 hover:flex-shrink-0 w-full h-100 px-2 py-4 transition-all duration-300 ease-in-out`}
-      onMouseEnter={() => handleContainerHover(id)}
-      onMouseLeave={() => setHoveredContainer("")}
+        ref={setNodeRef}
+        className={`hover:bg-gray-100 w-full h-100 px-2 py-4 transition-all`}
       >
-      <h3 className="mb-2">{title}</h3>
-      {containerItems
-        .sort((a, b) => a.order - b.order) // Sort by the 'order' property in ascending order
-        .map((item) => (
-        <DraggableItem
-          key={item.id}
-          id={item.id}
-          content={item.content}
-          isExpanded={isExpanded}
-          sets={item.sets}
-          exercise={item.exercise}
-          activeDragId={activeDragId}
-        />
-        ))}
-      {isExpanded && (
-        <button
-        type="button"
-        className="filter text-green-600 hover:scale-105 borde hover:backdrop-contrast-110
-        font-medium rounded-lg text-sm px-3 py-2.5 hover:shadow
-        transition text-center inline-block items-center mb-2"
-        onClick={() => addNewExercise(id)}
-        >
-        + Add New Exercise
-        </button>
-      )}
+        <h3 className="mb-2 uppercase font-bold text-primary">{title}:</h3>
+        {containerItems
+          .sort((a, b) => a.order - b.order) // Sort by the 'order' property in ascending order
+          .map((item) => (
+            <DraggableItem
+              key={item.id}
+              id={item.id}
+              content={item.content}
+              sets={item.sets}
+              exercise={item.exercise}
+            />
+          ))}
       </div>
     );
   };
 
   return (
-    <div className="absolute flex flex-col left-1/2 -translate-x-1/2 w-288 mt-15">
-      <DndContext onDragStart={(event) => setActiveDragId(event.active.id)} onDragEnd={handleDragEnd}>
-        <div className="flex rounded-lg overflow-hidden border-gray-500 border-2">
-          {initialContainers.map((container) => (
+    <div className="flex flex-col mx-auto w-288 mt-15 mb-20">
+      <DndContext
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex rounded-lg overflow-hidden border-gray-200 border-1 shadow-lg divide-x-2">
+          {initialContainers.map((container)   => (
             <DroppableContainer
               key={container.id}
               id={container.id}
@@ -279,26 +286,36 @@ function Workout() {
         </div>
       </DndContext>
 
-      <div className="flex justify-center mt-4">
+      <div className="flex mt-4 justify-between">
+        <div className="flex gap-x-4">
+          <Button
+            variant="ghost"
+            type="button"
+            className="border border-green-600 hover:bg-green-600 text-green-600 hover:text-white font-semibold shadow-md rounded-lg
+            px-3 hover:scale-105 transition"
+            onClick={() => addNewExercise("1")}
+          >
+            + Add New Exercise
+          </Button>
+          <Button
+            variant="ghost"
+            type="button"
+            className="border border-red-600 hover:bg-red-600 text-red-600 hover:text-white font-semibold shadow-md rounded-lg
+            px-3 hover:scale-105 transition"
+            onClick={() => fetchWorkoutData()}
+          >
+            <LuRotateCcw />
+          </Button> 
+        </div>
+        
         <Button
-          variant="outline"
-          className="w-1/2"
+          className="w-full md:w-auto text-white bg-gradient-to-r from-orange-400 to-orange-600 
+    hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5 px-6 hover:scale-103"
           onClick={() => {
-            saveWorkout()
+            saveWorkout();
           }}
         >
           Save Workout
-        </Button>
-      </div>
-          <div className="flex justify-center mt-4">
-        <Button
-          variant="outline"
-          className="w-1/2"
-          onClick={() => {
-            console.log(items)
-          }}
-        >
-          Log
         </Button>
       </div>
     </div>
