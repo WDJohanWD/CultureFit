@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
         // Guardar la imagen en la carpeta y obtener la URL con el ID del usuario en el
         // nombre del archivo
-        String imageUrl = profileImageService.saveImage(userId, file, user.getName());
+        String imageUrl = profileImageService.saveImage(userId, file, user.getDni());
 
         user.setImageUrl(imageUrl);
         return userRepository.save(user);
