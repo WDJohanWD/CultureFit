@@ -28,6 +28,7 @@ function NavBar() {
 
   const handleLogout = () => {
     logout();
+
   };
 
   useClickOutside(navbarRef, () => {
@@ -66,6 +67,14 @@ function NavBar() {
             <Link to="/aboutus" className="pt-1 ms-6 hover:underline">
               {t("about")}
             </Link>
+
+            {user ? (<Link to="/appointment" className="pt-1 ms-6 hover:underline">
+              {t("appointment")}
+            </Link>) :
+              (
+                <></>
+              )}
+
             {isAdmin && (
               <Link to="/admin" className="pt-1 ms-6 hover:underline">
                 Admin
@@ -88,11 +97,10 @@ function NavBar() {
                           absolute top-20 left-0 w-full bg-primary 
                           overflow-hidden 
                           transition-all duration-300 ease-in-out 
-                          ${
-                            menuOpen
-                              ? "max-h-[500px] opacity-100 py-4"
-                              : "max-h-0 opacity-0 py-0"
-                          }
+                          ${menuOpen
+            ? "max-h-[500px] opacity-100 py-4"
+            : "max-h-0 opacity-0 py-0"
+          }
                           text-center
                         `}
         >
@@ -115,14 +123,20 @@ function NavBar() {
           <Link to="/aboutus" className="block py-2 px-4 hover:underline">
             {t("about")}
           </Link>
+          {user ? (<Link to="/appointment" className="pt-1 ms-6 hover:underline">
+              {t("appointment")}
+            </Link>) :
+              (
+                <></>
+              )}
           {isAdmin && (
             <Link to="/admin" className="block py-2 px-4 hover:underline">
-              admin
+              Admin
             </Link>
           )}
 
           <div className="items-center align-middle">
-            {user ?(
+            {user ? (
               <div className="flex flex-col items-center me-2">
                 <Link to="/profile" className="flex flex-col items-center pt-1 hover:underline">
                   <img src={Profile} alt="Profile" className="h-9 w-12" />
@@ -130,9 +144,9 @@ function NavBar() {
                 </Link>
               </div>
 
-            ): null
-              
-          }
+            ) : null
+
+            }
             {user ? (
               <>
                 <button className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 

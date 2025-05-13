@@ -53,6 +53,12 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column( unique = true)
+    private String dni;
+
+    private int appointmentsAvailables = 0;
+
     @Column(unique = true)
     private String stripeId;
+
 }

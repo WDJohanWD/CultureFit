@@ -98,8 +98,10 @@ public class AuthController {
                 false,
                 null,
                 Role.USER,
+                signUpRequest.getDni(),
+                signUpRequest.getAppointmentsAvailables());
                 stripeUser.getId());
-                
+
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
     }

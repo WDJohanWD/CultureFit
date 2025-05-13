@@ -27,4 +27,8 @@ public class SignupDto {
 
     @NotNull
     private LocalDate birthDate;
+
+    private String dni;
+
+    private int appointmentsAvailables = 0;
 }
