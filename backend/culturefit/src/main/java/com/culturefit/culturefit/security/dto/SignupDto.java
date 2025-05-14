@@ -12,6 +12,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SignupDto {
+    @Size(min = 9, max = 9)
+    @NotBlank
+    private String dni;
+
     @NotBlank
     @Size(min = 3, max = 20)
     private String name;
