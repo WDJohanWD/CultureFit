@@ -7,7 +7,7 @@ const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [loading, setLoading] = useState(true); // ✅ NUEVO
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -43,9 +43,9 @@ const AuthProvider = ({ children }) => {
     initializeAuth();
   }, [token]);
 
-  const fetchUser = async (username) => {
+  const fetchUser = async (id) => {
     try {
-      const response = await fetch(`http://localhost:9000/user/${username}`);
+      const response = await fetch(`http://localhost:9000/user/${id}`);
       if (!response.ok) throw new Error("No se pudo obtener el usuario");
       const data = await response.json();
       setUser(data);
@@ -85,7 +85,7 @@ const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, isAdmin, login, logout, loading }}>
+    <AuthContext.Provider value={{ token, user, isAdmin, login, logout, loading, fetchUser }}>
       {children}
     </AuthContext.Provider>
   );

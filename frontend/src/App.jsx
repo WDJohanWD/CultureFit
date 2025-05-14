@@ -17,6 +17,7 @@ import Profile from "./sections/Profile";
 
 import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext } from "react";
+import { Appointment } from "./sections/Appointment";
 
 function Layout() {
   const { token, isAdmin, loading, user } = useContext(AuthContext);
@@ -35,7 +36,15 @@ function Layout() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
-        <Route path="/progress" element={
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/appointment" element={
+            user!= null? (
+              <Appointment />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
+        <Route path="/your-progress" element={
             user != null ? (
               <YourProgress />
             ) : (
@@ -51,7 +60,6 @@ function Layout() {
           )
         } />
 
-        <Route path="/profile" element={<Profile />} />
         <Route
           path="/admin"
           element={
@@ -62,7 +70,6 @@ function Layout() {
             )
           }
         />
-
         <Route path="/error" element={<Error404 />} />
         <Route path="*" element={<Navigate to="/error" replace />} />
       </Routes>

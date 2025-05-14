@@ -21,7 +21,7 @@ public class ProfileImageServiceImpl implements ProfileImageService {
     String DIRECTORY_PROFILE_IMAGES = dotenv.get("DIRECTORY_PROFILE_IMAGES");
 
     @Override
-    public String saveImage(Long userId, MultipartFile file, String userName) throws IOException {
+    public String saveImage(Long userId, MultipartFile file, String userDni) throws IOException {
         try {
             File directory = new File(DIRECTORY_PROFILE_IMAGES);
 
@@ -36,7 +36,7 @@ public class ProfileImageServiceImpl implements ProfileImageService {
             }
 
             // Normalizar el nombre del archivo
-            String fileName = userName.replaceAll("\\s+", "_").toLowerCase() + "_profile" + extension;
+            String fileName = userDni.replaceAll("\\s+", "_") + "_profile" + extension;
 
             // Construcción correcta de la ruta
             Path filePath = Paths.get(directory.getAbsolutePath(), fileName);

@@ -91,6 +91,7 @@ public class AuthController {
         // Crear nueva cuenta de usuario
         User user = new User(
                 null,
+                signUpRequest.getDni(),
                 signUpRequest.getName(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
@@ -98,8 +99,10 @@ public class AuthController {
                 false,
                 null,
                 Role.USER,
+                signUpRequest.getDni(),
+                signUpRequest.getAppointmentsAvailables());
                 stripeUser.getId());
-                
+
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
     }

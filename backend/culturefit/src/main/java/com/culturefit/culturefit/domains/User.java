@@ -28,6 +28,11 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    @Size(min = 9, max = 9)
+    @NotBlank
+    private String dni;
+
+    @Column(nullable = false, unique = true)
     @Size(min = 3, max = 20)
     @NotBlank
     private String name;
@@ -53,6 +58,12 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column( unique = true)
+    private String dni;
+
+    private int appointmentsAvailables = 0;
+
     @Column(unique = true)
     private String stripeId;
+
 }

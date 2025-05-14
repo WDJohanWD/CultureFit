@@ -3,6 +3,7 @@ import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
+import { motion } from "framer-motion";
 
 function AboutUs() {
   const { t } = useTranslation("aboutus");
@@ -36,7 +37,12 @@ function AboutUs() {
         {t("ubication")}
       </h2>
 
-      <div className="w-full max-w-5xl relative">
+      <motion.div
+        className="w-full max-w-5xl relative"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
         <MapContainer
           center={[42.242794462547636, -8.696215562890764]}
           zoom={15}
@@ -46,20 +52,17 @@ function AboutUs() {
           <TileLayer
             url="https://tile.jawg.io/35e6ff0b-cb69-4fa9-9e05-6606986d694d/{z}/{x}/{y}{r}.png?access-token=gKJKSFJEZfMAAS1eLraY1gTLsV7NKuosbvKrfwSsJH5ZHHl24sRaTiM9pMjzhtG1"
           />
-
           {markers.map((marker, index) => (
             <Marker key={index} position={marker.geocode} icon={customIcon}>
               <Popup>{marker.popUp}</Popup>
             </Marker>
           ))}
-
           <MapFixer />
-
           <div className="absolute bottom-2 left-2 z-[999] text-[10px] text-gray-500 bg-transparent">
             &copy; <a href="https://www.openstreetmap.org/copyright" className="underline">OpenStreetMap</a> contributors &copy; <a href="https://www.jawg.io" className="underline">Jawg</a>
           </div>
         </MapContainer>
-      </div>
+      </motion.div>
     </div>
   );
 }
