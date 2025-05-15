@@ -12,6 +12,7 @@ import AboutUs from "./sections/AboutUs";
 import ConfirmAccount from "./sections/ConfirmAccount";
 import AdminDashboard from "./sections/AdminDashboard";
 import YourProgress from "./sections/YourProgress";
+import Workout from "./sections/Workout"
 import Profile from "./sections/Profile";
 
 import { AuthProvider, AuthContext } from "./AuthContext";
@@ -50,6 +51,15 @@ function Layout() {
               <Navigate to="/error" replace />
             )
           } />
+
+        <Route path="/workout" element={
+          user != null ? (
+            <Workout />
+          ) : (
+            <Navigate to="/error" replace />
+          )
+        } />
+
         <Route
           path="/admin"
           element={

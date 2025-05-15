@@ -55,9 +55,20 @@ function NavBar() {
           <div className="hidden lg:flex">
             <Link className="pt-1 ms-9 hover:underline">{t("clases")}</Link>
             {user ? (
-              <Link className="pt-1 ms-6 hover:underline" to="/your-progress">
+              <>
+              <Link
+                className="block ms-6 py-1 hover:underline"
+                to="/progress"
+              >
                 {t("progress")}
               </Link>
+              <Link
+                className="block ms-6 py-1 hover:underline"
+                to="/workout"
+              >
+                Workout
+              </Link>
+              </>
             ) : (
               <></>
             )}
@@ -108,12 +119,20 @@ function NavBar() {
             {t("clases")}
           </Link>
           {user ? (
+            <>
             <Link
               className="block py-2 px-4 hover:underline"
-              to="/your-progress"
+              to="/progress"
             >
               {t("progress")}
             </Link>
+            <Link
+              className="block py-2 px-4 hover:underline"
+              to="/workout"
+            >
+              Workout
+            </Link>
+            </>
           ) : (
             <></>
           )}

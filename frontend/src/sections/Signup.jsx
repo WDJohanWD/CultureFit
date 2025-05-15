@@ -59,7 +59,7 @@ function Signup() {
     })
 
     sendVerificationEmail(email)
-    navigate("/login")
+    navigate("/")
     //}
   }
 
