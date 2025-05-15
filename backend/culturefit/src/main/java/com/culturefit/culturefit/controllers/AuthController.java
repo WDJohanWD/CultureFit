@@ -99,8 +99,7 @@ public class AuthController {
                 false,
                 null,
                 Role.USER,
-                signUpRequest.getDni(),
-                signUpRequest.getAppointmentsAvailables());
+                signUpRequest.getAppointmentsAvailables(),
                 stripeUser.getId());
 
         userRepository.save(user);

@@ -58,7 +58,6 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-
     private int appointmentsAvailables = 0;
 
     @Column(unique = true)

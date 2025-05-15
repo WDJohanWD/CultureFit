@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.culturefit.culturefit.domains.Appointment;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import com.culturefit.culturefit.domains.User;
 
