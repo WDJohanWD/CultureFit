@@ -221,7 +221,7 @@
                   {isEditing && (
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Label htmlFor="profile-image" className="cursor-pointer">
-                        <div className="flex items-center justify-center gap-2 p-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+                        <div className="flex items-center justify-center gap-2 mb-5 p-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
                           <Camera className="h-5 w-5" />
                         </div>
                         <Input
