@@ -9,7 +9,9 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class CulturefitApplication {
 
 	public static void main(String[] args) {
-		Dotenv dotenv = Dotenv.load();
+		Dotenv dotenv = Dotenv.configure()
+                                .directory("./")
+                                .load();
 
         // Pasar las variables al sistema
         dotenv.entries().forEach(entry ->

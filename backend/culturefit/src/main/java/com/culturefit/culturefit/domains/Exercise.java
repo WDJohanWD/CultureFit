@@ -27,4 +27,6 @@ public class Exercise {
     @NotBlank
     @Column(nullable = false, unique = true)
     private String nameEN;
+
+    private String imageUrl;
 }
