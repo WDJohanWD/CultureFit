@@ -42,5 +42,11 @@
     "buyNow": "Comprar ahora",
     "appointmentsRemaining": "Canjes disponibles para citas",
     "noAppointmentsRemaining": "No hay canjes disponibles para citas",
-    "couponsAdded": "Cupon añadido con éxito!"
+    "couponsAdded": "Cupon añadido con éxito!",
+    "LoadingId": "Cargando datos de la cita...",
+    "AppointmentsDetails": "Detalles de la cita",
+    "appointmentType": "Tipo de cita",
+    "UserInfo": "Información del usuario",
+    "name": "Nombre",
+    "noNoteMessage": "No hay notas adicionales"
 }
