@@ -43,7 +43,7 @@ function AppointmentData() {
                 : "bg-green-100 text-green-800 border border-green-200"
                 }`}
         >
-            {canceled ? "Canceled" : "Active"}
+            {canceled ? t("canceled") : t("active")}
         </span>
     )
 

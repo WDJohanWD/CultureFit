@@ -45,9 +45,9 @@
     "noAppointmentsRemaining": "No appointments remaining",
     "couponsAdded": "Coupons added successfully!",
     "LoadingId": "Loading appointment data...",
-    "AppointmentsDetails": "Appointment details",
+    "AppointmentDetails": "Appointment details",
     "appointmentType": "Appointment type",
     "UserInfo": "User information",
     "name": "Name",
-    "noNoteMessage": "No additional notes"
+    "NoNotesMessage": "No additional notes"
 }

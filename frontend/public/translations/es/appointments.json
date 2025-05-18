@@ -44,9 +44,9 @@
     "noAppointmentsRemaining": "No hay canjes disponibles para citas",
     "couponsAdded": "Cupon añadido con éxito!",
     "LoadingId": "Cargando datos de la cita...",
-    "AppointmentsDetails": "Detalles de la cita",
+    "AppointmentDetails": "Detalles de la cita",
     "appointmentType": "Tipo de cita",
     "UserInfo": "Información del usuario",
     "name": "Nombre",
-    "noNoteMessage": "No hay notas adicionales"
+    "NoNotesMessage": "No hay notas adicionales"
 }
