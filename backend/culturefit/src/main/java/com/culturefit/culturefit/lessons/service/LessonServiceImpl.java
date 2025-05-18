@@ -59,19 +59,6 @@ public class LessonServiceImpl implements LessonService {
         }
     }
 
-    @Override
-    public Lesson updateLesson(Long id, String lessonName, String lessonDescription, MultipartFile file) throws IOException {
-        Lesson existingLesson = getLesson(id);
-        existingLesson.setName(lessonName);
-        existingLesson.setDescription(lessonDescription);
-
-        if (file != null && !file.isEmpty()) {
-            String videoUrl = uploadLesson(file, lessonName);
-            existingLesson.setVideoUrl(videoUrl);
-        }
-
-        return repository.save(existingLesson);
-    }
 
     @Override
     public void deleteLesson(Long id) {
