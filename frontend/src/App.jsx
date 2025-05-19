@@ -14,7 +14,7 @@ import AdminDashboard from "./sections/AdminDashboard";
 import YourProgress from "./sections/YourProgress";
 import Workout from "./sections/Workout"
 import Profile from "./sections/Profile";
-
+import AppointmentData from "./sections/AppointmentData";
 import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext } from "react";
 import { Appointment } from "./sections/Appointment";
@@ -57,6 +57,14 @@ function Layout() {
               <Navigate to="/error" replace />
             )
           } />
+        <Route path="/appointment/:id" element={
+            user != null ? (
+              <AppointmentData />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
+
         <Route path="/your-progress" element={
             user != null ? (
               <YourProgress />

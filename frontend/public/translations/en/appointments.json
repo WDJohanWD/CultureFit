@@ -43,5 +43,11 @@
     "appointmentCancelled": "Your appointment has been cancelled successfully!",
     "appointmentsRemaining": "Appointments remaining",
     "noAppointmentsRemaining": "No appointments remaining",
-    "couponsAdded": "Coupons added successfully!"
+    "couponsAdded": "Coupons added successfully!",
+    "LoadingId": "Loading appointment data...",
+    "AppointmentDetails": "Appointment details",
+    "appointmentType": "Appointment type",
+    "UserInfo": "User information",
+    "name": "Name",
+    "NoNotesMessage": "No additional notes"
 }

@@ -15,7 +15,7 @@
 
   export default function Profile() {
     const { user: authUser, loading } = useContext(AuthContext)
-    const { t } = useTranslation("profile")
+    const { t } = useTranslation("Profile")
     const API_URL = "http://localhost:9000"
     const [isEditing, setIsEditing] = useState(false)
     const [user, setUser] = useState(null)
