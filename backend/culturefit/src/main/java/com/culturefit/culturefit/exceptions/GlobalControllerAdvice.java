@@ -16,10 +16,14 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.culturefit.culturefit.exceptions.exerciseExceptions.ErrorSavingExerciseException;
+import com.culturefit.culturefit.exceptions.exerciseExceptions.NotFoundExerciseException;
 import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentException;
 import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingImageException;
 import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exceptions.userExceptions.NotFoundUserException;
+import com.culturefit.culturefit.exceptions.workoutExceptions.ErrorSavingWorkoutException;
+import com.culturefit.culturefit.exceptions.workoutExceptions.NotFoundWorkoutException;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,6 +45,50 @@ public class GlobalControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(NotFoundUserException.class)
     public ResponseEntity<?> handleNotFoundUserException(NotFoundUserException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND,
+                e.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    // Manejo de excepciones para los ejercicios
+    @ExceptionHandler(ErrorSavingExerciseException.class)
+    public ResponseEntity<?> handleErrorSavingExerciseException(ErrorSavingExerciseException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundExerciseException.class)
+    public ResponseEntity<?> handleNotFoundExerciseException(NotFoundExerciseException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.NOT_FOUND,
+                e.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
+    }
+
+    // Manejo de excepciones para los workouts
+    @ExceptionHandler(ErrorSavingWorkoutException.class)
+    public ResponseEntity<?> handleErrorSavingWorkoutException(ErrorSavingWorkoutException e, WebRequest request) {
+        ExcepcionBody body = new ExcepcionBody(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST,
+                e.getMessage(),
+                request.getDescription(false)
+        );
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundWorkoutException.class)
+    public ResponseEntity<?> handleNotFoundWorkoutException(NotFoundWorkoutException e, WebRequest request) {
         ExcepcionBody body = new ExcepcionBody(
                 LocalDateTime.now(),
                 HttpStatus.NOT_FOUND,

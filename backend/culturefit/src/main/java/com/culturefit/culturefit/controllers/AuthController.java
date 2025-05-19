@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.culturefit.culturefit.domains.Role;
 import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.payments.service.PaymentService;
 import com.culturefit.culturefit.repositories.UserRepository;
 import com.culturefit.culturefit.security.JwtUtils;
 import com.culturefit.culturefit.security.domain.UserDetailsImpl;
@@ -23,6 +24,8 @@ import com.culturefit.culturefit.security.dto.JwtResponseDto;
 import com.culturefit.culturefit.security.dto.LoginDto;
 import com.culturefit.culturefit.security.dto.SignupDto;
 import com.culturefit.culturefit.services.userService.UserService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
 
 import jakarta.validation.Valid;
 
@@ -34,6 +37,8 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PaymentService paymentService;
     @Autowired
     private UserService userService;
     @Autowired
@@ -69,7 +74,7 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupDto signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupDto signUpRequest) throws StripeException {
         if (userRepository.existsByName(signUpRequest.getName())) {
             return ResponseEntity
                     .badRequest()
@@ -80,16 +85,23 @@ public class AuthController {
                     .badRequest()
                     .body("Error: A user with that email already exists");
         }
+
+        Customer stripeUser = paymentService.createCustomer(signUpRequest.getName(), signUpRequest.getEmail());
+
         // Crear nueva cuenta de usuario
         User user = new User(
                 null,
+                signUpRequest.getDni(),
                 signUpRequest.getName(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
                 signUpRequest.getBirthDate(),
                 false,
                 null,
-                Role.USER);
+                Role.USER,
+                signUpRequest.getAppointmentsAvailables(),
+                stripeUser.getId());
+
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
     }

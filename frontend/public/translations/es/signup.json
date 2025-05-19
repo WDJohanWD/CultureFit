@@ -1,0 +1,15 @@
+{
+    "passError": "La contraseña debe tener al menos 8 caracteres, contener 1 letra mayúscula, 1 letra minúscula y 1 número.",
+    "emailError": "El correo electrónico no es válido",
+    "userExists": "El usuario ya existe.",
+    "passwordMatch": "Las contraseñas no coinciden",
+    "title": "Crea tu cuenta de CultureFit",
+    "btn": "Registrarse",
+    "username": "Nombre de usuario",
+    "email": "Correo electrónico",
+    "pass": "Contraseña",
+    "repeatPass": "Repite tu contraseña",
+    "account": "¿Ya tienes cuenta?",
+    "login": "Iniciar sesión",
+    "birthDate": "Fecha de nacimiento"
+}

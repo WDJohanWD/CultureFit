@@ -24,9 +24,9 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @PostMapping("/create-checkout-session/{priceId}")
-    public ResponseEntity<?> createCheckoutSession(@PathVariable String priceId) throws StripeException {
-        Session session = paymentService.createCheckoutSession(priceId);
+    @PostMapping("/create-checkout-session/{priceId}/{stripeId}")
+    public ResponseEntity<?> createCheckoutSession(@PathVariable String priceId, @PathVariable String stripeId) throws StripeException {
+        Session session = paymentService.createCheckoutSession(priceId, stripeId);
         Map<String, Object> response = new HashMap<>();
         response.put("url", session.getUrl());
         return ResponseEntity.ok(response);

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.dto.UserEditDto;
 
 public interface UserService {
     User saveUser(User user);
@@ -18,6 +19,13 @@ public interface UserService {
     boolean deleteUser(Long id);
 
     User getUserByName(String name);
+
+    User updateUser(Long id, User user);
+
+    User updatePassword(Long userId, String currentPassword, String newPassword);
+
+    User updateUserEdit(Long id, UserEditDto user) throws IOException;
+
 
 }
 

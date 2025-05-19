@@ -4,10 +4,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.dto.UserEditDto;
 import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exceptions.userExceptions.NotFoundUserException;
 import com.culturefit.culturefit.repositories.UserRepository;
@@ -17,6 +19,10 @@ import jakarta.validation.Valid;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -53,7 +59,7 @@ public class UserServiceImpl implements UserService {
 
         // Guardar la imagen en la carpeta y obtener la URL con el ID del usuario en el
         // nombre del archivo
-        String imageUrl = profileImageService.saveImage(userId, file, user.getName());
+        String imageUrl = profileImageService.saveImage(userId, file, user.getDni());
 
         user.setImageUrl(imageUrl);
         return userRepository.save(user);
@@ -90,5 +96,39 @@ public class UserServiceImpl implements UserService {
         } catch (Exception e) {
             throw new NotFoundUserException();
         }
+    }
+
+    @Override
+    public User updateUser(Long id, User user) {
+        User userToUpdate = getUser(id);
+        userToUpdate.setName(user.getName());
+        userToUpdate.setEmail(user.getEmail());
+        userToUpdate.setBirthDate(user.getBirthDate());
+        userToUpdate.setPassword(user.getPassword());
+        userToUpdate.setActive(user.isActive());
+        return userRepository.save(userToUpdate);
+    }
+
+    @Override
+    public User updatePassword(Long userId, String currentPassword, String newPassword) {
+        User user = getUser(userId); // esto ya lanza la excepción si no existe
+    
+        // Verificar contraseña actual
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new RuntimeException("La contraseña actual no es correcta.");// Hacer luego excepción personalizada
+        }
+    
+        // Establecer nueva contraseña encriptada
+        user.setPassword(passwordEncoder.encode(newPassword));
+    
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User updateUserEdit(Long id, UserEditDto user) throws RuntimeException {
+        User userToUpdate = getUser(id);
+        userToUpdate.setActive(user.isActive());
+        userToUpdate.setRole(user.getRole());
+        return userRepository.save(userToUpdate);
     }
 }
