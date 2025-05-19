@@ -25,6 +25,7 @@ import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 function YourProgress() {
   const { t } = useTranslation("progress");
+
   const { user } = useContext(AuthContext);
 
   const [selectedExercise, setSelectedExercise] = useState(1);
@@ -115,7 +116,7 @@ function YourProgress() {
         >
           {exerciseList.map((exercise) => (
             <option key={exercise.id} value={exercise.id}>
-              {exercise.nameES    }
+              {exercise[t("exerciseName")]}
             </option>
           ))}
         </select>
@@ -206,11 +207,11 @@ function YourProgress() {
               onChange={(e) => setExercise(e.target.value)}
             >
               <option value="" disabled>
-                Selecciona un ejercicio
+                {t("select")}
               </option>
               {exerciseList.map((exercise) => (
                 <option key={exercise.id} value={exercise.id}>
-                  {exercise.nameES}
+                  {exercise[t("exerciseName")]}
                 </option>
               ))}
             </select>

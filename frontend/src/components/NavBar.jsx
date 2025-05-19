@@ -58,7 +58,7 @@ function NavBar() {
               <>
               <Link
                 className="block ms-6 py-1 hover:underline"
-                to="/progress"
+                to="/your-progress"
               >
                 {t("progress")}
               </Link>
@@ -66,7 +66,7 @@ function NavBar() {
                 className="block ms-6 py-1 hover:underline"
                 to="/workout"
               >
-                Workout
+                {t("workout")}
               </Link>
               </>
             ) : (
@@ -120,9 +120,9 @@ function NavBar() {
           </Link>
           {user ? (
             <>
-            <Link
+            <Link 
               className="block py-2 px-4 hover:underline"
-              to="/progress"
+              to="/your-progress"
             >
               {t("progress")}
             </Link>
@@ -130,7 +130,7 @@ function NavBar() {
               className="block py-2 px-4 hover:underline"
               to="/workout"
             >
-              Workout
+              {t("workout")}
             </Link>
             </>
           ) : (

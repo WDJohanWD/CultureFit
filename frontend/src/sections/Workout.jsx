@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { DndContext, useDraggable, useDroppable } from "@dnd-kit/core";
 import { AuthContext } from "@/AuthContext";
+import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,26 +11,29 @@ import { LuRotateCcw } from "react-icons/lu";
 import { IoReorderThreeOutline } from "react-icons/io5";
 
 function Workout() {
+  const { t } = useTranslation("workout");
+
+  const { user } = useContext(AuthContext);
+  const API_URL = "http://localhost:9000";
+
   const [items, setItems] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
   const [draggingId, setDraggingId] = useState(null);
 
   const initialContainers = [
-    { id: "1", title: "Monday", color: "bg-orange-200" },
-    { id: "2", title: "Tuesday", color: "bg-gray-100" },
-    { id: "3", title: "Wednesday", color: "bg-orange-200" },
-    { id: "4", title: "Thursday", color: "bg-gray-100" },
-    { id: "5", title: "Friday", color: "bg-orange-200" },
-    { id: "6", title: "Saturday", color: "bg-gray-100" },
-    { id: "7", title: "Sunday", color: "bg-orange-200" },
+    { id: "1", title: t("monday"), color: "bg-orange-200" },
+    { id: "2", title: t("tuesday"), color: "bg-gray-100" },
+    { id: "3", title: t("wednesday"), color: "bg-orange-200" },
+    { id: "4", title: t("thursday"), color: "bg-gray-100" },
+    { id: "5", title: t("friday"), color: "bg-orange-200" },
+    { id: "6", title: t("saturday"), color: "bg-gray-100" },
+    { id: "7", title: t("sunday"), color: "bg-orange-200" },
   ];
 
   const [activeId, setActiveId] = useState(null);
   const [overId, setOverId] = useState(null);
   const [originId, setOriginId] = useState(null);
 
-  const { user } = useContext(AuthContext);
-  const API_URL = "http://localhost:9000";
 
   useEffect(() => {
     fetchWorkoutData();
@@ -44,7 +48,7 @@ function Workout() {
 
       const transformedData = data.map((item) => ({
         id: item.id,
-        content: item.exercise.nameES,
+        content: item.exercise[t("exerciseName")],
         containerId: item.dayNumber.toString(),
         sets: item.sets,
         exercise: item.exercise.id,
@@ -209,7 +213,7 @@ function Workout() {
     if (firstExercise) {
       const exercise = {
         id: `item${Date.now()}`,
-        content: firstExercise.nameES,
+        content: firstExercise[t("exerciseName")],
         containerId: id,
         sets: 1,
         exercise: firstExercise.id,
@@ -223,6 +227,7 @@ function Workout() {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
       id,
     });
+    const currentExercise = exerciseList.find((ex) => ex.id === parseInt(exercise, 10));
 
     const style = transform
       ? {
@@ -264,7 +269,7 @@ function Workout() {
                   <Dumbbell></Dumbbell>
                 </AvatarFallback>
               </Avatar>
-              {content} x {sets}
+              {currentExercise[t("exerciseName")]} x {sets}
             </span>
           </div>
           <div
@@ -287,7 +292,7 @@ function Workout() {
                       ? {
                           ...item,
                           exercise: e.target.value,
-                          content: selectedExercise?.nameES || item.content,
+                          content: selectedExercise[t("exerciseName")] || item.content,
                         }
                       : item
                   )
@@ -296,7 +301,7 @@ function Workout() {
             >
               {exerciseList.map((ex) => (
                 <option key={ex.id} value={ex.id}>
-                  {ex.nameES}
+                  {ex[t("exerciseName")]}
                 </option>
               ))}
             </select>
@@ -433,7 +438,7 @@ function Workout() {
           px-3 hover:scale-105 transition"
             onClick={() => addNewExercise("1")}
           >
-            + Add New Exercise
+            + {t("newExercise")}
           </Button>
           <Button
             variant="ghost"
@@ -453,7 +458,7 @@ function Workout() {
             saveWorkout();
           }}
         >
-          Save Workout
+          {t("save")}
         </Button>
       </div>
     </div>

@@ -33,10 +33,23 @@ function Layout() {
         <Route path="/" element={<Home />} />
         <Route path="/memberships" element={<Memberships />} />
         <Route path="/aboutus" element={<AboutUs />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
         <Route path="/profile" element={<Profile />} />
+
+        <Route path="/signup" element={
+            user == null? (
+              <Signup />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
+        <Route path="/login" element={
+            user == null? (
+              <Login />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
         <Route path="/appointment" element={
             user!= null? (
               <Appointment />

@@ -4,5 +4,7 @@
     "exercise": "Ejercicio",
     "date": "Fecha",
     "weight": "Peso",
-    "reps": "Repeticiones"
+    "reps": "Repeticiones",
+    "select": "Selecciona el ejercicio",
+    "exerciseName": "nameES"
 }
