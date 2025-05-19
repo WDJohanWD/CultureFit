@@ -17,111 +17,103 @@ import com.culturefit.culturefit.lessons.repository.LessonRepository;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
-// TODO: Tocar manejo de extensiones
 @Service
-public class LessonServiceImpl implements LessonService{
+public class LessonServiceImpl implements LessonService {
+
     @Autowired
     private LessonRepository repository;
 
-    // Cargar configuración del entorno
     private final Dotenv dotenv = Dotenv.load();
     private final String DIRECTORY_LESSON_VIDEOS = dotenv.get("DIRECTORY_LESSON_VIDEOS");
+    private final String DIRECTORY_LESSON_THUMBNAILS = dotenv.get("DIRECTORY_LESSON_THUMBNAILS");
 
-    // Crear una lección (sin guardar en BD todavía)
-    public Lesson createLesson(String lessonName, String lessonDescription) {
-        return new Lesson(
-                null,
-                lessonName,
-                lessonDescription,
-                null,
-                null
-        );
-    }
-
-    // Obtener una lección por ID
+    @Override
     public Lesson getLesson(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No se ha encontrado la lección"));
+                .orElseThrow(() -> new RuntimeException("No se ha encontrado la lección con ID: " + id));
     }
 
-    // Obtener todas las lecciones
+    @Override
     public List<Lesson> getLessons() {
         return repository.findAll();
     }
 
-    // Guardar una lección con video
-    public Lesson save(Lesson lesson, MultipartFile file) {
+    @Override
+    public Lesson createLesson(String lessonName, String lessonDescription) {
+        return new Lesson(null, lessonName, lessonDescription, null, null, null);
+    }
+
+    @Override
+    public Lesson save(Lesson lesson, MultipartFile file, MultipartFile thumbnail) {
         try {
             String videoUrl = uploadLesson(file, lesson.getName());
+            String thumbnailUrl = uploadThumbnail(thumbnail, lesson.getName());
+
             lesson.setVideoUrl(videoUrl);
+            lesson.setThumbnailUrl(thumbnailUrl);
             lesson.setUploadDate(LocalDate.now());
+
             return repository.save(lesson);
         } catch (Exception e) {
-            throw new RuntimeException("Error al guardar la lección", e);
+            throw new RuntimeException("Error al guardar la lección: " + e.getMessage(), e);
         }
     }
 
-    public Lesson updateLesson(Long id, String lessonName, String lessonDescription, MultipartFile file) throws IOException {
-        // Obtener lección existente
-        Lesson existingLesson = repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Lección no encontrada"));
 
-        // Actualizar nombre y descripción
-        existingLesson.setName(lessonName);
-        existingLesson.setDescription(lessonDescription);
-
-        // Si se proporciona un archivo, actualizar el video
-        if (file != null && !file.isEmpty()) {
-            String videoUrl = uploadLesson(file, lessonName); // Subir el nuevo video
-            existingLesson.setVideoUrl(videoUrl);
-        }
-
-        // Guardar la lección actualizada
-        return repository.save(existingLesson);
-    }
-
-    // Eliminar una lección por ID
+    @Override
     public void deleteLesson(Long id) {
         getLesson(id); // Verifica existencia
         repository.deleteById(id);
     }
 
-    // Subir un archivo de video y devolver la URL
-    public String uploadLesson(MultipartFile file, String lessonName) throws IOException {
-        try {
-            File directory = new File(DIRECTORY_LESSON_VIDEOS);
-            if (!directory.exists()) {
-                directory.mkdirs(); // Crear directorio si no existe
-            }
+    private String uploadLesson(MultipartFile file, String lessonName) throws IOException {
+        String extension = getExtension(file.getOriginalFilename()).toLowerCase();
 
-            // Obtener y validar la extensión
-            String extension = getExtension(file.getOriginalFilename()).toLowerCase();
-            if (!extension.matches("\\.(mp4|avi|mov|mkv|webm|flv|wmv)$")) {
-                throw new RuntimeException("Formato de video no válido");
-            }
-
-            // Normalizar el nombre del archivo
-            String fileName = lessonName.replaceAll("\\s+", "_").toLowerCase() + "_video" + extension;
-
-            // Ruta donde se guardará el archivo
-            Path filePath = Paths.get(directory.getAbsolutePath(), fileName);
-
-            // Guardar el archivo en disco
-            Files.write(filePath, file.getBytes());
-
-            // Devolver la ruta relativa de acceso al video
-            return "/uploads/profileLessons/" + fileName;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al subir el video", e);
+        if (!isValidVideoExtension(extension)) {
+            throw new RuntimeException("Formato de video no válido: " + extension);
         }
+
+        String fileName = normalizeFileName(lessonName, "video", extension);
+        return saveFile(file, DIRECTORY_LESSON_VIDEOS, fileName, "/uploads/lessonVideos/");
     }
 
-    // Obtener la extensión del archivo
-    public String getExtension(String fileName) {
-        int extensionIndex = fileName.lastIndexOf(".");
-        if (extensionIndex == -1) {
-            return "";
+    private String uploadThumbnail(MultipartFile file, String lessonName) throws IOException {
+        String extension = getExtension(file.getOriginalFilename()).toLowerCase();
+
+        if (!isValidImageExtension(extension)) {
+            throw new RuntimeException("Formato de imagen no válido: " + extension);
         }
-        return fileName.substring(extensionIndex);
+
+        String fileName = normalizeFileName(lessonName, "thumbnail", extension);
+        return saveFile(file, DIRECTORY_LESSON_THUMBNAILS, fileName, "/uploads/lessonThumbnails/");
+    }
+
+    private String saveFile(MultipartFile file, String directoryPath, String fileName, String relativePathPrefix) throws IOException {
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        Path filePath = Paths.get(directory.getAbsolutePath(), fileName);
+        Files.write(filePath, file.getBytes());
+
+        return relativePathPrefix + fileName;
+    }
+
+    private String normalizeFileName(String baseName, String suffix, String extension) {
+        return baseName.replaceAll("\\s+", "_").toLowerCase() + "_" + suffix + extension;
+    }
+
+    private String getExtension(String fileName) {
+        int index = fileName.lastIndexOf(".");
+        return (index != -1) ? fileName.substring(index) : "";
+    }
+
+    private boolean isValidVideoExtension(String extension) {
+        return extension.matches("\\.(mp4|avi|mov|mkv|webm|flv|wmv)");
+    }
+
+    private boolean isValidImageExtension(String extension) {
+        return extension.matches("\\.(jpg|jpeg|png|gif|bmp|webp)");
     }
 }

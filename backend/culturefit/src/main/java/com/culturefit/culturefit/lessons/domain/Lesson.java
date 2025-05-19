@@ -22,6 +22,7 @@ public class Lesson{
     private String name;
     private String description;
     private String videoUrl;
+    private String thumbnailUrl;
     private LocalDate uploadDate;
 }
 
