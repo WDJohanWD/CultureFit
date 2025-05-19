@@ -1,5 +1,6 @@
 package com.culturefit.culturefit.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -44,6 +46,13 @@ public class ExerciseController {
         Exercise exerciseBD = exerciseService.saveExercise(exercise);
         return ResponseEntity.ok(exerciseBD);
     }
+
+    @PostMapping("/exercise/upload-image/{id}")
+    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
+        exerciseService.saveImage(image, id);
+        return ResponseEntity.ok("The image has been uploaded successfully");
+    }
+
 
     //Delete
     @DeleteMapping ("/delete-exercise/{id}")
