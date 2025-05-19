@@ -1,7 +1,6 @@
 package com.culturefit.culturefit.emails.service;
 
 import java.awt.image.BufferedImage;
-import jakarta.servlet.http.HttpServletResponse;
 
 public interface EmailService {
     boolean sendEmail(String destination, String subject, String textMessage);

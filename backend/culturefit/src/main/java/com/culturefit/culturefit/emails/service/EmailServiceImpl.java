@@ -86,9 +86,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public boolean sendQRCodeEmail(String toEmail, String text, int width, int height) {
         try {
-            // 1. Generar QR como BufferedImage
             BufferedImage qrImage = generateQRCode(text, width, height);
-
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(qrImage, "png", baos);
             byte[] imageBytes = baos.toByteArray();
@@ -96,14 +94,21 @@ public class EmailServiceImpl implements EmailService {
             MimeMessage message = sender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(toEmail);
-            helper.setSubject("Confirm your CultureFit account");
+            helper.setSubject("Detalles de tu cita en CultureFit");
 
             helper.setText(
-                    "<div style='text-align: center; font-family: Arial, sans-serif;'>" +
-                            "<p>Escanea el siguiente código QR para confirmar tu cuenta:</p>" +
-                            "<img src='cid:qrCodeImage' style='width:250px;height:auto;'/>" +
-                            "</div>",
+                    "<div style='background-color: #FF5400; padding: 20px; text-align: center; display: flex; align-items: center; justify-content: center;'>"
+                            + "<img src='cid:imageId' alt='Logo CultureFit' style='width:70px; height:auto; margin-right: 5px;'/>"
+                            + "<h1 style='color: white; font-family: Montserrat, Arial, sans-serif; margin: 0;'>CultureFit</h1>"
+                            + "</div>"
+                            + "<div style='padding: 20px; font-family: Montserrat, Arial, sans-serif; text-align: center;'>"
+                            + "<p style='font-size: 16px; color: #333;'>Escanea el siguiente código QR para ver los detalles de tu cita:</p>"
+                            + "<img src='cid:qrCodeImage' style='width:250px;height:auto;margin-top:15px;'/>"
+                            + "</div>",
                     true);
+
+            ClassPathResource image = new ClassPathResource("imgs/CultureFitLogoBlanco.png");
+            helper.addInline("imageId", image);
 
             helper.addInline("qrCodeImage", new ByteArrayDataSource(imageBytes, "image/png"));
 
