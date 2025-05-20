@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState, Da } from "react";
 import { AuthContext } from "@/AuthContext";
 import { useTranslation } from "react-i18next";
 
@@ -20,17 +20,29 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 function YourProgress() {
   const { t } = useTranslation("progress");
-
   const { user } = useContext(AuthContext);
 
   const [selectedExercise, setSelectedExercise] = useState(1);
   const [graphData, setGraphData] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [pointToDelete, setPointToDelete] = useState(null);
 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [exercise, setExercise] = useState("");
@@ -54,6 +66,7 @@ function YourProgress() {
 
     const data = await response.json();
     const fetchedData = data.map((item) => ({
+      id: item.id,
       date: item.date.toString(),
       weight: item.weight,
       repetitions: item.repetitions,
@@ -85,6 +98,7 @@ function YourProgress() {
 
   async function createProgressPoint() {
     const newPP = {
+      id: `${Date.now()}`,
       date: date,
       repetitions: reps,
       weight: weight,
@@ -103,6 +117,41 @@ function YourProgress() {
 
     setSelectedExercise(exercise);
     obtainData(selectedExercise);
+  }
+
+  const handlePointClick = (e) => {
+    if (e.activePayload) {
+      const clickedPoint = e.activePayload[0].payload;
+      setPointToDelete(clickedPoint);
+      setIsDeleteDialogOpen(true);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (pointToDelete) {
+      await deleteProgressPoint(pointToDelete.id);
+      setIsDeleteDialogOpen(false);
+      setPointToDelete(null);
+    }
+  };
+
+  async function deleteProgressPoint(id) {
+    try {
+      const response = await fetch(
+        `http://localhost:9000/delete-progress-point/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar el punto");
+      }
+
+      obtainData(selectedExercise);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   }
 
   return (
@@ -140,6 +189,7 @@ function YourProgress() {
                     left: 12,
                     right: 12,
                   }}
+                  onClick={handlePointClick}
                 >
                   <CartesianGrid vertical={false} />
                   <XAxis
@@ -188,6 +238,22 @@ function YourProgress() {
                 </LineChart>
               </ChartContainer>
             </CardContent>
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Eliminar este registro?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {pointToDelete && `Estás a punto de eliminar el registro del ${pointToDelete.date}`}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={confirmDelete}>
+                    Confirmar
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </Card>
         )}
       </div>

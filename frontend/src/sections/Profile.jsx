@@ -13,6 +13,9 @@
   import { toast } from "@/components/ui/use-toast"
   import { Badge } from "@/components/ui/badge"
 
+  import YourProgress from "./YourProgress"
+  import Workout from "./Workout"
+
   export default function Profile() {
     const { user: authUser, loading } = useContext(AuthContext)
     const { t } = useTranslation("Profile")
@@ -471,6 +474,10 @@
               </Tabs>
             </div>
           </div>
+        </div>
+        <div className="mx-20">
+          <YourProgress></YourProgress>
+          <Workout></Workout>
         </div>
       </div>
     )

@@ -257,7 +257,7 @@ function Workout() {
             {...listeners}
             style={{ cursor: "grab" }}
           >
-            <span className="text-sm flex truncate delay:20 items-center">
+            <span className="text-sm flex delay:20 items-center">
               <IoReorderThreeOutline className="h-5 w-5" />
               <Avatar className="h-7 w-7 shadow me-1">
                 <AvatarImage
@@ -269,7 +269,9 @@ function Workout() {
                   <Dumbbell></Dumbbell>
                 </AvatarFallback>
               </Avatar>
-              {currentExercise[t("exerciseName")]} x {sets}
+              <div className="">
+                {currentExercise[t("exerciseName")]} x {sets}
+              </div>
             </span>
           </div>
           <div

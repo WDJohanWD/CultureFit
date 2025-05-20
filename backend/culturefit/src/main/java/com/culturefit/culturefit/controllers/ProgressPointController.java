@@ -58,9 +58,9 @@ public class ProgressPointController {
     }
 
     //Delete
-    @DeleteMapping ("/delete-progress-popint/{id}")
-    public void deleteProgressPoint(Long id) {
-        progressPointService.deleteProgressPoint(id);
+    @DeleteMapping ("/delete-progress-point/{id}")
+    public boolean deleteProgressPoint(@PathVariable Long id) {
+        return progressPointService.deleteProgressPoint(id);
     }
 
     // Put
