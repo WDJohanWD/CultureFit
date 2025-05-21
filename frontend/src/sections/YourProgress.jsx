@@ -155,8 +155,8 @@ function YourProgress() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row">
-      <div className="ms-5 my-5 w-120 sm:w-150 md:w-200 lg:w-240 xl:w-240">
+    <div className="flex flex-col xl:flex-row">
+      <div className="w-full xl:w-[60%] my-5">
         <select
           name=""
           className="bg-gray-50 mb-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-50 p-2"
@@ -238,18 +238,22 @@ function YourProgress() {
                 </LineChart>
               </ChartContainer>
             </CardContent>
-            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <AlertDialog
+              open={isDeleteDialogOpen}
+              onOpenChange={setIsDeleteDialogOpen}
+            >
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>¿Eliminar este registro?</AlertDialogTitle>
+                  <AlertDialogTitle>{`${t("confirmTitle")}`}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    {pointToDelete && `Estás a punto de eliminar el registro del ${pointToDelete.date}`}
+                    {pointToDelete &&
+                      `${t("confirmDesc")} ${pointToDelete.date}`}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogCancel>{`${t("confirmN")}`}</AlertDialogCancel>
                   <AlertDialogAction onClick={confirmDelete}>
-                    Confirmar
+                    {`${t("confirmY")}`}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -257,7 +261,7 @@ function YourProgress() {
           </Card>
         )}
       </div>
-      <div className="mt-15 text-primary mx-auto my-5 px-4 w-120">
+      <div className="mt-5 xl:mt-15 text-primary mx-auto px-4 w-full md:w-120">
         <div className="flex-row md:items-end justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <label
@@ -283,7 +287,7 @@ function YourProgress() {
             </select>
           </div>
 
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-[100px]">
             <label
               htmlFor="date"
               className="montserrat font-semibold block mb-1"
@@ -291,7 +295,7 @@ function YourProgress() {
               {t("date")}
             </label>
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger className="w-full">
                 <Button
                   variant={"outline"}
                   className={cn(
@@ -301,10 +305,14 @@ function YourProgress() {
                   id="date"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  {date ? (
+                    format(date, "PPP")
+                  ) : (
+                    <span></span>
+                  )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 z-50">
                 <Calendar
                   mode="single"
                   selected={date}

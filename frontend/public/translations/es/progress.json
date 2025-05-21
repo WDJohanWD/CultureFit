@@ -6,5 +6,9 @@
     "weight": "Peso",
     "reps": "Repeticiones",
     "select": "Selecciona el ejercicio",
-    "exerciseName": "nameES"
+    "exerciseName": "nameES",
+    "confirmTitle": "¿Eliminar este registro?",
+    "confirmDesc": "Estás a punto de eliminar el registro del",
+    "confirmY": "Confirmar",
+    "confirmN": "Cancelar"
 }

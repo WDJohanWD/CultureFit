@@ -29,5 +29,7 @@
     "toast-password-error": "There was an error updating your password. Please try again.",
     "toast-image-success-title": "Image updated",
     "toast-image-success-description": "Your profile image has been successfully updated.",
-    "toast-image-error": "There was an error uploading the image. Please try again."
+    "toast-image-error": "There was an error uploading the image. Please try again.",
+    "progress":"Your Progress",
+    "workout":"Workout"
 }
