@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "@/components/ui/use-toast"
 
 import { Trash2, Dumbbell } from "lucide-react";
 import { LuRotateCcw } from "react-icons/lu";
@@ -101,10 +102,18 @@ function Workout() {
     );
 
     if (!response.ok) {
+      toast({
+              title: t("saveErrorTitle"),
+              description: t("saveErrorDescription"),
+      })
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
+    toast({
+              title: t("saveSuccessTitle"),
+              description: t("saveSuccessDescription"),
+    })
   }
 
   useEffect(() => {
@@ -257,19 +266,22 @@ function Workout() {
             {...listeners}
             style={{ cursor: "grab" }}
           >
-            <span className="text-sm flex truncate delay:20 items-center">
+            <span className="text-sm flex delay:20 items-center">
               <IoReorderThreeOutline className="h-5 w-5" />
               <Avatar className="h-7 w-7 shadow me-1">
                 <AvatarImage
                   src={`${API_URL}${exerciseList[exercise-1].imageUrl}`}
                   alt="ejercicio"
                   className="object-cover"
+                  loading="lazy"
                 />
                 <AvatarFallback className="text-2xl p-2 bg-primary/10 text-primary">
                   <Dumbbell></Dumbbell>
                 </AvatarFallback>
               </Avatar>
-              {currentExercise[t("exerciseName")]} x {sets}
+              <div className="">
+                {currentExercise[t("exerciseName")]} x {sets}
+              </div>
             </span>
           </div>
           <div
@@ -407,7 +419,7 @@ function Workout() {
   };
 
   return (
-    <div className="flex flex-col mx-auto w-full px-4 sm:px-6 lg:px-8 max-w-[1600px] mt-15 mb-20">
+    <div className="flex flex-col mx-auto w-full px-4 sm:px-6 lg:px-8 max-w-[1600px] mt-7 mb-20">
       <DndContext
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}

@@ -6,5 +6,9 @@
     "weight": "Weight",
     "reps": "Repetitions",
     "select": "Select the exercise",
-    "exerciseName": "nameEN"
+    "exerciseName": "nameEN",
+    "confirmTitle": "¿Delete this point?",
+    "confirmDesc": "You are about to delete a point dated from",
+    "confirmY": "Confirm",
+    "confirmN": "Cancel"
 }
