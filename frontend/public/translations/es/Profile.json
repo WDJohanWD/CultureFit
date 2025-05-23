@@ -31,5 +31,9 @@
     "toast-image-success-description": "Tu imagen de perfil ha sido actualizada correctamente.",
     "toast-image-error": "Hubo un error al subir la imagen. Por favor, inténtalo de nuevo.",
     "progress":"Tu progreso",
-    "workout":"Rutina"
+    "workout":"Rutina",
+    "friends": "Amigos",
+    "friends-req": "Solicitudes de amigo",
+    "no-fr": "No tienes ninguna solicitud de amigo",
+    "no-f": "Aún no has añadido a ningun amigo"
 }
