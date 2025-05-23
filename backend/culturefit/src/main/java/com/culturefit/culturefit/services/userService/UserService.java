@@ -2,6 +2,7 @@ package com.culturefit.culturefit.services.userService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +27,16 @@ public interface UserService {
 
     User updateUserEdit(Long id, UserEditDto user) throws IOException;
 
+    List<User> getFriendRequests(Long userId);
 
+    List<User> getFriends(Long userId);
+
+    void sendFriendRequest(Long senderId, Long receiverId);
+
+    void acceptFriendRequest(Long receiverId, Long senderId);
+
+    void rejectFriendRequest(Long receiverId, Long senderId);
+
+    void removeFriend(Long userId, Long friendId);
 }
 
