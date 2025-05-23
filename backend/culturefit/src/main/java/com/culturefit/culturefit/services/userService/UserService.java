@@ -20,12 +20,14 @@ public interface UserService {
 
     User getUserByName(String name);
 
+    User getUserByStryipeId(String id);
+
     User updateUser(Long id, User user);
 
     User updatePassword(Long userId, String currentPassword, String newPassword);
 
     User updateUserEdit(Long id, UserEditDto user) throws IOException;
 
-
+    User redeemAppointment(Long id) throws RuntimeException;
 }
 

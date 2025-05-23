@@ -7,4 +7,5 @@ import com.stripe.model.checkout.Session;
 public interface PaymentService {
     Session createCheckoutSession(String priceId, String email) throws StripeException;
     Customer createCustomer(String name, String email) throws StripeException;
+    Session createAppointmentSession(String priceId, String stripeId) throws StripeException;
 }

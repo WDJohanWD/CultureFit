@@ -44,6 +44,26 @@ public class PaymentServiceImpl implements PaymentService{
         } catch (Exception e) {
             throw new StripePaymentException();
         }
+    }
 
+    public Session createAppointmentSession(String priceId, String stripeId) throws StripeException {
+        try {
+            SessionCreateParams params = SessionCreateParams.builder()
+                //TODO: Cambiar urls de exito y de cancelación 
+                .setSuccessUrl("https://example.com/success")
+                .setCancelUrl("https://example.com/cancel")
+                .addLineItem(
+                    SessionCreateParams.LineItem.builder()
+                        .setPrice(priceId)
+                        .setQuantity(1L)
+                        .build()
+                )
+                .setCustomer(stripeId)
+                .setMode(SessionCreateParams.Mode.PAYMENT)
+                .build();
+            return Session.create(params);
+        } catch (Exception e) {
+            throw new StripePaymentException();
+        }
     }
 }

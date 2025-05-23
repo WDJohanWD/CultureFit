@@ -75,8 +75,12 @@ public class UserController {
         User userUpdated = userService.updateUserEdit(id, user);
         return ResponseEntity.ok(userUpdated);
     }
-
     
+    @PostMapping("user-redeem-appointment/{id}")
+    public ResponseEntity<?> reedemAppointment(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.redeemAppointment(id));
+    }
+
     //Delete
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
