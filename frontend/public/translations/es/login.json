@@ -4,5 +4,6 @@
     "email": "Correo",
     "pass": "Contraseña",
     "account":"¿No tienes cuenta?",
-    "signup": "Regístrate"
+    "signup": "Regístrate",
+    "invalid_credentials": "Credenciales inválidas"
 }

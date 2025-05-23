@@ -11,5 +11,8 @@
     "repeatPass": "Repite tu contraseña",
     "account": "¿Ya tienes cuenta?",
     "login": "Iniciar sesión",
-    "birthDate": "Fecha de nacimiento"
+    "birthDate": "Fecha de nacimiento",
+    "goHome": "Ir a inicio",
+    "verificationSentTitle": "Correo de verificación enviado",
+    "verificationSentText": "Por favor, revisa tu correo electrónico para verificar tu cuenta."
 }

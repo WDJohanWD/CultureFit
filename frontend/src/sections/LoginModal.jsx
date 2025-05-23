@@ -31,8 +31,11 @@ function LoginModal({ isOpen, onClose }) {
     try {
       const success = await login(email, password);
       if (success) {
+        setError(null);
         navigate("/");
-        onClose(); // Cerrar el modal después de login exitoso
+        onClose();
+      } else {
+        setError(t("invalid_credentials") || "Las credenciales introducidas son incorrectas.");
       }
     } catch {
       setError(t("error"));
@@ -132,7 +135,7 @@ function LoginModal({ isOpen, onClose }) {
                   {t("signup")}
                 </Link>
               </p>
-
+          
               {error && (
                 <Alert variant="destructive" className="mt-4 w-full">
                   <AlertCircle className="h-4 w-4" />

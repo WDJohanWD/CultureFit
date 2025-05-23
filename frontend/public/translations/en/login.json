@@ -4,5 +4,6 @@
     "email": "Email",
     "pass": "Password",
     "account":"Dont have an account?",
-    "signup": "Sign Up"
+    "signup": "Sign Up",
+    "invalid_credentials": "Invalid credentials"
 }
