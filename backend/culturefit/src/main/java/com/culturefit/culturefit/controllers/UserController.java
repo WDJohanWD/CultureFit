@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import com.culturefit.culturefit.dto.FriendRequestDto;
 import com.culturefit.culturefit.dto.PasswordUpdateDto;
 import com.culturefit.culturefit.dto.UserEditDto;
 
@@ -85,5 +88,47 @@ public class UserController {
     }
 
 
+    // Peticiones de amistad
+    // Obtener todas las solicitudes de amistad recibidas por un usuario
+    @GetMapping("/{userId}/friend-requests")
+    public ResponseEntity<List<User>> getFriendRequests(@PathVariable Long userId) {
+        List<User> requests = userService.getFriendRequests(userId);
+        return ResponseEntity.ok(requests);
+    }
 
+    // Obtener todos los amigos del usuario
+    @GetMapping("/{userId}/friends")
+    public ResponseEntity<List<User>> getFriends(@PathVariable Long userId) {
+        List<User> friends = userService.getFriends(userId);
+        return ResponseEntity.ok(friends);
+    }
+
+
+    // Enviar solicitud
+    @PostMapping("/friend-request/send")
+    public ResponseEntity<Void> sendFriendRequest(@RequestBody FriendRequestDto request) {
+        userService.sendFriendRequest(request.senderId(), request.receiverId());
+        return ResponseEntity.ok().build();
+    }
+
+    // Aceptar una solicitud de amistad
+    @PutMapping("/friend-request/accept")
+    public ResponseEntity<Void> acceptFriendRequest(@RequestBody FriendRequestDto request) {
+        userService.acceptFriendRequest(request.receiverId(), request.senderId());
+        return ResponseEntity.ok().build();
+    }
+
+    // Rechazar una solicitud de amistad
+    @PutMapping("/friend-request/reject")
+    public ResponseEntity<Void> rejectFriendRequest(@RequestBody FriendRequestDto request) {
+        userService.rejectFriendRequest(request.receiverId(), request.senderId());
+        return ResponseEntity.ok().build();
+    }
+
+    // Eliminar a un amigo
+    @DeleteMapping("/friend/delete")
+    public ResponseEntity<Void> removeFriend(@RequestBody FriendRequestDto request) {
+        userService.removeFriend(request.senderId(), request.receiverId());
+        return ResponseEntity.ok().build();
+    }
 }
