@@ -1,5 +1,6 @@
 {
     "noData": "No has empezado tu progreso en este ejercicio",
+    "noPublicData": "El usuario no tiene progreso en este ejercicio",
     "add": "Añadir récord",    
     "exercise": "Ejercicio",
     "date": "Fecha",

@@ -40,6 +40,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import YourProgress from "./YourProgress";
 import Workout from "./Workout";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { user: authUser, loading } = useContext(AuthContext);
@@ -658,6 +659,8 @@ export default function Profile() {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              {/* Friends Tab */}
               <TabsContent value="friends">
                 <Card className="md:col-span-1 border-muted/40 shadow-sm">
                   <CardHeader className="pb-2">
@@ -674,35 +677,92 @@ export default function Profile() {
                       className="w-full"
                     >
                       <AccordionItem value="item-1">
+                        <AccordionTrigger>{t("friends")}</AccordionTrigger>
+                        <AccordionContent>
+                          <ScrollArea className="h-45 w-full rounded-md border">
+                            <div className="p-4 grid grid-cols-2 gap-2">
+                              {friends.length === 0 ? (
+                                <div className="text-primary col-span-2">
+                                  {t("no-f")}
+                                </div>
+                              ) : (
+                                friends.map((request) => (
+                                  <div
+                                    key={request.id}
+                                    className="flex items-center justify-between align-middle mb-3 border px-5 py-3 rounded-lg hover:bg-gray-100"
+                                  >
+                                    <Link
+                                      to={`/profile/${request.name}`}
+                                      className="col-span-1"
+                                    >
+                                      <div className="flex items-center">
+                                        <Avatar className="h-10 w-10 border-2 border-background shadow-md me-3">
+                                          <AvatarImage
+                                            src={`${API_URL}${request.imageUrl}`}
+                                            alt="Foto de perfil"
+                                            className="object-cover"
+                                          />
+                                          <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                                            <User />
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-lg font-">
+                                          {request.name}
+                                        </span>
+                                      </div>
+                                    </Link>
+
+                                    <div className="flex flex-row gap-x-3">
+                                      <Button
+                                        variant="ghost"
+                                        type="button"
+                                        className="border border-red-600 hover:bg-red-600 text-red-600 hover:text-white font-semibold shadow-md rounded-lg
+                                                px-3 hover:scale-105 transition"
+                                        value={request.id}
+                                        onClick={deleteFriend}
+                                      >
+                                        <Trash2></Trash2>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </ScrollArea>
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem value="item-2">
                         <AccordionTrigger>{t("friends-req")}</AccordionTrigger>
                         <AccordionContent>
                           <ScrollArea className="h-45 w-full rounded-md border">
-                            <div className="p-4">
+                            <div className="p-4 grid grid-cols-2 gap-2">
                               {friendRequests.length === 0 ? (
-                                <div className="text-primary">
+                                <div className="text-primary col-span-2">
                                   {t("no-fr")}
                                 </div>
                               ) : (
                                 friendRequests.map((request) => (
                                   <div
                                     key={request.id}
-                                    className="flex items-center justify-between align-middle mb-3 border px-5 py-3 rounded-lg"
+                                    className="flex items-center justify-between align-middle mb-3 border px-5 py-3 rounded-lg hover:bg-gray-100"
                                   >
-                                    <div className="flex items-center">
-                                      <Avatar className="h-10 w-10 border-2 border-background shadow-md me-3">
-                                        <AvatarImage
-                                          src={`${API_URL}${request.imageUrl}`}
-                                          alt="Foto de perfil"
-                                          className="object-cover"
-                                        />
-                                        <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                                          <User />
-                                        </AvatarFallback>
-                                      </Avatar>
-                                      <span className="text-lg font-">
-                                        {request.name}
-                                      </span>
-                                    </div>
+                                    <Link to={`/profile/${request.name}`}>
+                                      <div className="flex items-center">
+                                        <Avatar className="h-10 w-10 border-2 border-background shadow-md me-3">
+                                          <AvatarImage
+                                            src={`${API_URL}${request.imageUrl}`}
+                                            alt="Foto de perfil"
+                                            className="object-cover"
+                                          />
+                                          <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                                            <User />
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-lg font-">
+                                          {request.name}
+                                        </span>
+                                      </div>
+                                    </Link>
                                     <div className="flex flex-row gap-x-3">
                                       <Button
                                         variant="ghost"
@@ -732,55 +792,6 @@ export default function Profile() {
                           </ScrollArea>
                         </AccordionContent>
                       </AccordionItem>
-                      <AccordionItem value="item-2">
-                        <AccordionTrigger>{t("friends")}</AccordionTrigger>
-                        <AccordionContent>
-                          <ScrollArea className="h-45 w-full rounded-md border">
-                            <div className="p-4">
-                              {friends.length === 0 ? (
-                                <div className="text-primary">
-                                  {t("no-f")}
-                                </div>
-                              ) : (
-                                friends.map((request) => (
-                                  <div
-                                    key={request.id}
-                                    className="flex items-center justify-between align-middle mb-3 border px-5 py-3 rounded-lg"
-                                  >
-                                    <div className="flex items-center">
-                                      <Avatar className="h-10 w-10 border-2 border-background shadow-md me-3">
-                                        <AvatarImage
-                                          src={`${API_URL}${request.imageUrl}`}
-                                          alt="Foto de perfil"
-                                          className="object-cover"
-                                        />
-                                        <AvatarFallback className="text-2xl bg-primary/10 text-primary">
-                                          <User />
-                                        </AvatarFallback>
-                                      </Avatar>
-                                      <span className="text-lg font-">
-                                        {request.name}
-                                      </span>
-                                    </div>
-                                    <div className="flex flex-row gap-x-3">
-                                      <Button
-                                        variant="ghost"
-                                        type="button"
-                                        className="border border-red-600 hover:bg-red-600 text-red-600 hover:text-white font-semibold shadow-md rounded-lg
-                                                px-3 hover:scale-105 transition"
-                                        value={request.id}
-                                        onClick={deleteFriend}
-                                      >
-                                        <Trash2></Trash2>
-                                      </Button>
-                                    </div>
-                                  </div>
-                                ))
-                              )}
-                            </div>
-                          </ScrollArea>
-                        </AccordionContent>
-                      </AccordionItem>
                     </Accordion>
                   </CardContent>
                 </Card>
@@ -790,18 +801,26 @@ export default function Profile() {
         </div>
       </div>
       <div className="flex flex-col gap-y-20 mx-2 md:mx-20 mt-10 xl:mt-20">
-        <div className="flex-1 xl:mx-8">
-          <h1 className="text-primary montserrat font-bold text-2xl uppercase">{`${t(
-            "progress"
-          )}`}</h1>
-          <YourProgress />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-primary montserrat font-bold text-2xl xl:mx-8 uppercase">{`${t(
-            "workout"
-          )}`}</h1>
-          <Workout />
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle
+              className={"text-primary text-xl font-bold uppercase"}
+            >{`${t("progress")}`}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <YourProgress />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle
+              className={"text-primary text-xl font-bold uppercase"}
+            >{`${t("workout")}`}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Workout />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

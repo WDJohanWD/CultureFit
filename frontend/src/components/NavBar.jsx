@@ -7,7 +7,12 @@ import { LuLogOut, LuChevronDown } from "react-icons/lu";
 import { FaBars } from "react-icons/fa";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import LoginModal from "../sections/LoginModal";
+import SearchModal from "../sections/SearchModal";
 import Profile from "../assets/login.svg";
+
+import {
+  Search
+} from "lucide-react";
 
 function NavBar() {
   // Seleccionar el NameSpace que estamos utilizando
@@ -18,6 +23,7 @@ function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navbarRef = useRef(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   //Cambiar el idioma de la pagina web
   const onChangeLang = (e) => {
@@ -125,6 +131,14 @@ function NavBar() {
           <div className="items-center align-middle text-center">
             {user ? (
               <div className="flex flex-row items-center justify-center my-4 gap-x-5">
+                <button
+                  className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
+                                      shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
+                                      text-lg px-5 py-2.5 text-center me-4 mb-2 mt-2"
+                  onClick={() => setIsSearchOpen(true)}
+                >
+                  {t("login")}
+                </button>
                 <div className="flex flex-col">
                   <Link
                     to="/profile"
@@ -188,15 +202,23 @@ function NavBar() {
           </div>
         </div>
 
-        <div className="flex items-center hidden lg:flex">
+        <div className="items-center hidden lg:flex">
           {user ? (
             <>
+              <button
+                  className="text-white me-6 cursor-pointer"
+                  onClick={() => setIsSearchOpen(true)}
+                >
+                  <Search />
+              </button>
               <div className="flex flex-col items-center me-2">
-                <Link to="/profile" className="pt-1 hover:underline">
+                
+                <Link to="/profile" className="flex flex-col pt-1 items-center hover:underline">
                   {" "}
                   <img src={Profile} alt="Profile" className="h-9 w-12" />{" "}
+                  <span className="text-sm">{user.name}</span>
                 </Link>
-                <span className="text-sm">{user.name}</span>
+                
               </div>
 
               <button
@@ -250,6 +272,10 @@ function NavBar() {
         <LoginModal
           isOpen={isLoginOpen}
           onClose={() => setIsLoginOpen(false)}
+        />
+        <SearchModal
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
         />
       </div>
     </nav>
