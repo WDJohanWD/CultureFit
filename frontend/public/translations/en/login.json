@@ -5,5 +5,8 @@
     "pass": "Password",
     "account":"Dont have an account?",
     "signup": "Sign Up",
-    "invalid_credentials": "Invalid credentials"
+    "invalid_credentials": "Invalid credentials",
+    "reset_sent_title": "Email sent",
+    "reset_sent_msg": "We have sent an email with instructions to change your password. Please check your inbox (and spam folder).",
+    "close": "Close"
 }

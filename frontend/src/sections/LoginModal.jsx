@@ -16,12 +16,13 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEyeSlash, FaRegEye } from "react-icons/fa";
+import PasswordResetSentModal from "./PasswordResetSentModal";
 
 function LoginModal({ isOpen, onClose }) {
   const { t } = useTranslation("login");
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
-
+  const [isPasswordResetSent, setIsPasswordResetSent] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
@@ -51,7 +52,7 @@ function LoginModal({ isOpen, onClose }) {
     setShowPassword(!showPassword);
   };
 
-  if (!isOpen) return null; 
+  if (!isOpen) return null;
 
   return (
     <AnimatePresence>
@@ -109,12 +110,16 @@ function LoginModal({ isOpen, onClose }) {
                       className="w-full"
                     />
                     <div id="eye-icon" onClick={togglePasswordVisibility} className="-ml-8 mt-2">
-                    {showPassword ? <FaRegEye className="text-xl"/> : <FaEyeSlash className="text-xl"/>}
+                      {showPassword ? <FaRegEye className="text-xl" /> : <FaEyeSlash className="text-xl" />}
                     </div>
                   </div>
+                  <Button variant="link" className="justify-end w-full" onClick={() => setIsPasswordResetSent(true)}>
+                    <p className="text-end text-xs">He olvidado mi contraseña</p>
+                  </Button>
+
                 </div>
 
-                <Button 
+                <Button
                   type="submit"
                   className="w-full mt-6 text-white bg-gradient-to-r from-orange-400 to-orange-600 
                 hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5 select-none"
@@ -135,7 +140,7 @@ function LoginModal({ isOpen, onClose }) {
                   {t("signup")}
                 </Link>
               </p>
-          
+
               {error && (
                 <Alert variant="destructive" className="mt-4 w-full">
                   <AlertCircle className="h-4 w-4" />
@@ -147,6 +152,7 @@ function LoginModal({ isOpen, onClose }) {
           </Card>
         </motion.div>
       )}
+      <PasswordResetSentModal isOpen={isPasswordResetSent} onClose={() => setIsPasswordResetSent(false)} />
     </AnimatePresence>
   );
 }

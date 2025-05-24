@@ -3,7 +3,10 @@
     "title": "Iniciar Sesión",
     "email": "Correo",
     "pass": "Contraseña",
-    "account":"¿No tienes cuenta?",
+    "account": "¿No tienes cuenta?",
     "signup": "Regístrate",
-    "invalid_credentials": "Credenciales inválidas"
+    "invalid_credentials": "Credenciales inválidas",
+    "reset_sent_title": "Correo enviado",
+    "reset_sent_msg": "Hemos enviado un correo con instrucciones para cambiar tu contraseña. Por favor, revisa tu bandeja de entrada (y la carpeta de spam).",
+    "close": "Cerrar"
 }
