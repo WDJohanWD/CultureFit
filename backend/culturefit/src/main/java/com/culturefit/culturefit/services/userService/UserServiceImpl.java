@@ -32,8 +32,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ProfileImageService profileImageService;
 
-    @Autowired
-    private AppointmentService appointmentService;
 
     @Override
     public User saveUser(@Valid User user) throws ErrorSavingUserException {
@@ -83,6 +81,12 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(NotFoundUserException::new);
     }
 
+    @Override
+    public List<User> searchUsersByName(String search) {
+        List<User> users = userRepository.searchByName(search);
+        return users;
+    }
+
 
     @Override
     public User activateUser(User user) {
@@ -97,7 +101,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean deleteUser(Long id) {
         try {
-            appointmentService.deleteByUser(id);
             userRepository.deleteById(id);
             return true;
         } catch (Exception e) {
@@ -157,18 +160,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public void sendFriendRequest(Long senderId, Long receiverId) {
         if (senderId.equals(receiverId)) {
-            throw new IllegalArgumentException("No puedes enviarte una solicitud a ti mismo.");
+            throw new RuntimeException("No puedes enviarte una solicitud a ti mismo.");
         }
 
         User sender = getUser(senderId);
         User receiver = getUser(receiverId);
 
         if (sender.getFriendList().contains(receiver)) {
-            throw new IllegalStateException("Ya sois amigos.");
+            throw new RuntimeException("Ya sois amigos.");
         }
 
         if (receiver.getFriendRequestsReceived().contains(sender)) {
-            throw new IllegalStateException("Ya has enviado una solicitud a este usuario.");
+            throw new RuntimeException("Ya has enviado una solicitud a este usuario.");
         }
 
         receiver.getFriendRequestsReceived().add(sender);
@@ -182,7 +185,7 @@ public class UserServiceImpl implements UserService {
         User sender = getUser(senderId);
 
         if (!receiver.getFriendRequestsReceived().contains(sender)) {
-            throw new IllegalStateException("No hay solicitud de amistad de este usuario.");
+            throw new RuntimeException("No hay solicitud de amistad de este usuario.");
         }
 
         // Eliminar solicitud
@@ -202,7 +205,7 @@ public class UserServiceImpl implements UserService {
         User sender = getUser(senderId);
 
         if (!receiver.getFriendRequestsReceived().contains(sender)) {
-            throw new IllegalStateException("No hay solicitud de amistad de este usuario.");
+            throw new RuntimeException("No hay solicitud de amistad de este usuario.");
         }
 
         receiver.getFriendRequestsReceived().remove(sender);
@@ -215,7 +218,7 @@ public class UserServiceImpl implements UserService {
         User friend = getUser(friendId);
 
         if (!user.getFriendList().contains(friend)) {
-            throw new IllegalStateException("Este usuario no es tu amigo.");
+            throw new RuntimeException("Este usuario no es tu amigo.");
         }
 
         user.getFriendList().remove(friend);

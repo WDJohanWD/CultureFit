@@ -20,6 +20,7 @@ public interface UserService {
     boolean deleteUser(Long id);
 
     User getUserByName(String name);
+    List<User> searchUsersByName(String search);
 
     User updateUser(Long id, User user);
 

@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.culturefit.culturefit.dto.FriendRequestDto;
 import com.culturefit.culturefit.dto.PasswordUpdateDto;
+import com.culturefit.culturefit.dto.UserDTO;
 import com.culturefit.culturefit.dto.UserEditDto;
 
 @RestController
@@ -45,6 +47,20 @@ public class UserController {
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         User user = userService.getUser(id);
         return ResponseEntity.ok(user);
+    }
+
+    @GetMapping("/username/{name}")
+    public ResponseEntity<UserDTO> getUserByName(@PathVariable String name) {
+        User user = userService.getUserByName(name);
+        UserDTO dto = new UserDTO(user.getId(), user.getName(), user.getImageUrl());
+        return ResponseEntity.ok(dto);
+    }
+    
+    @GetMapping("/search/{search}")
+    public List<UserDTO> searchUsers(@PathVariable String search) {
+        return userService.searchUsersByName(search).stream()
+        .map(user -> new UserDTO(user.getId(), user.getName(), user.getImageUrl()))
+        .toList();
     }
 
     //Posts
