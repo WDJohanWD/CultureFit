@@ -8,5 +8,16 @@
     "invalid_credentials": "Invalid credentials",
     "reset_sent_title": "Email sent",
     "reset_sent_msg": "We have sent an email with instructions to change your password. Please check your inbox (and spam folder).",
-    "close": "Close"
+    "close": "Close",
+    "introduceEmail": "Introduce your email.",
+    "send": "Send email",
+    "email_placeholder": "Email",
+    "forgot_password": "Forgot password?",
+    "set_new_password": "Set new password",
+    "new_password": "New password",
+    "confirm_password": "Confirm password",
+    "password_mismatch": "Passwords do not match",
+    "save_password": "Save password",
+    "back_to_login": "Back to login",
+    "change_password": "Change password"
 }

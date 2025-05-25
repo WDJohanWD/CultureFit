@@ -20,18 +20,20 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.culturefit.culturefit.dto.PasswordUpdateDto;
+import com.culturefit.culturefit.dto.ResetPasswordDto;
 import com.culturefit.culturefit.dto.UserEditDto;
 
 @RestController
 @Validated
 public class UserController {
 
-    
     @Autowired
     private UserService userService;
 
-    //Getters
+    // Getters
     @GetMapping("/users")
     public List<User> getUsers() {
         List<User> users = userService.getUsers();
@@ -44,20 +46,21 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    //Posts
+    // Posts
     @PostMapping("/user")
     public ResponseEntity<User> postUser(@Valid @RequestBody User user) {
         User userSaved = userService.saveUser(user);
         return ResponseEntity.ok(userSaved);
     }
-    
+
     @PostMapping("/user/upload-profile-image/{id}")
-    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
+    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestBody MultipartFile image)
+            throws IOException {
         userService.assignImage(id, image);
         return ResponseEntity.ok("The image has been uploaded successfully");
     }
 
-    //Put
+    // Put
     @PutMapping("/user/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
         User userUpdated = userService.updateUser(id, user);
@@ -65,25 +68,31 @@ public class UserController {
     }
 
     @PutMapping("/updatePassword/{userId}")
-    public ResponseEntity<User> updatePassword(@PathVariable Long userId, @RequestBody PasswordUpdateDto passwordUpdateDTO) {
-        User updatedUser = userService.updatePassword(userId, passwordUpdateDTO.getCurrentPassword(), passwordUpdateDTO.getNewPassword());
+    public ResponseEntity<User> updatePassword(@PathVariable Long userId,
+            @RequestBody PasswordUpdateDto passwordUpdateDTO) {
+        User updatedUser = userService.updatePassword(userId, passwordUpdateDTO.getCurrentPassword(),
+                passwordUpdateDTO.getNewPassword());
         return ResponseEntity.ok(updatedUser);
     }
 
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        userService.resetPassword(resetPasswordDto.getToken(), resetPasswordDto.getPassword());
+        return ResponseEntity.ok("Password has been reset successfully");
+    }
+
     @PutMapping("/user-edit/{id}")
-    public ResponseEntity<User> updateUserEdit(@PathVariable Long id, @Valid @RequestBody UserEditDto user) throws Exception {
+    public ResponseEntity<User> updateUserEdit(@PathVariable Long id, @Valid @RequestBody UserEditDto user)
+            throws Exception {
         User userUpdated = userService.updateUserEdit(id, user);
         return ResponseEntity.ok(userUpdated);
     }
 
-    
-    //Delete
+    // Delete
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok("The user has been deleted successfully");
     }
-
-
 
 }

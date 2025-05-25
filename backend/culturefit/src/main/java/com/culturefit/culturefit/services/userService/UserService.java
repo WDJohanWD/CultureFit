@@ -10,10 +10,17 @@ import com.culturefit.culturefit.dto.UserEditDto;
 
 public interface UserService {
     User saveUser(User user);
+
     List<User> getUsers();
+
     User getUser(Long id);
+
     User assignImage(Long userId, MultipartFile file) throws IOException;
+
     User getUserByEmail(String email);
+
+    User resetPassword(String token, String newPassword);
+
     User activateUser(User user);
 
     boolean deleteUser(Long id);

@@ -8,26 +8,21 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.emails.domain.EmailQrDto;
 import com.culturefit.culturefit.emails.domain.EmailRequest;
+import com.culturefit.culturefit.emails.domain.EmailResetPasswordDto;
 import com.culturefit.culturefit.emails.service.EmailService;
 import com.culturefit.culturefit.services.userService.UserService;
 
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import java.util.Map;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 public class EmailController {
@@ -89,4 +84,13 @@ public class EmailController {
         }
     }
 
+    @PostMapping("/resetPassword")
+    public ResponseEntity<?> resetPassword(@RequestBody EmailResetPasswordDto email) {
+        boolean sent = emailService.sendEmailResetPassword(email.getEmail());
+        if (sent) {
+            return ResponseEntity.ok("Email de restablecimiento de contraseña enviado correctamente");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al enviar el email");
+        }
+    }
 }
