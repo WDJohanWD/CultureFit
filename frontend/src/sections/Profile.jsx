@@ -13,6 +13,7 @@ import {
   Check,
   X,
   Trash2,
+  LogOut,
 } from "lucide-react";
 import axios from "axios";
 
@@ -44,6 +45,7 @@ import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { user: authUser, loading } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
   const { t } = useTranslation("Profile");
   const API_URL = "http://localhost:9000";
   const [isEditing, setIsEditing] = useState(false);
@@ -328,6 +330,10 @@ export default function Profile() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   if (loading || !user || !formData)
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -342,15 +348,16 @@ export default function Profile() {
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <h1 className="text-3xl font-bold">{t("title")}</h1>
-          <Badge variant="outline" className="bg-primary/10 text-primary">
-            {isEditing
-              ? t("editing") || "Editando"
-              : t("viewing") || "Visualizando"}
-          </Badge>
+        <div className="flex sm:flex-row flex-col items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold">{t("title")}</h1>
+            <Badge variant="outline" className="bg-primary/10 text-primary">
+              {isEditing
+                ? t("editing") || "Editando"
+                : t("viewing") || "Visualizando"}
+            </Badge>
+          </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Profile Image Section */}
           <Card className="md:col-span-1 border-muted/40 shadow-sm">
@@ -429,7 +436,7 @@ export default function Profile() {
           {/* Main Content */}
           <div className="md:col-span-2">
             <Tabs defaultValue="info" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsList className="grid w-full lg:grid-cols-3 lg:grid-rows-1 h-auto mb-6 grid-cols-1 grid-rows-3">
                 <TabsTrigger
                   value="info"
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -680,7 +687,7 @@ export default function Profile() {
                         <AccordionTrigger>{t("friends")}</AccordionTrigger>
                         <AccordionContent>
                           <ScrollArea className="h-45 w-full rounded-md border">
-                            <div className="p-4 grid grid-cols-2 gap-2">
+                            <div className="p-4 grid kg:grid-cols-2 gap-2">
                               {friends.length === 0 ? (
                                 <div className="text-primary col-span-2">
                                   {t("no-f")}
@@ -735,7 +742,7 @@ export default function Profile() {
                         <AccordionTrigger>{t("friends-req")}</AccordionTrigger>
                         <AccordionContent>
                           <ScrollArea className="h-45 w-full rounded-md border">
-                            <div className="p-4 grid grid-cols-2 gap-2">
+                            <div className="p-4 grid lg:grid-cols-2 gap-2">
                               {friendRequests.length === 0 ? (
                                 <div className="text-primary col-span-2">
                                   {t("no-fr")}
@@ -799,13 +806,22 @@ export default function Profile() {
             </Tabs>
           </div>
         </div>
+        <button
+            className="flex gap-3 text-white bg-light-primary transition hover:ring-3 hover:outline-none 
+            hover:ring-orange-400 shadow-lg shadow-red-500/50 font-semibold rounded-lg 
+            cursor-pointer px-2 py-2.5 text-center mt-3"
+            onClick={handleLogout}
+          >
+            <LogOut /> {t("logout")}
+          </button>
       </div>
+      
       <div className="flex flex-col gap-y-20 mx-2 md:mx-20 mt-10 xl:mt-20">
         <Card>
           <CardHeader>
-            <CardTitle
-              className={"text-primary text-xl font-bold uppercase"}
-            >{`${t("progress")}`}</CardTitle>
+            <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
+              "progress"
+            )}`}</CardTitle>
           </CardHeader>
           <CardContent>
             <YourProgress />
@@ -813,9 +829,9 @@ export default function Profile() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle
-              className={"text-primary text-xl font-bold uppercase"}
-            >{`${t("workout")}`}</CardTitle>
+            <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
+              "workout"
+            )}`}</CardTitle>
           </CardHeader>
           <CardContent>
             <Workout />

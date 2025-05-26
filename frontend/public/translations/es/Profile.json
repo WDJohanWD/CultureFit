@@ -37,5 +37,6 @@
     "no-fr": "No tienes ninguna solicitud de amigo",
     "no-f": "Aún no has añadido a ningun amigo",
     "add-friend": "Enviar petición de amistad",
-    "add-vue": "Añadelo como amigo para ver su progreso"
+    "add-vue": "Añadelo como amigo para ver su progreso",
+    "logout": "Cerrar sesión"
 }

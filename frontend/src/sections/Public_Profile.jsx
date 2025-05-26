@@ -117,7 +117,7 @@ function Public_Profile() {
                 </AvatarFallback>
               </Avatar>
               <div className="p-3 ms-5 flex flex-col gap-y-6">
-                <span className="text-4xl font-bold text-primary">
+                <span className="text-4xl font-bold">
                   {publicUser.name}
                 </span>
                 <span className="text-2xl">
@@ -148,7 +148,7 @@ function Public_Profile() {
           <Card>
             <CardHeader>
               <CardTitle
-                className={"text-primary text-xl font-bold uppercase"}
+                className={"text-xl font-bold uppercase"}
               >{`${t("progress")}`}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -158,7 +158,7 @@ function Public_Profile() {
           <Card>
             <CardHeader>
               <CardTitle
-                className={"text-primary text-xl font-bold uppercase"}
+                className={"text-xl font-bold uppercase"}
               >{`${t("workout")}`}</CardTitle>
             </CardHeader>
             <CardContent>
@@ -167,7 +167,7 @@ function Public_Profile() {
           </Card>
         </div>
       ) : (
-        <div className="flex items-center text-2xl text-primary uppercase font-semibold gap-x-3 mx-auto w-fit">
+        <div className="flex items-center text-2xl uppercase font-semibold gap-x-3 mx-auto w-fit">
           <UserRoundPlus className="w-8 h-8" />
           {t("add-vue")}
         </div>

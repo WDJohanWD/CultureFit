@@ -402,7 +402,7 @@ function Workout() {
           activeId ? "" : "hover:bg-gray-100"
         } w-full h-full xl:h-100 px-2 py-4 transition-all`}
       >
-        <h3 className="mb-2 uppercase font-bold text-primary">{title}:</h3>
+        <h3 className="mb-2 uppercase font-bold">{title}:</h3>
         {containerItems
           .sort((a, b) => a.order - b.order)
           .map((item, idx) => (

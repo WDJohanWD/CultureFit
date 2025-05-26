@@ -109,7 +109,7 @@ function Signup() {
 
   return (
     <div className="flex flex-col mx-10 my-10 sm:mx-10 md:mx-10 lg-mx-20 xl:mx-20 overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
-          <h2 className="text-2xl font-bold text-primary mb-5">{t("title")}</h2>
+          <h2 className="text-2xl font-bold mb-5">{t("title")}</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="username" className="text-sm font-medium text-gray-700">

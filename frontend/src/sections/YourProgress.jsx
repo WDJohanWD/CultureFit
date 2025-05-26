@@ -173,7 +173,7 @@ function YourProgress() {
         {graphData.length === 0 ? (
           <Card className="w-full h-max">
             <CardContent className="flex items-center justify-center h-60.5 sm:h-77.5 md:h-105.5 lg:h-128">
-              <h1 className="text-primary uppercase montserrat font-semibold text-center text-2xl">
+              <h1 className="uppercase montserrat font-semibold text-center text-2xl">
                 {t("noData")}
               </h1>
             </CardContent>
@@ -261,7 +261,7 @@ function YourProgress() {
           </Card>
         )}
       </div>
-      <div className="mt-5 xl:mt-15 text-primary mx-auto px-4 w-full md:w-120">
+      <div className="mt-5 xl:mt-15 mx-auto px-4 w-full md:w-120">
         <div className="flex-row md:items-end justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <label

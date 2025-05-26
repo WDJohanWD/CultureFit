@@ -3,16 +3,14 @@ import { LANGUAGES } from "../translations";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "../AuthContext";
 import { Link } from "react-router-dom";
-import { LuLogOut, LuChevronDown } from "react-icons/lu";
+import { LuChevronDown } from "react-icons/lu";
 import { FaBars } from "react-icons/fa";
 import { useClickOutside } from "@/hooks/useClickOutside";
 import LoginModal from "../sections/LoginModal";
 import SearchModal from "../sections/SearchModal";
 import Profile from "../assets/login.svg";
 
-import {
-  Search
-} from "lucide-react";
+import { UserRoundSearch } from "lucide-react";
 
 function NavBar() {
   // Seleccionar el NameSpace que estamos utilizando
@@ -32,9 +30,6 @@ function NavBar() {
     setLng(lang_code);
   };
 
-  const handleLogout = () => {
-    logout();
-  };
 
   useClickOutside(navbarRef, () => {
     if (menuOpen) setMenuOpen(false);
@@ -130,32 +125,24 @@ function NavBar() {
 
           <div className="items-center align-middle text-center">
             {user ? (
-              <div className="flex flex-row items-center justify-center my-4 gap-x-5">
+              <div className="mt-8 flex items-center flex-col">
                 <button
-                  className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
-                                      shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
-                                      text-lg px-5 py-2.5 text-center me-4 mb-2 mt-2"
+                  className="text-white cursor-pointer flex gap-x-3 bg-light-primary px-3 py-2 rounded-lg"
                   onClick={() => setIsSearchOpen(true)}
                 >
-                  {t("login")}
+                  <UserRoundSearch />
                 </button>
-                <div className="flex flex-col">
-                  <Link
-                    to="/profile"
-                    className="flex flex-col items-center pt-1 hover:underline"
-                  >
-                    <img src={Profile} alt="Profile" className="h-9 w-12" />
-                    <span className="text-sm">{user.name}</span>
-                  </Link>
+                <div className="flex flex-row items-center justify-center my-4 gap-x-5">
+                  <div className="flex flex-col">
+                    <Link
+                      to="/profile"
+                      className="flex flex-col items-center pt-1 hover:underline"
+                    >
+                      <img src={Profile} alt="Profile" className="h-9 w-12" />
+                      <span className="text-sm">{user.name}</span>
+                    </Link>
+                  </div>
                 </div>
-                <button
-                  className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
-                                      shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
-                                      text-lg px-2 py-2.5 text-center"
-                  onClick={handleLogout}
-                >
-                  <LuLogOut />
-                </button>
               </div>
             ) : null}
             {user ? (
@@ -206,29 +193,21 @@ function NavBar() {
           {user ? (
             <>
               <button
-                  className="text-white me-6 cursor-pointer"
-                  onClick={() => setIsSearchOpen(true)}
-                >
-                  <Search />
-              </button>
+                className="text-white cursor-pointer flex gap-x-3 bg-light-primary px-3 py-2 rounded-lg me-6"
+                onClick={() => setIsSearchOpen(true)}
+              >
+                <UserRoundSearch />
+              </button> 
               <div className="flex flex-col items-center me-2">
-                
-                <Link to="/profile" className="flex flex-col pt-1 items-center hover:underline">
+                <Link
+                  to="/profile"
+                  className="flex flex-col pt-1 items-center hover:underline"
+                >
                   {" "}
                   <img src={Profile} alt="Profile" className="h-9 w-12" />{" "}
                   <span className="text-sm">{user.name}</span>
                 </Link>
-                
               </div>
-
-              <button
-                className="text-white bg-light-primary transition hover:ring-3 hover:outline-none hover:ring-orange-400 shadow-lg 
-                                      shadow-red-500/50 dark:shadow-lg font-semibold rounded-lg cursor-pointer
-                                      text-lg px-2 py-2.5 text-center me-4 mb-2 mt-2"
-                onClick={handleLogout}
-              >
-                <LuLogOut />
-              </button>
             </>
           ) : (
             <div>

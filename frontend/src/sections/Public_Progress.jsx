@@ -96,7 +96,7 @@ function Public_Progress({ id }) {
         {graphData.length === 0 ? (
           <Card className="w-full h-max">
             <CardContent className="flex items-center justify-center h-60.5 sm:h-77.5 md:h-105.5 lg:h-128">
-              <h1 className="text-primary uppercase montserrat font-semibold text-center text-2xl">
+              <h1 className="uppercase montserrat font-semibold text-center text-2xl">
                 {t("noPublicData")}
               </h1>
             </CardContent>
