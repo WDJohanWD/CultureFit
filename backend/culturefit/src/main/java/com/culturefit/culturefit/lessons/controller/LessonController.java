@@ -35,10 +35,12 @@ public class LessonController {
     public ResponseEntity<?> postLesson(
         @RequestParam("thumbnail") MultipartFile thumbnail,
         @RequestParam("file") MultipartFile file,
-        @RequestParam("name") String lessonName,
-        @RequestParam("description") String lessonDescription) {
+        @RequestParam("nameES") String lessonNameES,
+        @RequestParam("nameEN") String lessonNameEN,
+        @RequestParam("descriptionES") String lessonDescriptionES,
+        @RequestParam("descriptionEN") String lessonDescriptionEN) {
 
-        Lesson createdLesson = lessonService.createLesson(lessonName, lessonDescription);
+        Lesson createdLesson = lessonService.createLesson(lessonNameES, lessonNameEN, lessonDescriptionES, lessonDescriptionEN);
         Lesson savedLesson = lessonService.save(createdLesson, file, thumbnail);
         
         return ResponseEntity.ok(savedLesson);
