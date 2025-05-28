@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog"
+import { DialogTitle } from "@radix-ui/react-dialog"
 
 function Signup() {
   const { t } = useTranslation("signup")
@@ -19,6 +21,7 @@ function Signup() {
   const [passwordRepeat, setPasswordRepeat] = useState("")
   const [birthDate, setBirthDate] = useState("")
   const [error, setError] = useState(null)
+  const [showDialog, setShowDialog] = useState(false)
 
   const validatePassword = (password) => {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/
@@ -58,12 +61,10 @@ function Signup() {
       body: JSON.stringify(newUser),
     })
 
-    sendVerificationEmail(email)
-    navigate("/")
-    //}
+    await sendVerificationEmail(email)
+    setShowDialog(true)
   }
 
-  // Comprobaciones de email, contraseña y que las contraseñas sean iguales
   const handleSubmit = (e) => {
     e.preventDefault()
     const passwordError = validatePassword(password)
@@ -91,14 +92,14 @@ function Signup() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: email,
+        body: JSON.stringify({ email }),
       })
 
       if (!response.ok) {
         throw new Error("Error al enviar el email")
       }
 
-      const data = await response.json()
+      const data = await response.text() // <-- Cambiado de .json() a .text()
       console.log("Respuesta:", data)
       return data
     } catch (error) {
@@ -197,25 +198,47 @@ function Signup() {
               type="submit"
               className="w-full mt-6 text-white bg-gradient-to-r from-orange-400 to-orange-600 
                 hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5"
+        >
+          {t("btn")}
+        </Button>
+      </form>
+
+      <p className="text-center">
+        {t("account")}
+        <Link to="/login" className="px-2 underline font-semibold">
+          {t("login")}
+        </Link>
+      </p>
+
+      {error && (
+        <Alert variant="destructive" className="mt-4">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error!</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Diálogo de verificación */}
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold">{t("verificationSentTitle") || "¡Correo de verificación enviado!"}</DialogTitle>
+        </DialogHeader>
+        <DialogContent>
+          <h2 className="text-lg font-semibold">{t("verificationSentTitle") || "¡Correo de verificación enviado!"}</h2>
+          <p>{t("verificationSentMsg") || "Hemos enviado un correo para verificar tu cuenta. Por favor, revisa tu bandeja de entrada."}</p>
+          <DialogFooter>
+            <Button
+              onClick={() => {
+                setShowDialog(false)
+                navigate("/")
+              }}
+              className="w-full mt-4"
             >
-              {t("btn")}
+              {t("goHome") || "Ir a inicio"}
             </Button>
-          </form>
-
-          <p className="text-center">
-            {t("account")}
-            <Link to="/login" className="px-2 underline font-semibold">
-              {t("login")}
-            </Link>
-          </p>
-
-          {error && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Error!</AlertTitle>
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

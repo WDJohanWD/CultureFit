@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,10 +19,15 @@ import com.culturefit.culturefit.repositories.UserRepository;
 import com.culturefit.culturefit.services.appointmentService.AppointmentService;
 import com.culturefit.culturefit.services.profileImageService.ProfileImageService;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.validation.Valid;
 
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -72,22 +78,22 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(NotFoundUserException::new);
+                .orElseThrow(NotFoundUserException::new);
     }
 
     @Override
     public User getUserByName(String name) {
         return userRepository.findByName(name)
-            .orElseThrow(NotFoundUserException::new);
+                .orElseThrow(NotFoundUserException::new);
     }
+
 
     @Override
     public List<User> searchUsersByName(String search) {
         List<User> users = userRepository.searchByName(search);
         return users;
     }
-
-
+  
     @Override
     public User activateUser(User user) {
         user.setActive(true);
@@ -122,15 +128,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updatePassword(Long userId, String currentPassword, String newPassword) {
         User user = getUser(userId); // esto ya lanza la excepción si no existe
-    
+
         // Verificar contraseña actual
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new RuntimeException("La contraseña actual no es correcta.");// Hacer luego excepción personalizada
         }
-    
+
         // Establecer nueva contraseña encriptada
         user.setPassword(passwordEncoder.encode(newPassword));
-    
+
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User resetPassword(String token, String newPassword) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtSecret.getBytes())
+                .parseClaimsJws(token)
+                .getBody();
+
+        String email = claims.getSubject();
+        User user = getUserByEmail(email);
+        user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }
 
