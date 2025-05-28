@@ -62,7 +62,7 @@ function Public_Profile() {
       const response = await fetch(
         "http://localhost:9000/friend-request/send",
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },

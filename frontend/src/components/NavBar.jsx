@@ -59,7 +59,7 @@ function NavBar() {
             <Link to="/aboutus" className="pt-1 hover:underline">
               {t("about")}
             </Link>
-            <Link className="pt-1 hover:underline">{t("clases")}</Link>
+            <Link className="pt-1 hover:underline" to="lessons">{t("clases")}</Link>
             {user ? (
               <Link to="/appointment" className="pt-1 hover:underline">
                 {t("appointment")}
@@ -100,7 +100,7 @@ function NavBar() {
                         `}
         >
           <div className="flex flex-col gap-y-2">
-            <Link className="block hover:underline" to="/">
+            <Link className="block hover:underline" to="/lessons">
               {t("clases")}
             </Link>
             <Link to="/memberships" className="block hover:underline">

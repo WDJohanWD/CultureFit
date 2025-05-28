@@ -41,13 +41,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import YourProgress from "./YourProgress";
 import Workout from "./Workout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const { user: authUser, loading } = useContext(AuthContext);
   const { logout } = useContext(AuthContext);
   const { t } = useTranslation("Profile");
   const API_URL = "http://localhost:9000";
+  const navigate = useNavigate();
+
+
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState(null);
@@ -331,6 +334,8 @@ export default function Profile() {
   };
 
   const handleLogout = () => {
+    navigate("/");
+    window.location.reload();
     logout();
   };
 
