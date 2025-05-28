@@ -15,6 +15,7 @@ function SetNewPassword() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
   const [email, setEmail] = useState(null);
+  const [success, setSuccess] = useState(false); // Add this line
 
   useEffect(() => {
     if (typeof token === "string" && token.trim() !== "") {
@@ -57,7 +58,11 @@ function SetNewPassword() {
       });
 
       if (response.ok) {
-        navigate("/");
+        setSuccess(true); // Add this line
+        // Remove immediate navigation
+        setTimeout(() => {
+          navigate("/");
+        }, 3000); // Redirect after 3 seconds
       } else {
         const data = await response.json();
         setError(data.message || "Error al cambiar la contraseña.");
@@ -67,6 +72,26 @@ function SetNewPassword() {
       setError("Ocurrió un error en el servidor.");
     }
   };
+
+  if (success) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Card className="max-w-md w-full p-6">
+          <CardHeader>
+            <CardTitle className="text-center text-green-600">{t("success")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-center text-gray-700">
+              {t("password_changed_successfully")}
+            </p>
+            <p className="text-center text-sm text-gray-500 mt-2">
+              {t("redirecting_to_login")}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (error && !email) {
     return (

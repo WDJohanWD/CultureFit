@@ -131,15 +131,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User resetPassword(String token, String newPassword) {
-
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret.getBytes())
                 .parseClaimsJws(token)
                 .getBody();
 
-        Long userId = Long.valueOf(claims.getSubject());
-
-        User user = getUser(userId);
+        String email = claims.getSubject();
+        User user = getUserByEmail(email);
         user.setPassword(passwordEncoder.encode(newPassword));
         return userRepository.save(user);
     }

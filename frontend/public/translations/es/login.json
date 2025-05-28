@@ -19,5 +19,9 @@
     "password_mismatch": "Las contraseñas no coinciden",
     "save_password": "Guardar contraseña",
     "back_to_login": "Volver a iniciar sesión",
-    "change_password": "Cambiar contraseña"
+    "change_password": "Cambiar contraseña",
+    "reset_sent_confirmation": "Hemos enviado un correo con instrucciones para cambiar tu contraseña. Por favor, revisa tu bandeja de entrada (y la carpeta de spam).",
+    "success": "¡Éxito!",
+    "password_changed_successfully": "Tu contraseña ha sido cambiada exitosamente.",
+    "redirecting_to_login": "Serás redirigido a la página de inicio de sesión en unos segundos..."
 }

@@ -10,7 +10,7 @@ function PasswordResetSentModal({ isOpen, onClose }) {
   const { t } = useTranslation("login");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
+  const [sent, setSent] = useState(false);
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
@@ -32,6 +32,7 @@ function PasswordResetSentModal({ isOpen, onClose }) {
       setError(err.message);
     } finally {
       setLoading(false);
+      setSent(true);
     }
   };
 
@@ -79,6 +80,11 @@ function PasswordResetSentModal({ isOpen, onClose }) {
                   </Button>
                 </div>
                 {error && <div className="text-red-500 text-sm">{error}</div>}
+                {sent && (
+                  <div className="text-green-500 text-sm">
+                    {t("reset_sent_confirmation") || "Correo enviado con éxito."}
+                  </div>
+                )}
               </form>
             </CardContent>
 

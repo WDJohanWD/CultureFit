@@ -19,5 +19,9 @@
     "password_mismatch": "Passwords do not match",
     "save_password": "Save password",
     "back_to_login": "Back to login",
-    "change_password": "Change password"
+    "change_password": "Change password",
+    "reset_sent_confirmation": "We have sent an email with instructions to change your password. Please check your inbox (and spam folder).",
+    "success": "Success!",
+    "password_changed_successfully": "Your password has been changed successfully.",
+    "redirecting_to_login": "You will be redirected to the login page in a few seconds..."
 }
