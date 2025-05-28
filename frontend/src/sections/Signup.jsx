@@ -110,93 +110,93 @@ function Signup() {
 
   return (
     <div className="flex flex-col mx-10 my-10 sm:mx-10 md:mx-10 lg-mx-20 xl:mx-20 overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
-      <h2 className="text-2xl font-bold text-primary mb-5">{t("title")}</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="username" className="text-sm font-medium text-gray-700">
-            {t("username")}
-          </Label>
-          <Input
-            type="text"
-            id="username"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            className="w-full"
-          />
-        </div>
+          <h2 className="text-2xl font-bold mb-5">{t("title")}</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-sm font-medium text-gray-700">
+                {t("username")}
+              </Label>
+              <Input
+                type="text"
+                id="username"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-            {t("email")}
-          </Label>
-          <Input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className="w-full"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="dni" className="text-sm font-medium text-gray-700">
-            {t("dni")}
-          </Label>
-          <Input
-            type="text"
-            id="dni"
-            value={dni}
-            onChange={(e) => setDni(e.target.value)}
-            required
-            className="w-full"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-            {t("pass")}
-          </Label>
-          <Input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            className="w-full"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
+                {t("email")}
+              </Label>
+              <Input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="dni" className="text-sm font-medium text-gray-700">
+                {t("dni")}
+              </Label>
+              <Input
+                type="text"
+                id="dni"
+                value={dni}
+                onChange={(e) => setDni(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
+                {t("pass")}
+              </Label>
+              <Input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="passwordRepeat" className="text-sm font-medium text-gray-700">
-            {t("repeatPass")}
-          </Label>
-          <Input
-            type="password"
-            id="passwordRepeat"
-            value={passwordRepeat}
-            onChange={(e) => setPasswordRepeat(e.target.value)}
-            required
-            className="w-full"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="passwordRepeat" className="text-sm font-medium text-gray-700">
+                {t("repeatPass")}
+              </Label>
+              <Input
+                type="password"
+                id="passwordRepeat"
+                value={passwordRepeat}
+                onChange={(e) => setPasswordRepeat(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="date" className="text-sm font-medium text-gray-700">
-            {t("birthDate")}
-          </Label>
-          <Input
-            type="date"
-            id="date"
-            value={birthDate}
-            onChange={(e) => setBirthDate(e.target.value)}
-            required
-            className="w-full"
-          />
-        </div>
+            <div className="space-y-2">
+              <Label htmlFor="date" className="text-sm font-medium text-gray-700">
+                {t("birthDate")}
+              </Label>
+              <Input
+                type="date"
+                id="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
 
-        <Button
-          type="submit"
-          className="w-full mt-6 text-white bg-gradient-to-r from-orange-400 to-orange-600 
+            <Button
+              type="submit"
+              className="w-full mt-6 text-white bg-gradient-to-r from-orange-400 to-orange-600 
                 hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5"
         >
           {t("btn")}

@@ -9,6 +9,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://vite.dev/config/
 export default defineConfig({
+  server: {
+    port: 5173, // o cámbialo si prefieres otro
+    host: true, // ← esto es lo que te está faltando
+  },
   plugins: [
     ["babel-plugin-transform-imports", {
       "react-icons": {
