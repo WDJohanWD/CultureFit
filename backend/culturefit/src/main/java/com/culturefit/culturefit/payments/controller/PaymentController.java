@@ -26,9 +26,6 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @Autowired
-    private UserService userService;
-
     @PostMapping("/create-checkout-session/{priceId}/{stripeId}")
     public ResponseEntity<?> createCheckoutSession(@PathVariable String priceId, @PathVariable String stripeId) throws StripeException {
         Session session = paymentService.createCheckoutSession(priceId, stripeId);
@@ -37,16 +34,16 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/create-appointment-checkout-session/{priceId}/{stripeId}")
-    public ResponseEntity<?> createAdviceCheckoutSession(@PathVariable String priceId, @PathVariable String stripeId) throws StripeException {
-        Session session = paymentService.createAppointmentSession(priceId, stripeId);
-        Map<String, Object> response = new HashMap<>();
-        response.put("url", session.getUrl());
+    // @PostMapping("/create-appointment-checkout-session/{priceId}/{stripeId}")
+    // public ResponseEntity<?> createAdviceCheckoutSession(@PathVariable String priceId, @PathVariable String stripeId) throws StripeException {
+    //     Session session = paymentService.createAppointmentSession(priceId, stripeId);
+    //     Map<String, Object> response = new HashMap<>();
+    //     response.put("url", session.getUrl());
         
-        User user = userService.getUserByStryipeId(stripeId);
-        user.setAppointmentsAvailables(user.getAppointmentsAvailables() + 1);
-        userService.saveUser(user);
+    //     User user = userService.getUserByStryipeId(stripeId);
+    //     user.setAppointmentsAvailables(user.getAppointmentsAvailables() + 1);
+    //     userService.saveUser(user);
         
-        return ResponseEntity.ok(response);
-    }
+    //     return ResponseEntity.ok(response);
+    // }
 }

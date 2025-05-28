@@ -14,6 +14,7 @@ import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.dto.AppointmentAvailableDto;
 import com.culturefit.culturefit.dto.AppointmentDto;
+import com.culturefit.culturefit.payments.service.PaymentService;
 import com.culturefit.culturefit.repositories.AppointmentRepository;
 import com.culturefit.culturefit.repositories.UserRepository;
 
@@ -24,6 +25,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private UserRepository userRepository;
+    
+    @Autowired
+    private PaymentService paymentService;
 
     private static final LocalTime START_TIME = LocalTime.of(9, 0);
     private static final LocalTime END_TIME = LocalTime.of(17, 30);
@@ -36,11 +40,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Appointment saveAppointment(AppointmentDto dto) {
-        User user = userRepository.findById(dto.getUserId()).orElseThrow();
-        Appointment appointment = new Appointment(null, dto.getDate(), dto.getTime(), user, dto.getNote(),
-                dto.getAppointmentType(), dto.isCanceled());
+        try {
+            User user = userRepository.findById(dto.getUserId()).orElseThrow();
+            paymentService.createAppointmentSession("price_1RQH482esfOHTwEz0wO1msLd", user.getStripeId());
+            Appointment appointment = new Appointment(null, dto.getDate(), dto.getTime(), user, dto.getNote(),
+                    dto.getAppointmentType(), dto.isCanceled());
 
-        return appointmentRepository.save(appointment);
+                    
+            return appointmentRepository.save(appointment);
+        
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @Override

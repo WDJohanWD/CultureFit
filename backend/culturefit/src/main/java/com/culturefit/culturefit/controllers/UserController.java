@@ -76,10 +76,10 @@ public class UserController {
         return ResponseEntity.ok(userUpdated);
     }
     
-    @PostMapping("user-redeem-appointment/{id}")
-    public ResponseEntity<?> reedemAppointment(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.redeemAppointment(id));
-    }
+    // @PostMapping("user-redeem-appointment/{id}")
+    // public ResponseEntity<?> reedemAppointment(@PathVariable Long id) {
+    //     return ResponseEntity.ok(userService.redeemAppointment(id));
+    // }
 
     //Delete
     @DeleteMapping("/user/{id}")
@@ -87,7 +87,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok("The user has been deleted successfully");
     }
-
-
-
 }

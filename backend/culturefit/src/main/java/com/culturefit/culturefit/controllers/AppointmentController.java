@@ -51,7 +51,6 @@ public class AppointmentController {
 
     @GetMapping("/services")
     public ResponseEntity<?> getServices() {
-
         return ResponseEntity.ok(AppointmentEnum.values());
     }
 
