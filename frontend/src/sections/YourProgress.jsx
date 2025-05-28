@@ -262,7 +262,7 @@ function YourProgress() {
         )}
       </div>
       <div className="mt-5 xl:mt-15 mx-auto px-4 w-full md:w-120">
-        <div className="flex-row md:items-end justify-between gap-4 flex-wrap">
+        <div className="flex flex-col justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <label
               htmlFor="exercise"
