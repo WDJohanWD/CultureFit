@@ -15,7 +15,7 @@ public interface LessonService {
     List<Lesson> getLessons();
 
     // Crear una lección (instancia sin guardar)
-    Lesson createLesson(String lessonName, String lessonDescription);
+    Lesson createLesson(String lessonNameES, String lessonNameEN, String lessonDescriptionES, String lessonDescriptionEN);
 
     // Guardar una lección nueva con archivos de video y miniatura
     Lesson save(Lesson lesson, MultipartFile file, MultipartFile thumbnail);

@@ -19,8 +19,10 @@ public class Lesson{
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
-    private String description;
+    private String nameES;
+    private String nameEN;
+    private String descriptionES;
+    private String descriptionEN;
     private String videoUrl;
     private String thumbnailUrl;
     private LocalDate uploadDate;

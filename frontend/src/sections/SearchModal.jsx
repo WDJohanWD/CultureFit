@@ -49,8 +49,9 @@ function SearchModal({ isOpen, onClose }) {
   }, [query]); // ← Asegúrate de incluir query como dependencia
 
   const handleSelect = (username) => {
+    navigate(`/profile/${username}`);
+    window.location.reload();
     onClose();
-    navigate(`/perfil/${encodeURIComponent(username)}`);
   };
 
   if (!isOpen) return null;
