@@ -15,6 +15,7 @@ import YourProgress from "./sections/YourProgress";
 import Workout from "./sections/Workout"
 import Profile from "./sections/Profile";
 import AppointmentData from "./sections/AppointmentData";
+import Public_Profile from "./sections/Public_Profile";
 import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext } from "react";
 import { Appointment } from "./sections/Appointment";
@@ -35,6 +36,8 @@ function Layout() {
         <Route path="/aboutus" element={<AboutUs />} />
         <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/:username" element={<Public_Profile />} />
+
 
         <Route path="/signup" element={
             user == null? (

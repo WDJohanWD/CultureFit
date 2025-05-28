@@ -3,12 +3,17 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthContext";
 import {
   User,
+  Users,
   Lock,
   Calendar,
   Mail,
   CreditCard,
   Camera,
   CheckCircle,
+  Check,
+  X,
+  Trash2,
+  LogOut,
 } from "lucide-react";
 import axios from "axios";
 
@@ -26,12 +31,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import YourProgress from "./YourProgress";
 import Workout from "./Workout";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { user: authUser, loading } = useContext(AuthContext);
+  const { logout } = useContext(AuthContext);
   const { t } = useTranslation("Profile");
   const API_URL = "http://localhost:9000";
   const [isEditing, setIsEditing] = useState(false);
@@ -43,12 +57,129 @@ export default function Profile() {
     confirmPassword: "",
   });
 
+  const [friendRequests, setFriendRequests] = useState([]);
+  const [friends, setFriends] = useState([]);
+
   useEffect(() => {
     if (!loading && authUser) {
       setUser(authUser);
       setFormData(authUser);
+      getFriendRequest(authUser);
+      getFriends(authUser);
     }
   }, [authUser, loading]);
+
+  async function getFriendRequest(currentUser) {
+    try {
+      const response = await fetch(
+        `http://localhost:9000/${currentUser.id}/friend-requests`
+      );
+      const data = await response.json();
+
+      const transformedData = data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        imageUrl: item.imageUrl,
+      }));
+
+      setFriendRequests(transformedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  async function getFriends(currentUser) {
+    try {
+      const response = await fetch(
+        `http://localhost:9000/${currentUser.id}/friends`
+      );
+      const data = await response.json();
+
+      const transformedData = data.map((item) => ({
+        id: item.id,
+        name: item.name,
+        imageUrl: item.imageUrl,
+      }));
+
+      setFriends(transformedData);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  const acceptRequest = async (e) => {
+    const senderId = e.target.value;
+
+    try {
+      const response = await fetch(
+        "http://localhost:9000/friend-request/accept",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            senderId: parseInt(senderId),
+            receiverId: user.id,
+          }),
+        }
+      );
+
+      await getFriendRequest(user);
+      await getFriends(user);
+      if (!response.ok) throw new Error("Failed to accept request");
+    } catch (error) {
+      console.error("Error accepting friend request:", error);
+    }
+  };
+
+  const denyRequest = async (e) => {
+    const senderId = e.target.value;
+
+    try {
+      const response = await fetch(
+        "http://localhost:9000/friend-request/reject",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            senderId: parseInt(senderId),
+            receiverId: user.id,
+          }),
+        }
+      );
+
+      await getFriendRequest(user);
+      await getFriends(user);
+      if (!response.ok) throw new Error("Failed to reject request");
+    } catch (error) {
+      console.error("Error rejecting friend request:", error);
+    }
+  };
+
+  const deleteFriend = async (e) => {
+    const friendId = e.target.value;
+
+    try {
+      const response = await fetch("http://localhost:9000/friend/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          senderId: user.id,
+          receiverId: parseInt(friendId),
+        }),
+      });
+
+      await getFriends(user);
+      if (!response.ok) throw new Error("Failed to remove friend");
+    } catch (error) {
+      console.error("Error removing friend:", error);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -199,6 +330,10 @@ export default function Profile() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+  };
+
   if (loading || !user || !formData)
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -213,15 +348,16 @@ export default function Profile() {
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <h1 className="text-3xl font-bold">{t("title")}</h1>
-          <Badge variant="outline" className="bg-primary/10 text-primary">
-            {isEditing
-              ? t("editing") || "Editando"
-              : t("viewing") || "Visualizando"}
-          </Badge>
+        <div className="flex sm:flex-row flex-col items-center justify-between gap-3 mb-8">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold">{t("title")}</h1>
+            <Badge variant="outline" className="bg-primary/10 text-primary">
+              {isEditing
+                ? t("editing") || "Editando"
+                : t("viewing") || "Visualizando"}
+            </Badge>
+          </div>
         </div>
-
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Profile Image Section */}
           <Card className="md:col-span-1 border-muted/40 shadow-sm">
@@ -300,7 +436,7 @@ export default function Profile() {
           {/* Main Content */}
           <div className="md:col-span-2">
             <Tabs defaultValue="info" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsList className="grid w-full lg:grid-cols-3 lg:grid-rows-1 h-auto mb-6 grid-cols-1 grid-rows-3">
                 <TabsTrigger
                   value="info"
                   className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -314,6 +450,13 @@ export default function Profile() {
                 >
                   <Lock className="h-4 w-4 mr-2" />
                   {t("tab2")}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="friends"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                >
+                  <Users className="h-4 w-4 mr-2" />
+                  {t("friends")}
                 </TabsTrigger>
               </TabsList>
 
@@ -523,19 +666,177 @@ export default function Profile() {
                   </CardContent>
                 </Card>
               </TabsContent>
+
+              {/* Friends Tab */}
+              <TabsContent value="friends">
+                <Card className="md:col-span-1 border-muted/40 shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xl flex items-center gap-2">
+                      <Users className="h-6 w-6 mr-2 text-primary" />
+                      {t("friends")}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col items-center pt-4">
+                    <Accordion
+                      type="single"
+                      collapsible
+                      defaultValue="item-1"
+                      className="w-full"
+                    >
+                      <AccordionItem value="item-1">
+                        <AccordionTrigger>{t("friends")}</AccordionTrigger>
+                        <AccordionContent>
+                          <ScrollArea className="h-45 w-full rounded-md border">
+                            <div className="p-4 grid kg:grid-cols-2 gap-2">
+                              {friends.length === 0 ? (
+                                <div className="text-primary col-span-2">
+                                  {t("no-f")}
+                                </div>
+                              ) : (
+                                friends.map((request) => (
+                                  <div
+                                    key={request.id}
+                                    className="flex items-center justify-between align-middle mb-3 border px-5 py-3 rounded-lg hover:bg-gray-100"
+                                  >
+                                    <Link
+                                      to={`/profile/${request.name}`}
+                                      className="col-span-1"
+                                    >
+                                      <div className="flex items-center">
+                                        <Avatar className="h-10 w-10 border-2 border-background shadow-md me-3">
+                                          <AvatarImage
+                                            src={`${API_URL}${request.imageUrl}`}
+                                            alt="Foto de perfil"
+                                            className="object-cover"
+                                          />
+                                          <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                                            <User />
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-lg font-">
+                                          {request.name}
+                                        </span>
+                                      </div>
+                                    </Link>
+
+                                    <div className="flex flex-row gap-x-3">
+                                      <Button
+                                        variant="ghost"
+                                        type="button"
+                                        className="border border-red-600 hover:bg-red-600 text-red-600 hover:text-white font-semibold shadow-md rounded-lg
+                                                px-3 hover:scale-105 transition"
+                                        value={request.id}
+                                        onClick={deleteFriend}
+                                      >
+                                        <Trash2></Trash2>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </ScrollArea>
+                        </AccordionContent>
+                      </AccordionItem>
+                      <AccordionItem value="item-2">
+                        <AccordionTrigger>{t("friends-req")}</AccordionTrigger>
+                        <AccordionContent>
+                          <ScrollArea className="h-45 w-full rounded-md border">
+                            <div className="p-4 grid lg:grid-cols-2 gap-2">
+                              {friendRequests.length === 0 ? (
+                                <div className="text-primary col-span-2">
+                                  {t("no-fr")}
+                                </div>
+                              ) : (
+                                friendRequests.map((request) => (
+                                  <div
+                                    key={request.id}
+                                    className="flex items-center justify-between align-middle mb-3 border px-5 py-3 rounded-lg hover:bg-gray-100"
+                                  >
+                                    <Link to={`/profile/${request.name}`}>
+                                      <div className="flex items-center">
+                                        <Avatar className="h-10 w-10 border-2 border-background shadow-md me-3">
+                                          <AvatarImage
+                                            src={`${API_URL}${request.imageUrl}`}
+                                            alt="Foto de perfil"
+                                            className="object-cover"
+                                          />
+                                          <AvatarFallback className="text-2xl bg-primary/10 text-primary">
+                                            <User />
+                                          </AvatarFallback>
+                                        </Avatar>
+                                        <span className="text-lg font-">
+                                          {request.name}
+                                        </span>
+                                      </div>
+                                    </Link>
+                                    <div className="flex flex-row gap-x-3">
+                                      <Button
+                                        variant="ghost"
+                                        type="button"
+                                        className="border border-green-600 hover:bg-green-600 text-green-600 hover:text-white font-semibold shadow-md rounded-lg
+                                                px-3 hover:scale-105 transition"
+                                        value={request.id}
+                                        onClick={acceptRequest}
+                                      >
+                                        <Check></Check>
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        type="button"
+                                        className="border border-red-600 hover:bg-red-600 text-red-600 hover:text-white font-semibold shadow-md rounded-lg
+                                                px-3 hover:scale-105 transition"
+                                        value={request.id}
+                                        onClick={denyRequest}
+                                      >
+                                        <X></X>
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ))
+                              )}
+                            </div>
+                          </ScrollArea>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </CardContent>
+                </Card>
+              </TabsContent>
             </Tabs>
           </div>
         </div>
+        <button
+            className="flex gap-3 text-white bg-light-primary transition hover:ring-3 hover:outline-none 
+            hover:ring-orange-400 shadow-lg shadow-red-500/50 font-semibold rounded-lg 
+            cursor-pointer px-2 py-2.5 text-center mt-3"
+            onClick={handleLogout}
+          >
+            <LogOut /> {t("logout")}
+          </button>
       </div>
+      
       <div className="flex flex-col gap-y-20 mx-2 md:mx-20 mt-10 xl:mt-20">
-        <div className="flex-1 xl:mx-8">
-          <h1 className="text-primary montserrat font-bold text-2xl uppercase">{`${t("progress")}`}</h1>
-          <YourProgress />
-        </div>
-        <div className="flex-1">
-          <h1 className="text-primary montserrat font-bold text-2xl xl:mx-8 uppercase">{`${t("workout")}`}</h1>
-          <Workout />
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
+              "progress"
+            )}`}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <YourProgress />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
+              "workout"
+            )}`}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Workout />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ function ConfirmAccount() {
 
     return (
         <div>
-            <h1 className='absolute text-3xl top-1/2 left-1/2 -translate-x-1/2 montserrat text-primary'>Confirming your account...</h1>
+            <h1 className='absolute text-3xl top-1/2 left-1/2 -translate-x-1/2 montserrat'>Confirming your account...</h1>
         </div>
     );
 }

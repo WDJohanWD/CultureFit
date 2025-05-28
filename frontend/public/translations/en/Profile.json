@@ -30,6 +30,13 @@
     "toast-image-success-title": "Image updated",
     "toast-image-success-description": "Your profile image has been successfully updated.",
     "toast-image-error": "There was an error uploading the image. Please try again.",
-    "progress":"Your Progress",
-    "workout":"Workout"
+    "progress":"Progress",
+    "workout":"Workout",
+    "friends": "Friends",
+    "friends-req": "Friend Requests",
+    "no-fr": "You dont have any friend requests at the moment",
+    "no-f": "You have no friends yet",
+    "add-friend": "Send friend request",
+    "add-vue": "Add this friend to see his progress",
+    "logout": "Log Out"
 }

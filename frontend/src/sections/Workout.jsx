@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { toast } from "@/components/ui/use-toast"
+import { toast } from "@/components/ui/use-toast";
 
 import { Trash2, Dumbbell } from "lucide-react";
 import { LuRotateCcw } from "react-icons/lu";
@@ -34,7 +34,6 @@ function Workout() {
   const [activeId, setActiveId] = useState(null);
   const [overId, setOverId] = useState(null);
   const [originId, setOriginId] = useState(null);
-
 
   useEffect(() => {
     fetchWorkoutData();
@@ -103,17 +102,17 @@ function Workout() {
 
     if (!response.ok) {
       toast({
-              title: t("saveErrorTitle"),
-              description: t("saveErrorDescription"),
-      })
+        title: t("saveErrorTitle"),
+        description: t("saveErrorDescription"),
+      });
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     const data = await response.json();
     toast({
-              title: t("saveSuccessTitle"),
-              description: t("saveSuccessDescription"),
-    })
+      title: t("saveSuccessTitle"),
+      description: t("saveSuccessDescription"),
+    });
   }
 
   useEffect(() => {
@@ -236,7 +235,9 @@ function Workout() {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
       id,
     });
-    const currentExercise = exerciseList.find((ex) => ex.id === parseInt(exercise, 10));
+    const currentExercise = exerciseList.find(
+      (ex) => ex.id === parseInt(exercise, 10)
+    );
 
     const style = transform
       ? {
@@ -247,6 +248,17 @@ function Workout() {
       : {
           touchAction: "none",
         };
+
+    if (exerciseList.length == 0)
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-pulse flex flex-col items-center gap-4">
+          <div className="h-24 w-24 bg-muted rounded-full"></div>
+          <div className="h-6 w-48 bg-muted rounded"></div>
+          <div className="h-4 w-32 bg-muted rounded"></div>
+        </div>
+      </div>
+    );
 
     return (
       <div
@@ -266,11 +278,11 @@ function Workout() {
             {...listeners}
             style={{ cursor: "grab" }}
           >
-            <span className="text-sm flex delay:20 items-center">
-              <IoReorderThreeOutline className="h-5 w-5" />
-              <Avatar className="h-7 w-7 shadow me-1">
+            {/* <IoReorderThreeOutline className="h-5 w-5" /> */}
+            <span className="text-sm flex xl:grid xl:grid-cols-[20%_60%_20%] w-full gap-x-3 xl:gap-x-0 delay:20 items-center">
+              <Avatar className="h-7 w-7 shadow me-3">
                 <AvatarImage
-                  src={`${API_URL}${exerciseList[exercise-1].imageUrl}`}
+                  src={`${API_URL}${exerciseList[exercise - 1].imageUrl}`}
                   alt="ejercicio"
                   className="object-cover"
                   loading="lazy"
@@ -279,9 +291,10 @@ function Workout() {
                   <Dumbbell></Dumbbell>
                 </AvatarFallback>
               </Avatar>
-              <div className="">
-                {currentExercise[t("exerciseName")]} x {sets}
+              <div className="xl:ms-3 w-full">
+                {currentExercise[t("exerciseName")]}
               </div>
+              <div className="font-bold text-right">{sets}</div>
             </span>
           </div>
           <div
@@ -304,7 +317,8 @@ function Workout() {
                       ? {
                           ...item,
                           exercise: e.target.value,
-                          content: selectedExercise[t("exerciseName")] || item.content,
+                          content:
+                            selectedExercise[t("exerciseName")] || item.content,
                         }
                       : item
                   )
@@ -388,7 +402,7 @@ function Workout() {
           activeId ? "" : "hover:bg-gray-100"
         } w-full h-full xl:h-100 px-2 py-4 transition-all`}
       >
-        <h3 className="mb-2 uppercase font-bold text-primary">{title}:</h3>
+        <h3 className="mb-2 uppercase font-bold">{title}:</h3>
         {containerItems
           .sort((a, b) => a.order - b.order)
           .map((item, idx) => (
