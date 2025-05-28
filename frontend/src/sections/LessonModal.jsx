@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
 
 function LessonModal({ isOpen, onClose, lessonId }) {
-  const { t } = useTranslation("login");
+  const { t } = useTranslation("lessons");
   const { user } = useContext(AuthContext);
   const API_URL = "http://localhost:9000";
 
@@ -48,7 +48,7 @@ function LessonModal({ isOpen, onClose, lessonId }) {
         <Card className="p-6 bg-white shadow-md z-50 relative mx-auto my-8 w-auto max-w-[90vw]">
           <CardContent className="space-y-4 space-x-4">
             {loading ? (
-              <p className="text-center">Cargando contenido...</p>
+              <p className="text-center">{t("loading")}</p>
             ) : lesson ? (
               <>
                 <div className="flex flex-col lg:flex-row lg:space-x-4 space-y-4">
@@ -57,7 +57,7 @@ function LessonModal({ isOpen, onClose, lessonId }) {
                       <video
                         controls
                         src={`${API_URL}${lesson.videoUrl}`}
-                        alt={lesson.videoUrl}
+                        alt={lesson[t("name")]}
                         className={`
                             max-h-[70vh] max-w-full
                             h-auto w-auto
@@ -65,25 +65,25 @@ function LessonModal({ isOpen, onClose, lessonId }) {
                             `}
                       />
                     )}
-                  </div>
+                  </div> 
                   <div className="w-full lg:w-100 flex flex-col justify-between">
                     <div className="mb-8 lg:mb-0">
                       <div className="text-2xl font-extrabold montserrat lg:mb-4">
-                        {lesson.nameES}
+                        {lesson[t("name")]}
                       </div>
                       <span className="flex justify-end text-gray-600">
-                        {lesson.descriptionES}{" "}
+                        {lesson[t("description")]}{" "}
                       </span>
                     </div>
                     <span className="flex text-sm justify-end">
-                      Upload date: &nbsp;{" "}
+                      {t("date")} &nbsp;{" "}
                       <span className="font-bold"> {lesson.uploadDate}</span>
                     </span>
                   </div>
                 </div>
               </>
             ) : (
-              <p className="text-center">No se encontró la lección</p>
+              <p className="text-center">{t("not-found")}</p>
             )}
           </CardContent>
         </Card>

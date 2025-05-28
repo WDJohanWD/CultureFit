@@ -1,7 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { AuthContext } from "@/AuthContext";
+
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Trash2,
+} from "lucide-react";
 
 import LessonModal from "./LessonModal";
 
@@ -125,6 +130,29 @@ function Lessons() {
     }
   };
 
+  const deleteLesson = async (lessonId) => {
+    try {
+      const response = await fetch(`${API_URL}/delete-lesson/${lessonId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const updatedResponse = await fetch("http://localhost:9000/lessons");
+      if (updatedResponse.ok) {
+        const updatedData = await updatedResponse.json();
+        setLessonsList(updatedData);
+      }
+    } catch (err) {
+      setError(err.message || "Error al eliminar la lección");
+    }
+  };
+
   const handleLessonClick = (id) => {
     setSelectedLessonId(id);
     setModalOpen(true);
@@ -229,35 +257,54 @@ function Lessons() {
             </form>
           </div>
         )}
-
         <div className="mt-10 text-4xl font-bold montserrat uppercase mb-10">
           {t("lessons")}
         </div>
 
-        {lessonsList.length === 0 ? (
-          <div className="text-center py-10">No hay lecciones disponibles</div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-            {lessonsList.map((lesson, index) => (
-              <button
-                className="flex flex-col w-auto col-span-1 shadow-lg bg-gray-200 rounded-lg h-auto overflow-hidden p-0 hover:scale-105 hover:-translate-y-1 transition"
-                key={index}
-                onClick={() => handleLessonClick(lesson.id)}
-              >
-                <img
-                  src={`${API_URL}${lesson.thumbnailUrl}`}
-                  alt={lesson.thumbnailUrl}
-                  className="w-full h-40 object-cover"
-                />
-                <div className="px-3 py-2 capitalize text-lg">
-                  <span className="block overflow-hidden text-clip">
-                    {lesson.nameES}
-                  </span>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
+        <Card>
+          <CardContent>
+            {lessonsList.length === 0 ? (
+              <div className="text-center py-10">{t("no-lessons")}</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                {lessonsList.map((lesson, index) => (
+                  <div className="flex flex-col w-auto">
+                    <button
+                      className="flex flex-col w-auto col-span-1 shadow-lg bg-gray-200 rounded-lg h-auto overflow-hidden p-0 hover:scale-105 hover:-translate-y-1 transition"
+                      key={index}
+                      onClick={() => handleLessonClick(lesson.id)}
+                    >
+                      <img
+                        src={`${API_URL}${lesson.thumbnailUrl}`}
+                        alt={lesson[t("name")]}
+                        className="w-full h-40 object-cover"
+                      />
+                      <div className="px-3 py-2 capitalize text-lg">
+                        <span className="block overflow-hidden text-clip">
+                          {lesson[t("name")]}
+                        </span>
+                      </div>
+                      {isAdmin && <></>}
+                    </button>
+                    {isAdmin && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="border border-red-600 hover:bg-red-600 text-red-600 hover:text-white 
+                        font-semibold shadow-md rounded-lg px-5 hover:scale-105 transition mt-3"
+                        onClick={() => {
+                          deleteLesson(lesson.id)
+                        }}
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <LessonModal
