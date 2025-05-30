@@ -8,18 +8,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
-import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.AppointmentEnum;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.dto.AppointmentDto;
 import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentException;
 import com.culturefit.culturefit.repositories.UserRepository;
 import com.culturefit.culturefit.services.appointmentService.AppointmentService;
-import com.culturefit.culturefit.services.userService.UserService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -95,11 +90,8 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
-    @PostMapping("/api/stripe/webhook")
-    public ResponseEntity<String> handleStripeWebhook(
-            @RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) {
-
+    public ResponseEntity<String> handleStripeWebhook(String payload, String sigHeader) {
+        
         String endpointSecret = "whsec_AMfHCF0RBHSOTJQeEwekmvcNpiUD9hq9";
         Event event;
 

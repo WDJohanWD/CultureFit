@@ -49,6 +49,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Long id) {
+        // userRepository.findById(id).orElseThrow().setAppointmentsAvailables(0);
+        // userRepository.save(userRepository.findById(id).orElseThrow());
+
         return userRepository.findById(id)
                 .orElseThrow(NotFoundUserException::new);
     }
