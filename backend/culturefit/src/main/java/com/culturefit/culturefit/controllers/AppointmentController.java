@@ -4,13 +4,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.AppointmentEnum;
-import com.culturefit.culturefit.dto.AppointmentAvailableDto;
+import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.dto.AppointmentDto;
+import com.culturefit.culturefit.payments.service.PaymentService;
 import com.culturefit.culturefit.services.appointmentService.AppointmentService;
+import com.culturefit.culturefit.services.userService.UserService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.checkout.Session;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -31,6 +37,12 @@ public class AppointmentController {
     @Autowired
     private AppointmentService appointmentService;
 
+    @Autowired
+    private PaymentService paymentService;
+
+    @Autowired
+    private UserService userService;
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllAppointments() {
         List<Appointment> appointments = appointmentService.getAllAppointments();
@@ -38,9 +50,25 @@ public class AppointmentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createAppointment(@RequestBody AppointmentDto appointment) {
-        Appointment appointmentSave = appointmentService.saveAppointment(appointment);
-        return ResponseEntity.ok(appointmentSave);
+    public ResponseEntity<?> createAppointment(@RequestBody AppointmentDto appointment) throws StripeException{
+        User user = userService.getUser(appointment.getUserId());
+        Session session = paymentService.createAppointmentSession(
+            "price_1RQH482esfOHTwEz0wO1msLd", 
+            user.getStripeId(), 
+            appointment.getQuantity(),
+            Map.of(
+                "note", appointment.getNote(),
+                "date", appointment.getDate().toString(),
+                "time", appointment.getTime().toString(),
+                "appointmentType", appointment.getAppointmentType().toString(),
+                "userId", appointment.getUserId().toString(),
+                "quantity", appointment.getQuantity().toString()
+            )
+        );
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("checkoutUrl", session.getUrl());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/byuser/{userId}")
@@ -67,9 +95,9 @@ public class AppointmentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PatchMapping("/manageAppointment")
-    public ResponseEntity<?> manageAppointment(@RequestBody AppointmentAvailableDto dto) {
-        appointmentService.manageAppointment(dto);
+    @PostMapping("/{userId}/redeem-appointment/{id}")
+    public ResponseEntity<?> redeemAppointment(@PathVariable Long userId, @PathVariable Long id) {
+        appointmentService.redeemAppointment(userId, id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

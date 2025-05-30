@@ -14,5 +14,6 @@ public class AppointmentDto {
     private String note;
     private AppointmentEnum appointmentType;
     private Long userId;
+    private Long quantity;
     private boolean isCanceled = false;
 }

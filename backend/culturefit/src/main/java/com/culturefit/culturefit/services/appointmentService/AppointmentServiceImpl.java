@@ -12,9 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.User;
-import com.culturefit.culturefit.dto.AppointmentAvailableDto;
 import com.culturefit.culturefit.dto.AppointmentDto;
-import com.culturefit.culturefit.payments.service.PaymentService;
 import com.culturefit.culturefit.repositories.AppointmentRepository;
 import com.culturefit.culturefit.repositories.UserRepository;
 
@@ -25,9 +23,6 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private UserRepository userRepository;
-    
-    @Autowired
-    private PaymentService paymentService;
 
     private static final LocalTime START_TIME = LocalTime.of(9, 0);
     private static final LocalTime END_TIME = LocalTime.of(17, 30);
@@ -40,18 +35,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     public Appointment saveAppointment(AppointmentDto dto) {
-        try {
-            User user = userRepository.findById(dto.getUserId()).orElseThrow();
-            paymentService.createAppointmentSession("price_1RQH482esfOHTwEz0wO1msLd", user.getStripeId());
-            Appointment appointment = new Appointment(null, dto.getDate(), dto.getTime(), user, dto.getNote(),
-                    dto.getAppointmentType(), dto.isCanceled());
+        User user = userRepository.findById(dto.getUserId()).orElseThrow();
+        Appointment appointment = new Appointment(null, dto.getDate(), dto.getTime(), user, dto.getNote(),
+                dto.getAppointmentType(), dto.isCanceled());
 
-                    
-            return appointmentRepository.save(appointment);
-        
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        return appointmentRepository.save(appointment);
     }
 
     @Override
@@ -70,6 +58,18 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointment.setCanceled(true);
         appointmentRepository.save(appointment);
     }
+
+    @Override
+    public void redeemAppointment(Long userId, Long appointmentId){
+        User user = userRepository.findById(userId).orElseThrow();
+        appointmentRepository.deleteById(appointmentId);
+
+        user.setAppointmentsAvailables(user.getAppointmentsAvailables() - 1);
+        userRepository.save(user);
+
+        // TODO: MANDAR QR
+    }
+
 
     @Override
     public List<Appointment> getAppointmentsByUser(Long id) {
@@ -95,14 +95,5 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return availableSlots;
-    }
-
-    @Override
-    public User manageAppointment(AppointmentAvailableDto dto) {
-        Long userId = dto.getId();
-        User user = userRepository.findById(userId).orElseThrow();
-        int newAppointmentAvailable = user.getAppointmentsAvailables() + dto.getNum();
-        user.setAppointmentsAvailables(newAppointmentAvailable);
-        return  userRepository.save(user);
     }
 }
