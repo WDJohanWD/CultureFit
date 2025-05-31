@@ -114,17 +114,18 @@ public class PaymentServiceImpl implements PaymentService{
                 Long userId = Long.parseLong(session.getMetadata().get("userId"));
                 int quantity = Integer.parseInt(session.getMetadata().get("quantity"));
 
-                // Crear y guardar la cita real
-                AppointmentDto appointment = new AppointmentDto();
-                appointment.setNote(note);
-                appointment.setDate(LocalDate.parse(date));
-                appointment.setTime(LocalTime.parse(time));
-                appointment.setAppointmentType(AppointmentEnum.valueOf(appointmentType));
-                appointment.setUserId(userId);;
-                appointment.setCanceled(false);
-
-                appointmentService.saveAppointment(appointment);
-
+                for (int i = 0; i < quantity; i++) {
+                    AppointmentDto appointment = new AppointmentDto(
+                        LocalDate.parse(date),
+                        LocalTime.parse(time),
+                        note,
+                        AppointmentEnum.valueOf(appointmentType),
+                        userId,
+                        Long.valueOf(quantity),
+                        false
+                    );
+                    appointmentService.saveAppointment(appointment);
+                }
                 User user = userRepository.findById(userId).orElseThrow();
                 user.setAppointmentsAvailables(user.getAppointmentsAvailables() + quantity);
                 userRepository.save(user);

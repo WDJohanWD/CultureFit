@@ -14,6 +14,8 @@ public interface AppointmentService {
 
     Appointment updateAppointment(Appointment appointment);
 
+    public void totalDeleteAppointment(Long id);
+
     void deleteAppointment(Long id);
 
     void redeemAppointment(Long userId, Long appointmentId);

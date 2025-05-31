@@ -35,6 +35,7 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
+    // TODO: CAMBIAR LA IP EN PRODUCCION A LA IP DEL SERVIDOR
     @PostMapping("/api/stripe/webhook")
     public ResponseEntity<String> handleStripeWebhook(
             @RequestBody String payload,

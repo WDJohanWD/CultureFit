@@ -60,9 +60,15 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public void totalDeleteAppointment(Long id) {
+        appointmentRepository.findById(id).orElseThrow();
+        appointmentRepository.deleteById(id);
+    }
+
+    @Override
     public void redeemAppointment(Long userId, Long appointmentId){
         User user = userRepository.findById(userId).orElseThrow();
-        appointmentRepository.deleteById(appointmentId);
+        totalDeleteAppointment(appointmentId);
 
         user.setAppointmentsAvailables(user.getAppointmentsAvailables() - 1);
         userRepository.save(user);
