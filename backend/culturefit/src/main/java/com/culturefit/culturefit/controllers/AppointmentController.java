@@ -50,6 +50,12 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAppointmentById(@PathVariable Long id) {
+        Appointment appointment = appointmentService.getAppointmentById(id);
+        return ResponseEntity.ok(appointment);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<?> createAppointment(@RequestBody AppointmentDto appointment) throws StripeException{
         User user = userService.getUser(appointment.getUserId());

@@ -1,0 +1,16 @@
+{
+    "monday": "Lunes",
+    "tuesday": "Martes",
+    "wednesday": "Miércoles",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sábado",
+    "sunday": "Domingo",
+    "exerciseName": "nameES",
+    "newExercise": "Añadir Nuevo Ejercicio",
+    "save": "Guardar Rutina",
+    "saveSuccessTitle": "Rutina guardada",
+    "saveSuccessDescription": "Se ha guardado tu rutina correctamente",
+    "saveErrorTitle": "Error",
+    "saveErrorDescription": "Ha habido un error al guardar tu rutina, por favor inténtalo más tarde"
+}

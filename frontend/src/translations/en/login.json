@@ -1,8 +1,0 @@
-{
-    "error": "Either the email or password is wrong",
-    "title": "Log In",
-    "email": "Email",
-    "pass": "Password",
-    "account":"Dont have an account?",
-    "signup": "Sign Up"
-}

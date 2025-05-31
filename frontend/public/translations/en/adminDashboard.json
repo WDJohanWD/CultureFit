@@ -1,0 +1,40 @@
+{
+    "h1":"Admin Dashboard",
+    "title": "Users",
+    "ID": "ID",
+    "Name": "Name",
+    "Email": "Email",
+    "Birth Date": "Birthdate",
+    "Status": "Status",
+    "Role": "Role",
+    "Actions": "Actions",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "NoFound": "No members found",
+    "search": "Search members",
+
+    "exercisesTitle":"Exercises",
+    "addExercise":"Add exercise",
+    "addExerciseDescription":"Add a new exercise to the database",
+    "searchExercises":"Search exercises",
+    "image": "Image",
+    "nameEs":"Name (ES)",
+    "nameEn":"Name (EN)",
+    "actions":"Actions",
+    "NoExercisesFound":"No exercises found",
+
+    "active":"Active",
+    "inactive":"Inactive",
+
+    "confirmDeleteTitle":"Are you sure you want to delete this member?",
+    "confirmDelete": "This action cannot be undone.",
+
+    "confirmDeleteExerciseTitle":"Are you sure you want to delete this exercise?",
+    "confirmDeleteExercise": "This action cannot be undone.",
+
+    "save":"Save",
+    "cancel":"Cancel"
+
+    
+    
+}

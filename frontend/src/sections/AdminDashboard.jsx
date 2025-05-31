@@ -7,11 +7,17 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import {  Dialog,  DialogContent,  DialogDescription,  DialogFooter,  DialogHeader,  DialogTitle,} from "@/components/ui/dialog"
-import { Pencil, Trash2, Search, AlertCircle, Loader2 } from "lucide-react"
+import { Dialog,  DialogContent,  DialogDescription,  DialogFooter,  DialogHeader,  DialogTitle,} from "@/components/ui/dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Label } from "@/components/ui/label"
+
+
+import { Pencil, Trash2, Search, AlertCircle, Loader2, Camera, Dumbbell } from "lucide-react"
+import axios from "axios"
 
 function AdminDashboard() {
   const { t } = useTranslation("adminDashboard")
+  const API_URL = "http://localhost:9000"
 
   // --- Estado ---
   const [members, setMembers] = useState([])
@@ -34,6 +40,8 @@ function AdminDashboard() {
     nameES: "",
     nameEN: "",
   })
+  const [tempExerciseImage, setTempExerciseImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   // --- Función para Cargar Miembros ---
   const fetchMembersData = async () => {
@@ -135,6 +143,19 @@ function AdminDashboard() {
     }))
   }
 
+  const handleExerciseImageUpload = async (event) =>{
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+        
+        setTempExerciseImage(file);
+      }
+  }
+
   const handleNewExerciseInputChange = (event) => {
     const { name, value } = event.target
     setNewExerciseData((prevData) => ({
@@ -145,6 +166,25 @@ function AdminDashboard() {
 
   async function handleSaveExerciseEdit(id) {
     try {
+      if (tempExerciseImage) {
+        const formData = new FormData();
+        formData.append("image", tempExerciseImage);
+
+        const uploadResponse = await axios.post(
+          `http://localhost:9000/exercise/upload-image/${id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (!uploadResponse.status === 200) {
+          throw new Error("Failed to upload image");
+        }
+      }
+
       const response = await fetch(`http://localhost:9000/edit-exercise/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -546,6 +586,7 @@ function AdminDashboard() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t("ID") || "ID"}</TableHead>
+                    <TableHead>{t("image") || "Image"}</TableHead>
                     <TableHead>{t("nameEs") || "Name (Spanish)"}</TableHead>
                     <TableHead>{t("nameEn") || "Name (English)"}</TableHead>
                     <TableHead>{t("Actions") || "Actions"}</TableHead>
@@ -559,6 +600,31 @@ function AdminDashboard() {
                           // --- Edit Mode ---
                           <>
                             <TableCell className="font-medium">{exercise.id}</TableCell>
+                            <TableCell>
+                              <Label htmlFor="profile-image-btn" className="cursor-pointer">
+                                <div className="flex items-center justify-center gap-2 p-2 border border-dashed rounded-md hover:bg-muted transition-colors">
+                                  {imagePreview ? (
+                                    <img 
+                                      src={imagePreview} 
+                                      alt="Preview" 
+                                      className="h-10 w-10 object-cover rounded-md"
+                                    />
+                                  ) : (
+                                    <>
+                                      <Camera className="h-4 w-4" />
+                                      <span>{t("change-image")}</span>
+                                    </>
+                                  )}
+                                </div>
+                                <Input
+                                  id="profile-image-btn"
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleExerciseImageUpload}
+                                />
+                              </Label>
+                            </TableCell>
                             <TableCell>
                               <Input
                                 type="text"
@@ -603,6 +669,18 @@ function AdminDashboard() {
                           // --- View Mode ---
                           <>
                             <TableCell className="font-medium">{exercise.id}</TableCell>
+                            <TableCell>
+                              <Avatar className="h-10 w-10 shadow-md">
+                                <AvatarImage
+                                  src={`${API_URL}${exercise.imageUrl}`}
+                                  alt="ejercicio"
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="text-2xl p-2 bg-primary/10 text-primary">
+                                  <Dumbbell></Dumbbell>
+                                </AvatarFallback>
+                              </Avatar>
+                            </TableCell>
                             <TableCell>{exercise.nameES}</TableCell>
                             <TableCell>{exercise.nameEN}</TableCell>
                             <TableCell>

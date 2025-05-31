@@ -209,6 +209,16 @@ export function Appointment() {
 
       const newAppointment = await response.json()
 
+      const response2 = await fetch(`http://localhost:9000/appointment/sendQrEmail`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: user.email,
+          qrText: `http://localhost:5173/appointment/${newAppointment.id}`,
+        }),
+      });
+
+
       setSuccess(true)
       setConfirmDialog(false)
       setSelectedTimeSlot(null)

@@ -1,8 +1,0 @@
-{
-    "error": "El correo o la contraseña son incorrectos",
-    "title": "Iniciar Sesión",
-    "email": "Correo",
-    "pass": "Contraseña",
-    "account":"¿No tienes cuenta?",
-    "signup": "Regístrate"
-}

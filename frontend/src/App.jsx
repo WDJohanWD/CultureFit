@@ -14,11 +14,13 @@ import AdminDashboard from "./sections/AdminDashboard";
 import YourProgress from "./sections/YourProgress";
 import Workout from "./sections/Workout"
 import Profile from "./sections/Profile";
-
+import AppointmentData from "./sections/AppointmentData";
+import Public_Profile from "./sections/Public_Profile";
+import Lessons from "./sections/Lessons";
 import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext } from "react";
 import { Appointment } from "./sections/Appointment";
-
+import ResetPassword from "./sections/SetNewPassword";
 function Layout() {
   const { token, isAdmin, loading, user } = useContext(AuthContext);
 
@@ -33,10 +35,33 @@ function Layout() {
         <Route path="/" element={<Home />} />
         <Route path="/memberships" element={<Memberships />} />
         <Route path="/aboutus" element={<AboutUs />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
         <Route path="/profile" element={<Profile />} />
+
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/profile/:username" element={<Public_Profile />} />
+
+        <Route path="/lessons" element={
+            user != null? (
+              <Lessons />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
+        <Route path="/signup" element={
+            user == null? (
+              <Signup />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
+        <Route path="/login" element={
+            user == null? (
+              <Login />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
         <Route path="/appointment" element={
             user!= null? (
               <Appointment />
@@ -44,6 +69,14 @@ function Layout() {
               <Navigate to="/error" replace />
             )
           } />
+        <Route path="/appointment/:id" element={
+            user != null ? (
+              <AppointmentData />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
+
         <Route path="/your-progress" element={
             user != null ? (
               <YourProgress />

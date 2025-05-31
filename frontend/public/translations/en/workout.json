@@ -1,0 +1,16 @@
+{
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday",
+    "exerciseName": "nameEN",
+    "newExercise": "Add New Exercise",
+    "save": "Save Workout",
+    "saveSuccessTitle": "Workout saved",
+    "saveSuccessDescription": "Your workout was saved succesfully",
+    "saveErrorTitle": "Error",
+    "saveErrorDescription": "There was an error while saving your workout, please try again later"
+}

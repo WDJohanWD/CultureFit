@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState, Da } from "react";
 import { AuthContext } from "@/AuthContext";
 import { useTranslation } from "react-i18next";
 
@@ -20,7 +20,18 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 function YourProgress() {
@@ -30,6 +41,8 @@ function YourProgress() {
   const [selectedExercise, setSelectedExercise] = useState(1);
   const [graphData, setGraphData] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [pointToDelete, setPointToDelete] = useState(null);
 
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [exercise, setExercise] = useState("");
@@ -53,6 +66,7 @@ function YourProgress() {
 
     const data = await response.json();
     const fetchedData = data.map((item) => ({
+      id: item.id,
       date: item.date.toString(),
       weight: item.weight,
       repetitions: item.repetitions,
@@ -84,6 +98,7 @@ function YourProgress() {
 
   async function createProgressPoint() {
     const newPP = {
+      id: `${Date.now()}`,
       date: date,
       repetitions: reps,
       weight: weight,
@@ -104,9 +119,44 @@ function YourProgress() {
     obtainData(selectedExercise);
   }
 
+  const handlePointClick = (e) => {
+    if (e.activePayload) {
+      const clickedPoint = e.activePayload[0].payload;
+      setPointToDelete(clickedPoint);
+      setIsDeleteDialogOpen(true);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (pointToDelete) {
+      await deleteProgressPoint(pointToDelete.id);
+      setIsDeleteDialogOpen(false);
+      setPointToDelete(null);
+    }
+  };
+
+  async function deleteProgressPoint(id) {
+    try {
+      const response = await fetch(
+        `http://localhost:9000/delete-progress-point/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar el punto");
+      }
+
+      obtainData(selectedExercise);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
   return (
-    <div className="flex flex-col lg:flex-row">
-      <div className="ms-5 my-5 w-120 sm:w-150 md:w-200 lg:w-240 xl:w-240">
+    <div className="flex flex-col xl:flex-row">
+      <div className="w-full xl:w-[60%] my-5">
         <select
           name=""
           className="bg-gray-50 mb-3 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-50 p-2"
@@ -115,7 +165,7 @@ function YourProgress() {
         >
           {exerciseList.map((exercise) => (
             <option key={exercise.id} value={exercise.id}>
-              {exercise.nameES    }
+              {exercise[t("exerciseName")]}
             </option>
           ))}
         </select>
@@ -123,7 +173,7 @@ function YourProgress() {
         {graphData.length === 0 ? (
           <Card className="w-full h-max">
             <CardContent className="flex items-center justify-center h-60.5 sm:h-77.5 md:h-105.5 lg:h-128">
-              <h1 className="text-primary uppercase montserrat font-semibold text-center text-2xl">
+              <h1 className="uppercase montserrat font-semibold text-center text-2xl">
                 {t("noData")}
               </h1>
             </CardContent>
@@ -139,6 +189,7 @@ function YourProgress() {
                     left: 12,
                     right: 12,
                   }}
+                  onClick={handlePointClick}
                 >
                   <CartesianGrid vertical={false} />
                   <XAxis
@@ -187,11 +238,31 @@ function YourProgress() {
                 </LineChart>
               </ChartContainer>
             </CardContent>
+            <AlertDialog
+              open={isDeleteDialogOpen}
+              onOpenChange={setIsDeleteDialogOpen}
+            >
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{`${t("confirmTitle")}`}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {pointToDelete &&
+                      `${t("confirmDesc")} ${pointToDelete.date}`}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{`${t("confirmN")}`}</AlertDialogCancel>
+                  <AlertDialogAction onClick={confirmDelete}>
+                    {`${t("confirmY")}`}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </Card>
         )}
       </div>
-      <div className="mt-15 text-primary mx-auto my-5 px-4 w-120">
-        <div className="flex-row md:items-end justify-between gap-4 flex-wrap">
+      <div className="mt-5 xl:mt-15 mx-auto px-4 w-full md:w-120">
+        <div className="flex flex-col justify-between gap-4 flex-wrap">
           <div className="flex-1 min-w-[200px]">
             <label
               htmlFor="exercise"
@@ -206,17 +277,17 @@ function YourProgress() {
               onChange={(e) => setExercise(e.target.value)}
             >
               <option value="" disabled>
-                Selecciona un ejercicio
+                {t("select")}
               </option>
               {exerciseList.map((exercise) => (
                 <option key={exercise.id} value={exercise.id}>
-                  {exercise.nameES}
+                  {exercise[t("exerciseName")]}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-[100px]">
             <label
               htmlFor="date"
               className="montserrat font-semibold block mb-1"
@@ -224,7 +295,7 @@ function YourProgress() {
               {t("date")}
             </label>
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger className="w-full">
                 <Button
                   variant={"outline"}
                   className={cn(
@@ -234,10 +305,14 @@ function YourProgress() {
                   id="date"
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  {date ? (
+                    format(date, "PPP")
+                  ) : (
+                    <span></span>
+                  )}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0 z-50">
                 <Calendar
                   mode="single"
                   selected={date}

@@ -14,7 +14,7 @@ i18n
       escapeValue: false,
     },
     backend: {
-      loadPath: "src/translations/{{lng}}/{{ns}}.json",
+      loadPath: "/translations/{{lng}}/{{ns}}.json",
     },
     defaultNS: "home",
   });

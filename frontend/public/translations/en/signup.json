@@ -1,0 +1,19 @@
+{
+    "passError": "Password must be at least 8 characters, contain 1 uppercase letter, 1 lowercase letter, and 1 number.",
+    "emailError": "Email is not valid",
+    "userExists": "User already exists.",
+    "passwordMatch": "Password do not match",
+    "title": "Create your CultureFit account",
+    "btn": "Sign Up",
+    "username": "Username",
+    "email": "Email",
+    "pass": "Password",
+    "repeatPass": "Repeat your password",
+    "account":"Already have an account?",
+    "login": "Log In",
+    "birthDate": "Birth Date",
+    "goHome": "Go Home",
+    "verificationSentTitle": "Verification email sent",
+    "verificationSentText": "Please check your email to verify your account."
+
+}
