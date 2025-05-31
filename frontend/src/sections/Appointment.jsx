@@ -209,7 +209,7 @@ export function Appointment() {
 
       const newAppointment = await response.json()
 
-      const response2 = await fetch(`http://localhost:9000/appointment/sendQrEmail`, {
+      const response2 = await fetch(`http://localhost:9000/sendQrEmail`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
