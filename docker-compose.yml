@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  springboot:
+    build:
+      context: ./backend/culturefit
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./backend/culturefit/uploads:/app/uploads
+    networks:
+      - app-network
+    depends_on:
+      - node
+      - mysql
+
+  node:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: culturefit-bd
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: culturefit-db
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
