@@ -42,18 +42,4 @@ public class PaymentController {
             @RequestHeader("Stripe-Signature") String sigHeader) {
         return paymentService.handleStripeWebhook(payload, sigHeader);
     }
-
-    // @PostMapping("/create-appointment-checkout-session/{priceId}/{stripeId}")
-    // public ResponseEntity<?> createAdviceCheckoutSession(@PathVariable String
-    // priceId, @PathVariable String stripeId) throws StripeException {
-    // Session session = paymentService.createAppointmentSession(priceId, stripeId);
-    // Map<String, Object> response = new HashMap<>();
-    // response.put("url", session.getUrl());
-
-    // User user = userService.getUserByStryipeId(stripeId);
-    // user.setAppointmentsAvailables(user.getAppointmentsAvailables() + 1);
-    // userService.saveUser(user);
-
-    // return ResponseEntity.ok(response);
-    // }
 }
