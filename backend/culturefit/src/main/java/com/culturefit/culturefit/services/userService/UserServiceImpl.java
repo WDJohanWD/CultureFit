@@ -59,6 +59,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Long id) {
+        // userRepository.findById(id).orElseThrow().setAppointmentsAvailables(0);
+        // userRepository.save(userRepository.findById(id).orElseThrow());
+
         return userRepository.findById(id)
                 .orElseThrow(NotFoundUserException::new);
     }
@@ -85,6 +88,12 @@ public class UserServiceImpl implements UserService {
     public User getUserByName(String name) {
         return userRepository.findByName(name)
                 .orElseThrow(NotFoundUserException::new);
+    }
+
+    @Override
+    public User getUserByStryipeId(String id) {
+        return userRepository.findByStripeId(id)
+            .orElseThrow(NotFoundUserException::new);
     }
 
 
@@ -159,6 +168,14 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setActive(user.isActive());
         userToUpdate.setRole(user.getRole());
         return userRepository.save(userToUpdate);
+    }
+
+    @Override
+    public User redeemAppointment(Long id) throws RuntimeException {
+        User user = getUser(id);
+        user.setAppointmentsAvailables(user.getAppointmentsAvailables() - 1);
+        user = userRepository.save(user);
+        return user;
     }
 
 

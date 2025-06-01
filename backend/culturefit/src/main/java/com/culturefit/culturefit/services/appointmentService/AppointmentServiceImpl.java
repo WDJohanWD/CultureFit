@@ -9,13 +9,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.User;
-import com.culturefit.culturefit.dto.AppointmentAvailableDto;
 import com.culturefit.culturefit.dto.AppointmentDto;
+import com.culturefit.culturefit.emails.service.EmailService;
 import com.culturefit.culturefit.repositories.AppointmentRepository;
 import com.culturefit.culturefit.repositories.UserRepository;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class AppointmentServiceImpl implements AppointmentService {
@@ -24,6 +27,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EmailService emailService;
 
     private static final LocalTime START_TIME = LocalTime.of(9, 0);
     private static final LocalTime END_TIME = LocalTime.of(17, 30);
@@ -61,6 +67,37 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
+    public void totalDeleteAppointment(Long id) {
+        appointmentRepository.findById(id).orElseThrow();
+        appointmentRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public boolean redeemAppointment(Long userId, Long appointmentId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
+
+        totalDeleteAppointment(appointmentId);
+
+        user.setAppointmentsAvailables(user.getAppointmentsAvailables() - 1);
+        userRepository.save(user);
+
+        boolean sent = emailService.sendQRCodeEmail(
+            //TODO: CAMBIAR PARA PRODUCCION
+                "culturefit.contact@gmail.com",
+                "Use el próximo código QR en el mostrador del gimnasio para canjearlo.",
+                200,
+                200);
+
+        if (!sent) {
+            throw new RuntimeException("Fallo al enviar el email con el QR.");
+        }
+
+        return true;
+    }
+
+    @Override
     public List<Appointment> getAppointmentsByUser(Long id) {
         User user = userRepository.findById(id).orElseThrow();
         return appointmentRepository.findByUser(user);
@@ -84,14 +121,5 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return availableSlots;
-    }
-
-    @Override
-    public User manageAppointment(AppointmentAvailableDto dto) {
-        Long userId = dto.getId();
-        User user = userRepository.findById(userId).orElseThrow();
-        int newAppointmentAvailable = user.getAppointmentsAvailables() + dto.getNum();
-        user.setAppointmentsAvailables(newAppointmentAvailable);
-        return  userRepository.save(user);
     }
 }
