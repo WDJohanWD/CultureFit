@@ -43,6 +43,11 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Override
     public Appointment saveAppointment(AppointmentDto dto) {
         User user = userRepository.findById(dto.getUserId()).orElseThrow();
+
+        if (user.getAppointmentsAvailables() <= 0) {
+            throw new RuntimeException("El usuario no tiene citas disponibles");
+        }
+        
         Appointment appointment = new Appointment(null, dto.getDate(), dto.getTime(), user, dto.getNote(),
                 dto.getAppointmentType(), dto.isCanceled());
 
@@ -77,8 +82,6 @@ public class AppointmentServiceImpl implements AppointmentService {
     public boolean redeemAppointment(Long userId, Long appointmentId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
-
-        totalDeleteAppointment(appointmentId);
 
         user.setAppointmentsAvailables(user.getAppointmentsAvailables() - 1);
         userRepository.save(user);

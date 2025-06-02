@@ -3,7 +3,6 @@ package com.culturefit.culturefit.services.userService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +15,6 @@ import com.culturefit.culturefit.dto.UserEditDto;
 import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exceptions.userExceptions.NotFoundUserException;
 import com.culturefit.culturefit.repositories.UserRepository;
-import com.culturefit.culturefit.services.appointmentService.AppointmentService;
 import com.culturefit.culturefit.services.profileImageService.ProfileImageService;
 
 import io.jsonwebtoken.Claims;

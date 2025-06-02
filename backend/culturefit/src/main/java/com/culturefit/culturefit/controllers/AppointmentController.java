@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.AppointmentEnum;
 import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.dto.AppointmentDto;
 import com.culturefit.culturefit.dto.CouponDto;
 import com.culturefit.culturefit.payments.service.PaymentService;
 import com.culturefit.culturefit.services.appointmentService.AppointmentService;
@@ -80,22 +81,22 @@ public class AppointmentController {
     }
 
     @PostMapping("/buy-coupon")
-    public ResponseEntity<?> buyCoupon(@RequestBody CouponDto CouponDto) throws StripeException {
-        User user = userService.getUser((CouponDto.getUserId()));
+    public ResponseEntity<?> buyCoupon(@RequestBody CouponDto couponDto) throws StripeException {
+        User user = userService.getUser((couponDto.getUserId()));
         Session session = paymentService.createAppointmentSession(
-            "price_1RQH482esfOHTwEz0wO1msLd",
-            user.getStripeId(),
-            String.valueOf(CouponDto.getQuantity())
-        );
+                "price_1RQH482esfOHTwEz0wO1msLd",
+                user.getStripeId(),
+                String.valueOf(couponDto.getQuantity()));
 
         Map<String, Object> response = new HashMap<>();
         response.put("checkoutUrl", session.getUrl());
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{userId}/redeem-appointment/{id}")
-    public ResponseEntity<?> redeemAppointment(@PathVariable Long userId, @PathVariable Long id) {
-        boolean sent = appointmentService.redeemAppointment(userId, id);
+    @PostMapping("/create-appointment")
+    public ResponseEntity<?> createAppointment(@RequestBody AppointmentDto appointmentDto) {
+        Appointment appointment = appointmentService.saveAppointment(appointmentDto);
+        boolean sent = appointmentService.redeemAppointment(appointment.getUser().getId(), appointment.getId());
         if (sent) {
             return ResponseEntity.ok(
                     "Cita canjeada correctamente, mire la bandeja de entrada de su correo para obtener el código QR");
@@ -103,5 +104,4 @@ public class AppointmentController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al canjear la cita");
         }
     }
-
 }
