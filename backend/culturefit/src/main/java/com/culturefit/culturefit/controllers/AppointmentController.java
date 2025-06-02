@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.culturefit.culturefit.domains.Appointment;
 import com.culturefit.culturefit.domains.AppointmentEnum;
 import com.culturefit.culturefit.domains.User;
-import com.culturefit.culturefit.dto.AppointmentDto;
+import com.culturefit.culturefit.dto.CouponDto;
 import com.culturefit.culturefit.payments.service.PaymentService;
 import com.culturefit.culturefit.services.appointmentService.AppointmentService;
 import com.culturefit.culturefit.services.userService.UserService;
@@ -55,28 +55,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointment);
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createAppointment(@RequestBody AppointmentDto appointment) throws StripeException{
-        User user = userService.getUser(appointment.getUserId());
-        Session session = paymentService.createAppointmentSession(
-            "price_1RQH482esfOHTwEz0wO1msLd", 
-            user.getStripeId(), 
-            appointment.getQuantity(),
-            Map.of(
-                "note", appointment.getNote(),
-                "date", appointment.getDate().toString(),
-                "time", appointment.getTime().toString(),
-                "appointmentType", appointment.getAppointmentType().toString(),
-                "userId", appointment.getUserId().toString(),
-                "quantity", appointment.getQuantity().toString()
-            )
-        );
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("checkoutUrl", session.getUrl());
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/byuser/{userId}")
     public ResponseEntity<?> getMethodName(@PathVariable Long userId) {
         List<Appointment> appointments = appointmentService.getAppointmentsByUser(userId);
@@ -101,15 +79,29 @@ public class AppointmentController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @PostMapping("/buy-coupon")
+    public ResponseEntity<?> buyCoupon(@RequestBody CouponDto CouponDto) throws StripeException {
+        User user = userService.getUser((CouponDto.getUserId()));
+        Session session = paymentService.createAppointmentSession(
+            "price_1RQH482esfOHTwEz0wO1msLd",
+            user.getStripeId(),
+            String.valueOf(CouponDto.getQuantity())
+        );
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("checkoutUrl", session.getUrl());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/{userId}/redeem-appointment/{id}")
     public ResponseEntity<?> redeemAppointment(@PathVariable Long userId, @PathVariable Long id) {
         boolean sent = appointmentService.redeemAppointment(userId, id);
         if (sent) {
             return ResponseEntity.ok(
-                "Cita canjeada correctamente, mire la bandeja de entrada de su correo para obtener el código QR"
-            );
+                    "Cita canjeada correctamente, mire la bandeja de entrada de su correo para obtener el código QR");
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al canjear la cita");
         }
     }
+
 }
