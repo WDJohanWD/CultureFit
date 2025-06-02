@@ -1,20 +1,13 @@
 package com.culturefit.culturefit.payments.service;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.culturefit.culturefit.domains.AppointmentEnum;
 import com.culturefit.culturefit.domains.User;
-import com.culturefit.culturefit.dto.AppointmentDto;
 import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentException;
 import com.culturefit.culturefit.repositories.UserRepository;
-import com.culturefit.culturefit.services.appointmentService.AppointmentService;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -28,9 +21,6 @@ import com.stripe.param.checkout.SessionCreateParams;
 public class PaymentServiceImpl implements PaymentService{
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private AppointmentService appointmentService;
 
     // Método para crear el usuario de Stripe
     public Customer createCustomer(String name, String email) throws StripeException {
@@ -67,8 +57,9 @@ public class PaymentServiceImpl implements PaymentService{
         }
     }
 
-    public Session createAppointmentSession(String priceId, String stripeId, Long quantity, Map<String, String> metadata) throws StripeException {
+    public Session createAppointmentSession(String priceId, String stripeId, String quantity) throws StripeException {
         try {
+            User user = userRepository.findByStripeId(stripeId).orElseThrow();
             SessionCreateParams params = SessionCreateParams.builder()
                 //TODO: Cambiar urls de exito y de cancelación 
                 .setSuccessUrl("https://example.com/success")
@@ -76,12 +67,13 @@ public class PaymentServiceImpl implements PaymentService{
                 .addLineItem(
                     SessionCreateParams.LineItem.builder()
                         .setPrice(priceId)
-                        .setQuantity(quantity)
+                        .setQuantity(Long.parseLong(quantity))
                         .build()
                 )
                 .setCustomer(stripeId)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .putAllMetadata(metadata)
+                .putMetadata("userId", String.valueOf(user.getId()))
+                .putMetadata("quantity", quantity)
                 .build();
             
             return Session.create(params);
@@ -107,25 +99,9 @@ public class PaymentServiceImpl implements PaymentService{
                     .orElse(null);
 
             if (session != null) {
-                String note = session.getMetadata().get("note");
-                String date = session.getMetadata().get("date");
-                String time = session.getMetadata().get("time");
-                String appointmentType = session.getMetadata().get("appointmentType");
                 Long userId = Long.parseLong(session.getMetadata().get("userId"));
                 int quantity = Integer.parseInt(session.getMetadata().get("quantity"));
 
-                for (int i = 0; i < quantity; i++) {
-                    AppointmentDto appointment = new AppointmentDto(
-                        LocalDate.parse(date),
-                        LocalTime.parse(time),
-                        note,
-                        AppointmentEnum.valueOf(appointmentType),
-                        userId,
-                        Long.valueOf(quantity),
-                        false
-                    );
-                    appointmentService.saveAppointment(appointment);
-                }
                 User user = userRepository.findById(userId).orElseThrow();
                 user.setAppointmentsAvailables(user.getAppointmentsAvailables() + quantity);
                 userRepository.save(user);
