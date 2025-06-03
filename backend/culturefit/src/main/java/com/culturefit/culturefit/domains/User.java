@@ -72,6 +72,10 @@ public class User {
     @Column(unique = true)
     private String stripeId;
 
+    private MembershipEnum membership;
+
+    private LocalDate lastPaymentDate;
+
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany

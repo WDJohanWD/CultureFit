@@ -1,5 +1,6 @@
 package com.culturefit.culturefit.controllers;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.culturefit.culturefit.domains.MembershipEnum;
 import com.culturefit.culturefit.domains.Role;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.payments.service.PaymentService;
@@ -90,6 +92,7 @@ public class AuthController {
 
         Customer stripeUser = paymentService.createCustomer(signUpRequest.getName(), signUpRequest.getEmail());
 
+
         // Crear nueva cuenta de usuario
         User user = new User(
                 null,
@@ -103,6 +106,8 @@ public class AuthController {
                 Role.USER,
                 signUpRequest.getAppointmentsAvailables(),
                 stripeUser.getId(),
+                null,
+                LocalDate.now(), //Fecha de inscripcion
                 new HashSet<>(), //Lista de amigos
                 new HashSet<>()); //Lista de peticiones de amistad
 
