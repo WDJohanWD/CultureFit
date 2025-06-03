@@ -79,7 +79,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Override
     @Transactional
-    public boolean redeemAppointment(Long userId, Long appointmentId) {
+    public boolean redeemAppointment(Long userId, Long appointmentId, String email) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado"));
 
@@ -88,7 +88,7 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         boolean sent = emailService.sendQRCodeEmail(
             //TODO: CAMBIAR PARA PRODUCCION
-                "culturefit.contact@gmail.com",
+                 email,
                 "Use el próximo código QR en el mostrador del gimnasio para canjearlo.",
                 200,
                 200);

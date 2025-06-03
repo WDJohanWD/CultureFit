@@ -18,7 +18,7 @@ public interface AppointmentService {
 
     void deleteAppointment(Long id);
 
-    boolean redeemAppointment(Long userId, Long appointmentId);
+    boolean redeemAppointment(Long userId, Long appointmentId, String email);
 
     List<Appointment> getAppointmentsByUser(Long id);
 

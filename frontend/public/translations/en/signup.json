@@ -14,6 +14,6 @@
     "birthDate": "Birth Date",
     "goHome": "Go Home",
     "verificationSentTitle": "Verification email sent",
-    "verificationSentText": "Please check your email to verify your account."
+    "verificationSentMsg": "Please check your email to verify your account."
 
 }

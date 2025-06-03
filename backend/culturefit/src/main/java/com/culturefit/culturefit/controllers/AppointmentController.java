@@ -96,7 +96,7 @@ public class AppointmentController {
     @PostMapping("/create-appointment")
     public ResponseEntity<?> createAppointment(@RequestBody AppointmentDto appointmentDto) {
         Appointment appointment = appointmentService.saveAppointment(appointmentDto);
-        boolean sent = appointmentService.redeemAppointment(appointment.getUser().getId(), appointment.getId());
+        boolean sent = appointmentService.redeemAppointment(appointment.getUser().getId(), appointment.getId(), appointment.getUser().getEmail());
         if (sent) {
             return ResponseEntity.ok(
                     "Cita canjeada correctamente, mire la bandeja de entrada de su correo para obtener el código QR");
