@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.culturefit.culturefit.domains.MembershipEnum;
 import com.culturefit.culturefit.domains.User;
 
 
@@ -20,4 +21,6 @@ public interface UserRepository  extends JpaRepository<User, Long>{
 
     @Query("SELECT u FROM User u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<User> searchByName(String search);
+
+    List<User> findByMembership(MembershipEnum membership);
 }

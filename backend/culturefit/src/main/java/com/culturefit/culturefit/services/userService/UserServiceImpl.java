@@ -1,6 +1,8 @@
 package com.culturefit.culturefit.services.userService;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.culturefit.culturefit.domains.MembershipEnum;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.dto.UserEditDto;
 import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
@@ -37,7 +40,6 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ProfileImageService profileImageService;
-
 
     @Override
     public User saveUser(@Valid User user) throws ErrorSavingUserException {
@@ -87,13 +89,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundUserException::new);
     }
 
-
     @Override
     public List<User> searchUsersByName(String search) {
         List<User> users = userRepository.searchByName(search);
         return users;
     }
-  
+
     @Override
     public User activateUser(User user) {
         user.setActive(true);
@@ -110,7 +111,7 @@ public class UserServiceImpl implements UserService {
             userRepository.deleteById(id);
             return true;
         } catch (Exception e) {
-            throw new NotFoundUserException();  
+            throw new NotFoundUserException();
         }
     }
 
@@ -160,8 +161,6 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setRole(user.getRole());
         return userRepository.save(userToUpdate);
     }
-
-
 
     // Peticiones de amistad
     @Override
@@ -245,5 +244,46 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
         userRepository.save(friend);
+    }
+
+    public void setUserBasic(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+        user.setMembership(MembershipEnum.BASIC);
+        user.setLastPaymentDate(LocalDate.now());
+    }
+
+    public void setUserPlus(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+        user.setMembership(MembershipEnum.PLUS);
+        user.setLastPaymentDate(LocalDate.now());
+    }
+
+    public void setUserElite(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(NotFoundUserException::new);
+        user.setMembership(MembershipEnum.ELITE);
+        user.setLastPaymentDate(LocalDate.now());
+    }
+
+    public void updateCouponsMonthly() {
+        List<User> eliteUsers = userRepository.findByMembership(MembershipEnum.ELITE);
+
+        for (User user : eliteUsers) {
+            LocalDate today = LocalDate.now();
+            LocalDate lastPaymentDate = user.getLastPaymentDate();
+
+            if (lastPaymentDate == null) {
+                user.setLastPaymentDate(today);
+                userRepository.save(user);
+            } else {
+                long monthsBetween = ChronoUnit.MONTHS.between(lastPaymentDate.withDayOfMonth(1),
+                        today.withDayOfMonth(1));
+
+                if (monthsBetween >= 1) {
+                    user.setAppointmentsAvailables(user.getAppointmentsAvailables() + 4);
+                    user.setLastPaymentDate(today);
+                    userRepository.save(user);
+                }
+            }
+        }
     }
 }
