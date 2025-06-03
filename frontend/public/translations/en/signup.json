@@ -11,5 +11,9 @@
     "repeatPass": "Repeat your password",
     "account":"Already have an account?",
     "login": "Log In",
-    "birthDate": "Birth Date"
+    "birthDate": "Birth Date",
+    "goHome": "Go Home",
+    "verificationSentTitle": "Verification email sent",
+    "verificationSentMsg": "Please check your email to verify your account."
+
 }

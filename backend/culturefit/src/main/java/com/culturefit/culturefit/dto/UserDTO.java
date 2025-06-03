@@ -2,10 +2,13 @@ package com.culturefit.culturefit.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class AppointmentAvailableDto {
+public class UserDTO {
     private Long id;
-    private int num;
+    private String name;
+    private String imageUrl;
 }

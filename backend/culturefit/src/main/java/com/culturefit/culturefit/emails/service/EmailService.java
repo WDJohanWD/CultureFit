@@ -9,6 +9,8 @@ public interface EmailService {
 
     boolean sendQRCodeEmail(String toEmail, String text, int width, int height);
 
+    boolean sendEmailResetPassword(String toEmail);
+
     BufferedImage generateQRCode(String text, int width, int height) throws Exception;
 
     String generateToken(String email);

@@ -197,7 +197,7 @@ function ChartTooltipContent({
                       {nestLabel ? tooltipLabel : null}
                       <div className="-ms-4 flex flex-col gap-y-2">
                         <span>Weight</span>
-                        <span>Repetitions:</span>
+                        <span>Reps:</span>
                       </div>
                     </div>
                     {item.value && (

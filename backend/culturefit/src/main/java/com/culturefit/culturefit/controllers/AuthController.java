@@ -1,5 +1,7 @@
 package com.culturefit.culturefit.controllers;
 
+import java.util.HashSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -100,7 +102,9 @@ public class AuthController {
                 null,
                 Role.USER,
                 signUpRequest.getAppointmentsAvailables(),
-                stripeUser.getId());
+                stripeUser.getId(),
+                new HashSet<>(), //Lista de amigos
+                new HashSet<>()); //Lista de peticiones de amistad
 
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");

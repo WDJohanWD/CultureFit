@@ -39,15 +39,15 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public Lesson createLesson(String lessonName, String lessonDescription) {
-        return new Lesson(null, lessonName, lessonDescription, null, null, null);
+    public Lesson createLesson(String lessonNameES, String lessonNameEN, String lessonDescriptionES, String lessonDescriptionEN) {
+        return new Lesson(null, lessonNameES, lessonNameEN, lessonDescriptionES, lessonDescriptionEN, null, null, null);
     }
 
     @Override
     public Lesson save(Lesson lesson, MultipartFile file, MultipartFile thumbnail) {
         try {
-            String videoUrl = uploadLesson(file, lesson.getName());
-            String thumbnailUrl = uploadThumbnail(thumbnail, lesson.getName());
+            String videoUrl = uploadLesson(file, lesson.getNameES());
+            String thumbnailUrl = uploadThumbnail(thumbnail, lesson.getNameES());
 
             lesson.setVideoUrl(videoUrl);
             lesson.setThumbnailUrl(thumbnailUrl);

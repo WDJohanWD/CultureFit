@@ -189,35 +189,15 @@ export function Appointment() {
         notes: notes || ""
       }
 
-      const response = await fetch("http://localhost:9000/appointment/create", {
+      const response = await fetch("http://localhost:9000/appointment/create-appointment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
 
       if (!response.ok) throw new Error("Failed to book appointment")
-      const response1 = await fetch(`${API_URL}/manageAppointment`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: user.id,
-          num: -1
-        }),
-      });
 
       const newAppointment = await response.json()
-
-      const response2 = await fetch(`http://localhost:9000/appointment/sendQrEmail`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: user.email,
-          qrText: `http://localhost:5173/appointment/${newAppointment.id}`,
-        }),
-      });
-
 
       setSuccess(true)
       setConfirmDialog(false)

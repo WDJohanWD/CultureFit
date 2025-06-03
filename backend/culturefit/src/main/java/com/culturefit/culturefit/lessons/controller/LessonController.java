@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,12 +36,20 @@ public class LessonController {
     public ResponseEntity<?> postLesson(
         @RequestParam("thumbnail") MultipartFile thumbnail,
         @RequestParam("file") MultipartFile file,
-        @RequestParam("name") String lessonName,
-        @RequestParam("description") String lessonDescription) {
+        @RequestParam("nameES") String lessonNameES,
+        @RequestParam("nameEN") String lessonNameEN,
+        @RequestParam("descriptionES") String lessonDescriptionES,
+        @RequestParam("descriptionEN") String lessonDescriptionEN) {
 
-        Lesson createdLesson = lessonService.createLesson(lessonName, lessonDescription);
+        Lesson createdLesson = lessonService.createLesson(lessonNameES, lessonNameEN, lessonDescriptionES, lessonDescriptionEN);
         Lesson savedLesson = lessonService.save(createdLesson, file, thumbnail);
         
         return ResponseEntity.ok(savedLesson);
+    }
+
+    @DeleteMapping("/delete-lesson/{id}")
+    public ResponseEntity<?> deleteLesson(@PathVariable Long id) {
+        lessonService.deleteLesson(id);;
+        return ResponseEntity.ok(null);
     }
 }

@@ -29,5 +29,14 @@
     "toast-password-error": "Hubo un error al actualizar tu contraseña. Por favor, inténtalo de nuevo.",
     "toast-image-success-title": "Imagen actualizada",
     "toast-image-success-description": "Tu imagen de perfil ha sido actualizada correctamente.",
-    "toast-image-error": "Hubo un error al subir la imagen. Por favor, inténtalo de nuevo."
+    "toast-image-error": "Hubo un error al subir la imagen. Por favor, inténtalo de nuevo.",
+    "progress":"Progreso",
+    "workout":"Rutina",
+    "friends": "Amigos",
+    "friends-req": "Solicitudes de amigo",
+    "no-fr": "No tienes ninguna solicitud de amigo",
+    "no-f": "Aún no has añadido a ningun amigo",
+    "add-friend": "Enviar petición de amistad",
+    "add-vue": "Añadelo como amigo para ver su progreso",
+    "logout": "Cerrar sesión"
 }

@@ -15,10 +15,12 @@ import YourProgress from "./sections/YourProgress";
 import Workout from "./sections/Workout"
 import Profile from "./sections/Profile";
 import AppointmentData from "./sections/AppointmentData";
+import Public_Profile from "./sections/Public_Profile";
+import Lessons from "./sections/Lessons";
 import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext } from "react";
 import { Appointment } from "./sections/Appointment";
-
+import ResetPassword from "./sections/SetNewPassword";
 function Layout() {
   const { token, isAdmin, loading, user } = useContext(AuthContext);
 
@@ -36,6 +38,16 @@ function Layout() {
         <Route path="/confirm-account/:token" element={<ConfirmAccount />} />
         <Route path="/profile" element={<Profile />} />
 
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/profile/:username" element={<Public_Profile />} />
+
+        <Route path="/lessons" element={
+            user != null? (
+              <Lessons />
+            ) : (
+              <Navigate to="/error" replace />
+            )
+          } />
         <Route path="/signup" element={
             user == null? (
               <Signup />

@@ -77,7 +77,7 @@ function Memberships() {
 
       <img src="/CultureFitLogoNegro.png" alt="" className="h-12 mx-auto mb-3" />
       <div className="mx-auto max-w-4xl text-center">
-        <h2 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">{t("titulo1")}</h2>
+        <h2 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl montserrat">{t("titulo1")}</h2>
       </div>
       <p className="mx-auto mt-6 max-w-2xl text-center text-lg font-medium text-pretty text-gray-600 sm:text-xl">
         {t("subtitulo1")}
@@ -93,7 +93,7 @@ function Memberships() {
                 {tier.name}
               </Badge>
               <div className="mt-4 flex items-baseline gap-x-2">
-                <CardTitle className="text-5xl font-semibold tracking-tight text-gray-900">
+                <CardTitle className="text-5xl font-semibold tracking-tight montserrat text-gray-900">
                   {tier.priceMonthly}
                 </CardTitle>
                 <span className="text-base text-gray-500">/{t("mes")}</span>
