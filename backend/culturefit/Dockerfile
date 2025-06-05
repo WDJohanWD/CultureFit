@@ -1,5 +1,5 @@
 # Usa una imagen de Java para correr el jar
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:23-jre-alpine
 
 # Crea un directorio dentro del contenedor
 WORKDIR /app
