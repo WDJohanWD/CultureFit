@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.culturefit.culturefit.domains.Role;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentException;
 import com.culturefit.culturefit.repositories.UserRepository;
@@ -18,14 +19,13 @@ import com.stripe.param.CustomerCreateParams;
 import com.stripe.param.checkout.SessionCreateParams;
 
 @Service
-public class PaymentServiceImpl implements PaymentService{
+public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private UserRepository userRepository;
 
     // Método para crear el usuario de Stripe
     public Customer createCustomer(String name, String email) throws StripeException {
-        CustomerCreateParams params = 
-            CustomerCreateParams.builder()
+        CustomerCreateParams params = CustomerCreateParams.builder()
                 .setName(name)
                 .setEmail(email)
                 .build();
@@ -39,18 +39,17 @@ public class PaymentServiceImpl implements PaymentService{
     public Session createCheckoutSession(String priceId, String stripeId) throws StripeException {
         try {
             SessionCreateParams params = SessionCreateParams.builder()
-                //TODO: Cambiar urls de exito y de cancelación 
-                .setSuccessUrl("https://example.com/success")
-                .setCancelUrl("https://example.com/cancel")
-                .addLineItem(
-                    SessionCreateParams.LineItem.builder()
-                        .setPrice(priceId)
-                        .setQuantity(1L)
-                        .build()
-                )
-                .setCustomer(stripeId)
-                .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-                .build();
+                    // TODO: Cambiar urls de exito y de cancelación
+                    .setSuccessUrl("https://example.com/success")
+                    .setCancelUrl("https://example.com/cancel")
+                    .addLineItem(
+                            SessionCreateParams.LineItem.builder()
+                                    .setPrice(priceId)
+                                    .setQuantity(1L)
+                                    .build())
+                    .setCustomer(stripeId)
+                    .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                    .build();
             return Session.create(params);
         } catch (Exception e) {
             throw new StripePaymentException();
@@ -61,21 +60,20 @@ public class PaymentServiceImpl implements PaymentService{
         try {
             User user = userRepository.findByStripeId(stripeId).orElseThrow();
             SessionCreateParams params = SessionCreateParams.builder()
-                //TODO: Cambiar urls de exito y de cancelación 
-                .setSuccessUrl("https://example.com/success")
-                .setCancelUrl("https://example.com/cancel")
-                .addLineItem(
-                    SessionCreateParams.LineItem.builder()
-                        .setPrice(priceId)
-                        .setQuantity(Long.parseLong(quantity))
-                        .build()
-                )
-                .setCustomer(stripeId)
-                .setMode(SessionCreateParams.Mode.PAYMENT)
-                .putMetadata("userId", String.valueOf(user.getId()))
-                .putMetadata("quantity", quantity)
-                .build();
-            
+                    // TODO: Cambiar urls de exito y de cancelación
+                    .setSuccessUrl("https://example.com/success")
+                    .setCancelUrl("https://example.com/cancel")
+                    .addLineItem(
+                            SessionCreateParams.LineItem.builder()
+                                    .setPrice(priceId)
+                                    .setQuantity(Long.parseLong(quantity))
+                                    .build())
+                    .setCustomer(stripeId)
+                    .setMode(SessionCreateParams.Mode.PAYMENT)
+                    .putMetadata("userId", String.valueOf(user.getId()))
+                    .putMetadata("quantity", quantity)
+                    .build();
+
             return Session.create(params);
         } catch (Exception e) {
             throw new StripePaymentException();
@@ -83,7 +81,7 @@ public class PaymentServiceImpl implements PaymentService{
     }
 
     public ResponseEntity<String> handleStripeWebhook(String payload, String sigHeader) {
-        
+
         String endpointSecret = "whsec_AMfHCF0RBHSOTJQeEwekmvcNpiUD9hq9";
         Event event;
 
@@ -98,12 +96,21 @@ public class PaymentServiceImpl implements PaymentService{
                     .getObject()
                     .orElse(null);
 
-            if (session != null) {
+            if (session != null && session.getMetadata() != null &&
+                    session.getMetadata().containsKey("userId") &&
+                    session.getMetadata().containsKey("quantity")) {
+
                 Long userId = Long.parseLong(session.getMetadata().get("userId"));
                 int quantity = Integer.parseInt(session.getMetadata().get("quantity"));
 
                 User user = userRepository.findById(userId).orElseThrow();
                 user.setAppointmentsAvailables(user.getAppointmentsAvailables() + quantity);
+                userRepository.save(user);
+
+            } else if (session != null && session.getSubscription() != null) {
+                String stripeId = session.getCustomer();
+                User user = userRepository.findByStripeId(stripeId).orElseThrow();
+                user.setRole(Role.SUBSCRIBER);
                 userRepository.save(user);
             }
         }
