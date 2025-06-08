@@ -13,9 +13,12 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.model.Event;
+import com.stripe.model.Subscription;
+import com.stripe.model.SubscriptionCollection;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.SubscriptionListParams;
 import com.stripe.param.checkout.SessionCreateParams;
 
 @Service
@@ -79,6 +82,30 @@ public class PaymentServiceImpl implements PaymentService {
             throw new StripePaymentException();
         }
     }
+
+    public void cancelActiveSubscriptionsByUserId(Long userId) throws StripeException {
+        User user = userRepository.findById(userId).orElseThrow();
+        String stripeCustomerId = user.getStripeId();
+
+        if (stripeCustomerId == null || stripeCustomerId.isEmpty()) {
+            throw new IllegalArgumentException("El usuario no tiene asociado un Stripe ID");
+        }
+
+        SubscriptionListParams listParams = SubscriptionListParams.builder()
+                .setCustomer(stripeCustomerId)
+                .setStatus(SubscriptionListParams.Status.ACTIVE)
+                .build();
+
+        SubscriptionCollection subscriptions = Subscription.list(listParams);
+
+        for (Subscription subscription : subscriptions.getData()) {
+            subscription.cancel();
+        }
+
+        user.setRole(Role.USER);
+        userRepository.save(user);
+    }
+
 
     public ResponseEntity<String> handleStripeWebhook(String payload, String sigHeader) {
 
