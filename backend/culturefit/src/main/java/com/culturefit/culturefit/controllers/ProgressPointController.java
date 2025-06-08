@@ -66,23 +66,6 @@ public class ProgressPointController {
         return progressPoints;
     }
 
-    // Recibir el último punto de progresion de un usuario(userId) en un ejercicio
-    // en concreto(exerciseId)
-    @Operation(summary = "Obtener el último punto de progreso de un usuario en un ejercicio", description = "Devuelve el último punto de progreso registrado por un usuario en un ejercicio específico.")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Último punto de progreso encontrado exitosamente",
-            content = @Content(schema = @Schema(implementation = ProgressPoint.class))),
-        @ApiResponse(responseCode = "404", description = "Usuario o ejercicio no encontrado"),
-        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
-    @Parameter(name = "userId", description = "Id del usuario", required = true)
-    @Parameter(name = "exerciseId", description = "Id del ejercicio", required = true)
-    @GetMapping("/user-latest/{userId}/{exerciseId}")
-    public ResponseEntity<ProgressPoint> getUserLatest(@PathVariable Long userId, @PathVariable Long exerciseId) {
-        ProgressPoint progressPoint = progressPointService.getLatestFromUser(userId, exerciseId);
-        return ResponseEntity.ok(progressPoint);
-    }
-
     // Posts
     @Operation(summary = "Crear un nuevo punto de progreso", description = "Crea un nuevo punto de progreso para un usuario en un ejercicio.")
     @ApiResponses(value = {
