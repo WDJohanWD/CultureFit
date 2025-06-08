@@ -14,6 +14,10 @@ import com.culturefit.culturefit.services.exerciseService.ExerciseService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -32,6 +36,11 @@ public class ExerciseController {
 
     // Getters
     @Operation(summary = "Obtener todos los ejercicios", description = "Devuelve una lista de todos los ejercicios.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de ejercicios obtenida exitosamente",
+            content = @Content(schema = @Schema(implementation = Exercise.class))),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @GetMapping ("/exercise")
     public List<Exercise> getExercises(){
         List<Exercise> exercises = exerciseService.getExercise();
@@ -39,6 +48,12 @@ public class ExerciseController {
     }
 
     @Operation(summary = "Obtener un ejercicio por ID", description = "Devuelve los datos de un ejercicio por su ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ejercicio encontrado exitosamente",
+            content = @Content(schema = @Schema(implementation = Exercise.class))),
+        @ApiResponse(responseCode = "404", description = "Ejercicio no encontrado"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @Parameter(name = "id", description = "Id del ejercicio", required = true)
     @GetMapping("/exercise/{id}")
     public ResponseEntity<Exercise> getExercise(@PathVariable Long id) {
@@ -48,6 +63,12 @@ public class ExerciseController {
 
     // Posts
     @Operation(summary = "Crear un nuevo ejercicio", description = "Crea un nuevo ejercicio en la aplicación.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ejercicio creado exitosamente",
+            content = @Content(schema = @Schema(implementation = Exercise.class))),
+        @ApiResponse(responseCode = "400", description = "Datos de ejercicio inválidos"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @PostMapping("/new-exercise")
     public ResponseEntity<Exercise> newExercise (@Valid @RequestBody Exercise exercise) {
         Exercise exerciseBD = exerciseService.saveExercise(exercise);
@@ -55,6 +76,12 @@ public class ExerciseController {
     }
 
     @Operation(summary = "Subir imagen de ejercicio", description = "Sube una imagen para un ejercicio existente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Imagen subida exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Ejercicio no encontrado"),
+        @ApiResponse(responseCode = "400", description = "Formato de imagen inválido"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @Parameter(name = "id", description = "Id del ejercicio", required = true)
     @PostMapping("/exercise/upload-image/{id}")
     public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
@@ -65,6 +92,11 @@ public class ExerciseController {
 
     //Delete
     @Operation(summary = "Eliminar un ejercicio", description = "Elimina un ejercicio de la aplicación por su ID.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "204", description = "Ejercicio eliminado exitosamente"),
+        @ApiResponse(responseCode = "404", description = "Ejercicio no encontrado"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @Parameter(name = "id", description = "Id del ejercicio", required = true)
     @DeleteMapping ("/delete-exercise/{id}")
     public ResponseEntity<?> deleteExercise(@PathVariable Long id) {
@@ -74,6 +106,13 @@ public class ExerciseController {
 
     // Put
     @Operation(summary = "Editar un ejercicio", description = "Actualiza los datos de un ejercicio existente.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Ejercicio actualizado exitosamente",
+            content = @Content(schema = @Schema(implementation = Exercise.class))),
+        @ApiResponse(responseCode = "404", description = "Ejercicio no encontrado"),
+        @ApiResponse(responseCode = "400", description = "Datos de ejercicio inválidos"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
     @Parameter(name = "id", description = "Id del ejercicio", required = true)
     @PutMapping("/edit-exercise/{id}")
     public ResponseEntity<Exercise> editExercise(@PathVariable Long id, @Valid @RequestBody Exercise exercise) {

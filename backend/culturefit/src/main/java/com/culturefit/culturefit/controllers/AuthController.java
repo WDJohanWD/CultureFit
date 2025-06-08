@@ -30,6 +30,10 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -52,6 +56,14 @@ public class AuthController {
     private JwtUtils jwtUtils;
 
     @Operation(summary = "Iniciar sesión", description = "Login/Inicio de sesión en la aplicación.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso", 
+            content = @Content(schema = @Schema(implementation = JwtResponseDto.class))),
+        @ApiResponse(responseCode = "401", description = "Credenciales inválidas o usuario inactivo", 
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos", 
+            content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
         try {
@@ -80,6 +92,14 @@ public class AuthController {
     }
 
     @Operation(summary = "Registrar usuario", description = "Registro de un nuevo usuario en la aplicación.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario registrado exitosamente", 
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = "El nombre de usuario o email ya existe", 
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor", 
+            content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupDto signUpRequest) throws StripeException {
         if (userRepository.existsByName(signUpRequest.getName())) {
