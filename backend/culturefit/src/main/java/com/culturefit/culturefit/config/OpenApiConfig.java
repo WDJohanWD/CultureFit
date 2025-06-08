@@ -29,7 +29,7 @@ public class OpenApiConfig {
         Info info = new Info();
         info.setTitle("API CultureFit");
         info.setDescription("CultureFit Gym API");
-        info.setVersion("1.0.0");
+        info.setVersion("3.0.0");
         info.setContact(contact);
         info.setLicense(license);
 

@@ -29,8 +29,11 @@ import com.culturefit.culturefit.services.userService.UserService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Controlador de autentificación", description = "Controlador para gestionar la autentificación de los usuarios.")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
@@ -48,6 +51,7 @@ public class AuthController {
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Operation(summary = "Iniciar sesión", description = "Login/Inicio de sesión en la aplicación.")
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
         try {
@@ -75,6 +79,7 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Registrar usuario", description = "Registro de un nuevo usuario en la aplicación.")
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupDto signUpRequest) throws StripeException {
         if (userRepository.existsByName(signUpRequest.getName())) {
@@ -103,8 +108,8 @@ public class AuthController {
                 Role.USER,
                 signUpRequest.getAppointmentsAvailables(),
                 stripeUser.getId(),
-                new HashSet<>(), //Lista de amigos
-                new HashSet<>()); //Lista de peticiones de amistad
+                new HashSet<>(), // Lista de amigos
+                new HashSet<>()); // Lista de peticiones de amistad
 
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
