@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.services.userService.UserService;
+import com.stripe.exception.StripeException;
 
 import jakarta.validation.Valid;
 
@@ -25,6 +26,7 @@ import com.culturefit.culturefit.dto.FriendRequestDto;
 import com.culturefit.culturefit.dto.PasswordUpdateDto;
 import com.culturefit.culturefit.dto.UserDTO;
 import com.culturefit.culturefit.dto.UserEditDto;
+import com.culturefit.culturefit.payments.service.PaymentService;
 
 @RestController
 @Validated
@@ -32,6 +34,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PaymentService paymentService;
 
     // Getters
     @GetMapping("/users")
@@ -151,5 +156,19 @@ public class UserController {
     public ResponseEntity<Void> removeFriend(@RequestBody FriendRequestDto request) {
         userService.removeFriend(request.senderId(), request.receiverId());
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/cancel-subscription/{userId}")
+    public ResponseEntity<String> cancelSubscription(@PathVariable Long userId) {
+        try {
+            paymentService.cancelActiveSubscriptionsByUserId(userId);
+            return ResponseEntity.ok("Suscripción cancelada correctamente.");
+        } catch (StripeException e) {
+            return ResponseEntity.status(500).body("Error con Stripe al cancelar la suscripción.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error inesperado al cancelar la suscripción.");
+        }
     }
 }
