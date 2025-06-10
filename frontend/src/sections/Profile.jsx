@@ -1,42 +1,18 @@
 import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthContext";
-import {
-  User,
-  Users,
-  Lock,
-  Calendar,
-  Mail,
-  CreditCard,
-  Camera,
-  CheckCircle,
-  Check,
-  X,
-  Trash2,
-  LogOut,
-} from "lucide-react";
+import { User,  Users,  Lock,  Calendar,  Mail,  CreditCard,  Camera, CheckCircle,  Check,  X,  Trash2,  LogOut} from "lucide-react";
 import axios from "axios";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {  Card,  CardContent,  CardDescription,  CardHeader,  CardTitle,} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import {  Accordion,  AccordionContent,  AccordionItem,  AccordionTrigger,} from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import YourProgress from "./YourProgress";

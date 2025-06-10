@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import compression from 'vite-plugin-compression';
+import { visualizer }from 'rollup-plugin-visualizer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -27,7 +28,13 @@ export default defineConfig({
         algorithm: 'gzip',
         threshold: 1024, 
       }
-    )
+    ),
+    visualizer({
+      open: true,
+      filename: 'stats.html',
+      gzipSize: true,
+      brotliSize: true,
+    }),
   ],
   resolve: {
     alias: {

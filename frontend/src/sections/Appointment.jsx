@@ -23,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 /*ICONOS */
 import { CalendarIcon, Clock, CheckCircle, X, Loader2, CreditCard } from "lucide-react"
 
-export function Appointment() {
+export default function Appointment() {
   // --- Imports ---
   const { t } = useTranslation("appointments")
   const API_URL = "http://localhost:9000/appointment"
