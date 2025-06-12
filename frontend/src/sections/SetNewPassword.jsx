@@ -10,7 +10,7 @@ function SetNewPassword() {
   const { t } = useTranslation("login");
   const { token } = useParams();
   const navigate = useNavigate();
-
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState(null);
@@ -49,7 +49,7 @@ function SetNewPassword() {
     }
 
     try {
-      const response = await fetch(`http://localhost:9000/reset-password`, {
+      const response = await fetch(`${API_URL}/reset-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

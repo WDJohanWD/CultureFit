@@ -13,7 +13,7 @@ function SearchModal({ isOpen, onClose }) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState([]);
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -21,7 +21,7 @@ function SearchModal({ isOpen, onClose }) {
         if (query.length > 1) {
           try {
             const res = await fetch(
-              `http://localhost:9000/search/${encodeURIComponent(query)}`
+              `${API_URL}/search/${encodeURIComponent(query)}`
             );
 
             if (res.ok) {

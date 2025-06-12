@@ -1,3 +1,4 @@
 backend/culturefit/.env
 backend/.env
 backend/culturefit/uploads
+frontend/.env

@@ -17,7 +17,7 @@ import axios from "axios"
 
 function AdminDashboard() {
   const { t } = useTranslation("adminDashboard")
-  const API_URL = "http://localhost:9000"
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000"
 
   // --- Estado ---
   const [members, setMembers] = useState([])
@@ -46,7 +46,7 @@ function AdminDashboard() {
   // --- Función para Cargar Miembros ---
   const fetchMembersData = async () => {
     try {
-      const membersFetch = await fetch("http://localhost:9000/users")
+      const membersFetch = await fetch(`${API_URL}/users`)
       if (!membersFetch.ok) {
         throw new Error(`Failed to fetch members: ${membersFetch.statusText}`)
       }
@@ -63,7 +63,7 @@ function AdminDashboard() {
 
   const fetchExercisesData = async () => {
     try {
-      const exercisesFetch = await fetch("http://localhost:9000/exercise")
+      const exercisesFetch = await fetch(`${API_URL}/exercise`)
       if (!exercisesFetch.ok) {
         throw new Error(`Failed to fetch exercises: ${exercisesFetch.statusText}`)
       }
@@ -89,7 +89,7 @@ function AdminDashboard() {
   // --- Función para Borrar Miembro ---
   async function deleteMember(id) {
     try {
-      const deleteFetch = await fetch(`http://localhost:9000/user/${id}`, {
+      const deleteFetch = await fetch(`${API_URL}/user/${id}`, {
         method: "DELETE",
       })
       if (!deleteFetch.ok) {
@@ -106,7 +106,7 @@ function AdminDashboard() {
 
   async function deleteExercise(id) {
     try {
-      const deleteFetch = await fetch(`http://localhost:9000/delete-exercise/${id}`, {
+      const deleteFetch = await fetch(`${API_URL}/delete-exercise/${id}`, {
         method: "DELETE",
       })
       if (!deleteFetch.ok) {
@@ -171,7 +171,7 @@ function AdminDashboard() {
         formData.append("image", tempExerciseImage);
 
         const uploadResponse = await axios.post(
-          `http://localhost:9000/exercise/upload-image/${id}`,
+          `${API_URL}/exercise/upload-image/${id}`,
           formData,
           {
             headers: {
@@ -185,7 +185,7 @@ function AdminDashboard() {
         }
       }
 
-      const response = await fetch(`http://localhost:9000/edit-exercise/${id}`, {
+      const response = await fetch(`${API_URL}/edit-exercise/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(exerciseFormData),
@@ -211,7 +211,7 @@ function AdminDashboard() {
 
   async function handleAddExercise() {
     try {
-      const response = await fetch("http://localhost:9000/new-exercise", {
+      const response = await fetch(`${API_URL}/new-exercise`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newExerciseData),
@@ -265,7 +265,7 @@ function AdminDashboard() {
   // --- Función para Guardar Cambios ---
   async function handleSaveEdit(id) {
     try {
-      const response = await fetch(`http://localhost:9000/user-edit/${id}`, {
+      const response = await fetch(`${API_URL}/user-edit/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editFormData),

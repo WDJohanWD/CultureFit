@@ -14,7 +14,7 @@ import { IoReorderThreeOutline } from "react-icons/io5";
 function Public_Workout({ id }) {
   const { t } = useTranslation("workout");
 
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   const [items, setItems] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
@@ -42,7 +42,7 @@ function Public_Workout({ id }) {
   async function fetchWorkoutData() {
     try {
       const response = await fetch(
-        `http://localhost:9000/workout/user/${id}`
+        `${API_URL}/workout/user/${id}`
       );
       const data = await response.json();
 
@@ -62,7 +62,7 @@ function Public_Workout({ id }) {
   }
 
   async function getExercises() {
-    const response = await fetch(`http://localhost:9000/exercise`);
+    const response = await fetch(`${API_URL}/exercise`);
     if (!response.ok) {
       throw new Error("An error ocurred while fetching");
     }

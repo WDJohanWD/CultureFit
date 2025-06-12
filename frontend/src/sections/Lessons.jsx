@@ -13,7 +13,7 @@ import LessonModal from "./LessonModal";
 function Lessons() {
   const { t } = useTranslation("lessons");
   const { token, isAdmin, loading, user } = useContext(AuthContext);
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   const [thumbnailFile, setThumbnailFile] = useState(null);
   const [videoFile, setVideoFile] = useState(null);
@@ -37,7 +37,7 @@ function Lessons() {
   useEffect(() => {
     const fetchLessons = async () => {
       try {
-        const response = await fetch("http://localhost:9000/lessons");
+        const response = await fetch(`${API_URL}/lessons`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -93,7 +93,7 @@ function Lessons() {
       formData.append("videoUrl", newLesson.videoUrl);
       formData.append("thumbnailUrl", newLesson.thumbnailUrl);
 
-      const response = await fetch("http://localhost:9000/save-lesson", {
+      const response = await fetch(`${API_URL}/save-lesson`, {
         method: "POST",
         body: formData,
         headers: {
@@ -118,7 +118,7 @@ function Lessons() {
       setThumbnailFile(null);
       setVideoFile(null);
 
-      const updatedResponse = await fetch("http://localhost:9000/lessons");
+      const updatedResponse = await fetch(`${API_URL}/lessons`);
       if (updatedResponse.ok) {
         const updatedData = await updatedResponse.json();
         setLessonsList(updatedData);
@@ -143,7 +143,7 @@ function Lessons() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const updatedResponse = await fetch("http://localhost:9000/lessons");
+      const updatedResponse = await fetch(`${API_URL}/lessons`);
       if (updatedResponse.ok) {
         const updatedData = await updatedResponse.json();
         setLessonsList(updatedData);
