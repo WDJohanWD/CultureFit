@@ -12,6 +12,8 @@ import com.culturefit.culturefit.emails.domain.EmailResetPasswordDto;
 import com.culturefit.culturefit.emails.service.EmailService;
 import com.culturefit.culturefit.services.userService.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import java.util.Map;
@@ -24,6 +26,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+@Tag(name = "Controlador de correos", description = "Controlador para gestionar los distintos envíos de correos.")
 @RestController
 public class EmailController {
 
@@ -36,6 +39,7 @@ public class EmailController {
     @Value("${app.jwt.secret.confirmation}")
     private String jwtSecretConfirmation;
 
+    @Operation(summary = "Enviar un correo electrónico", description = "Envía un correo electrónico con el asunto y el mensaje proporcionados.")
     @PostMapping("/email")
     public ResponseEntity<?> sendEmail(@Valid @RequestBody EmailRequest request, BindingResult result) {
 
@@ -47,12 +51,14 @@ public class EmailController {
         return ResponseEntity.status(HttpStatus.OK).body("Email sent successfully");
     }
 
+    @Operation(summary = "Enviar correo de verificación", description = "Envía un correo electrónico de verificación al usuario.")
     @PostMapping("/verification-email")
     public ResponseEntity<?> sendVerifyEmail(@RequestBody String email) {
         emailService.sendConfirmationEmail(email);
         return ResponseEntity.ok("Email enviado correctamente");
     }
 
+    @Operation(summary = "Confirmar cuenta", description = "Confirma la cuenta del usuario utilizando un token JWT.")
     @PostMapping("/confirm-account")
     public ResponseEntity<?> confirmAccount(@RequestBody Map<String, String> request) {
         String token = request.get("token");
@@ -73,6 +79,7 @@ public class EmailController {
         }
     }
 
+    @Operation(summary = "Enviar correo con QR", description = "Envía un correo electrónico con un código QR generado.")
     @PostMapping("/sendQrEmail")
     public ResponseEntity<?> sendQrEmail(@RequestBody EmailQrDto request) {
         boolean sent = emailService.sendQRCodeEmail(request.getEmail(), request.getQrText(), request.getWidth(),
@@ -84,6 +91,7 @@ public class EmailController {
         }
     }
 
+    @Operation(summary = "Enviar correo de restablecimiento de contraseña", description = "Envía un correo electrónico para restablecer la contraseña del usuario.")
     @PostMapping("/resetPassword")
     public ResponseEntity<?> resetPassword(@RequestBody EmailResetPasswordDto email) {
         boolean sent = emailService.sendEmailResetPassword(email.getEmail());
