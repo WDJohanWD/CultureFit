@@ -62,14 +62,14 @@ export default function Appointment() {
       setPaymentSuccess(false)
 
       // Aquí llamas a tu endpoint de compra en el backend
-      const response = await fetch(`${API_URL}/manageAppointment`, {
-        method: "PATCH",
+      const response = await fetch(`${API_URL}/buy-coupon`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: user.id,
-          num: amount
+          userId: user.id,
+          quantity: amount
         }),
       });
       await fetchUser(user.id);
