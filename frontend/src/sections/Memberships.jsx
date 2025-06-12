@@ -3,13 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Check } from "lucide-react"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Loader2 } from "lucide-react"
 import { useState, useContext } from "react"
@@ -19,7 +13,7 @@ function Memberships() {
   const { t } = useTranslation("memberships")
   const [isLoading, setIsLoading] = useState(false)
   const { user } = useContext(AuthContext)
-
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000"
   const tiers = [
     {
       name: t("n1"),
@@ -50,7 +44,7 @@ function Memberships() {
   // Metodo para redirigir al checkout-session
   const handleCheckout = async (priceId) => {
     setIsLoading(true)
-    const CHECKOUT_SESSION_URL = "http://localhost:9000/payments/create-checkout-session/"
+    const CHECKOUT_SESSION_URL = `${API_URL}/payments/create-checkout-session/`
 
     try {
       const response = await fetch(CHECKOUT_SESSION_URL + priceId, {
@@ -133,21 +127,21 @@ function Memberships() {
         </Alert>
       ) : null}
 
-      {!user ?(
+      {!user ? (
         <Dialog open={isLoading} onOpenChange={setIsLoading}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{t("processingPayment")}</DialogTitle>
-            <DialogDescription className="flex items-center gap-2">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              {t("redirecting")}
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>{t("processingPayment")}</DialogTitle>
+              <DialogDescription className="flex items-center gap-2">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t("redirecting")}
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
 
-      ):null}
-      
+      ) : null}
+
 
     </div>
   )

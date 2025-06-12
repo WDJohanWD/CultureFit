@@ -1,13 +1,7 @@
 import { useContext, useEffect, useState, Da } from "react";
-import { AuthContext } from "@/AuthContext";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
-
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
+import {  ChartContainer,  ChartTooltip,  ChartTooltipContent} from "@/components/ui/chart";
 
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
@@ -17,6 +11,7 @@ function Public_Progress({ id }) {
   const [selectedExercise, setSelectedExercise] = useState(1);
   const [graphData, setGraphData] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   const chartConfig = {
     weight: {
@@ -27,7 +22,7 @@ function Public_Progress({ id }) {
 
   async function obtainData(idExercise) {
     const response = await fetch(
-      `http://localhost:9000/user-progress/${id}/${idExercise}`
+      `${API_URL}/user-progress/${id}/${idExercise}`
     );
     if (!response.ok) {
       throw new Error("An error ocurred while fetching");
@@ -44,7 +39,7 @@ function Public_Progress({ id }) {
   }
 
   async function getExercises() {
-    const response = await fetch(`http://localhost:9000/exercise`);
+    const response = await fetch(`${API_URL}/exercise`);
     if (!response.ok) {
       throw new Error("An error ocurred while fetching");
     }

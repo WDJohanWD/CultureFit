@@ -8,7 +8,7 @@ const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true); 
-
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
   useEffect(() => {
     const initializeAuth = async () => {
       if (token) {
@@ -45,7 +45,7 @@ const AuthProvider = ({ children }) => {
 
   const fetchUser = async (id) => {
     try {
-      const response = await fetch(`http://localhost:9000/user/${id}`);
+      const response = await fetch(`${API_URL}/user/${id}`);
       if (!response.ok) throw new Error("No se pudo obtener el usuario");
       const data = await response.json();
       setUser(data);
@@ -57,7 +57,7 @@ const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch("http://localhost:9000/auth/login", {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

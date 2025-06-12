@@ -23,7 +23,7 @@ export default function Profile() {
   const { user: authUser, loading } = useContext(AuthContext);
   const { logout } = useContext(AuthContext);
   const { t } = useTranslation("Profile");
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
   const navigate = useNavigate();
 
 
@@ -51,7 +51,7 @@ export default function Profile() {
   async function getFriendRequest(currentUser) {
     try {
       const response = await fetch(
-        `http://localhost:9000/${currentUser.id}/friend-requests`
+        `${API_URL}/${currentUser.id}/friend-requests`
       );
       const data = await response.json();
 
@@ -70,7 +70,7 @@ export default function Profile() {
   async function getFriends(currentUser) {
     try {
       const response = await fetch(
-        `http://localhost:9000/${currentUser.id}/friends`
+        `${API_URL}/${currentUser.id}/friends`
       );
       const data = await response.json();
 
@@ -91,7 +91,7 @@ export default function Profile() {
 
     try {
       const response = await fetch(
-        "http://localhost:9000/friend-request/accept",
+        `${API_URL}/friend-request/accept`,
         {
           method: "PUT",
           headers: {
@@ -117,7 +117,7 @@ export default function Profile() {
 
     try {
       const response = await fetch(
-        "http://localhost:9000/friend-request/reject",
+        `${API_URL}/friend-request/reject`,
         {
           method: "PUT",
           headers: {
@@ -142,7 +142,7 @@ export default function Profile() {
     const friendId = e.target.value;
 
     try {
-      const response = await fetch("http://localhost:9000/friend/delete", {
+      const response = await fetch(`${API_URL}/friend/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -226,7 +226,7 @@ export default function Profile() {
     try {
       // Realizamos la solicitud para cambiar la contraseña
       const response = await fetch(
-        `http://localhost:9000/updatePassword/${user.id}`,
+        `${API_URL}/updatePassword/${user.id}`,
         {
           method: "PUT",
           headers: {

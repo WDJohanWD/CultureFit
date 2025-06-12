@@ -26,7 +26,7 @@ import { CalendarIcon, Clock, CheckCircle, X, Loader2, CreditCard } from "lucide
 export default function Appointment() {
   // --- Imports ---
   const { t } = useTranslation("appointments")
-  const API_URL = "http://localhost:9000/appointment"
+  const API_URL = (import.meta.env.VITE_API_URL + "/appointment") || "http://localhost:9000/appointment"
   const { user, fetchUser } = useContext(AuthContext)
 
   // --- Estados Generales ---
@@ -113,7 +113,7 @@ export default function Appointment() {
     const fetchUserAppointments = async () => {
       try {
         setIsLoadingAppointments(true)
-        const response = await fetch(`http://localhost:9000/appointment/byuser/${user.id}`, {
+        const response = await fetch(`${API_URL}/byuser/${user.id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -146,7 +146,7 @@ export default function Appointment() {
 
       try {
         const formattedDate = format(date, "yyyy-MM-dd")
-        const response = await fetch(`http://localhost:9000/appointment/slots?date=${formattedDate}`)
+        const response = await fetch(`${API_URL}/slots?date=${formattedDate}`)
         const data = await response.json()
 
         const slots = data.map((timeString) => ({
@@ -189,7 +189,7 @@ export default function Appointment() {
         notes: notes || ""
       }
 
-      const response = await fetch("http://localhost:9000/appointment/create-appointment", {
+      const response = await fetch(`${API_URL}/create-appointment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -220,7 +220,7 @@ export default function Appointment() {
     try {
       setIsLoading(true)
 
-      const response = await fetch(`http://localhost:9000/appointment/${appointmentId}/cancel`, {
+      const response = await fetch(`${API_URL}/${appointmentId}/cancel`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" }
       })

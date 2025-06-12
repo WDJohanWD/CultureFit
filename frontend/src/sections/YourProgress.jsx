@@ -13,14 +13,14 @@ import { Card, CardContent } from "@/components/ui/card";
 
 import {  ChartContainer,  ChartTooltip,  ChartTooltipContent,
 } from "@/components/ui/chart";
-import {  AlertDialog,  AlertDialogAction,  AlertDialogCancel,  AlertDialogContent,  AlertDialogDescription,  AlertDialogFooter,  AlertDialogHeader,  AlertDialogTitle,  AlertDialogTrigger,} from "@/components/ui/alert-dialog";
+import {  AlertDialog,  AlertDialogAction,  AlertDialogCancel,  AlertDialogContent,  AlertDialogDescription,  AlertDialogFooter,  AlertDialogHeader,  AlertDialogTitle} from "@/components/ui/alert-dialog";
 
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 function YourProgress() {
   const { t } = useTranslation("progress");
   const { user } = useContext(AuthContext);
-
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
   const [selectedExercise, setSelectedExercise] = useState(1);
   const [graphData, setGraphData] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
@@ -41,7 +41,7 @@ function YourProgress() {
 
   async function obtainData(idExercise) {
     const response = await fetch(
-      `http://localhost:9000/user-progress/${user.id}/${idExercise}`
+      `${API_URL}/user-progress/${user.id}/${idExercise}`
     );
     if (!response.ok) {
       throw new Error("An error ocurred while fetching");
@@ -58,7 +58,7 @@ function YourProgress() {
   }
 
   async function getExercises() {
-    const response = await fetch(`http://localhost:9000/exercise`);
+    const response = await fetch(`${API_URL}/exercise`);
     if (!response.ok) {
       throw new Error("An error ocurred while fetching");
     }
@@ -90,7 +90,7 @@ function YourProgress() {
     };
     console.log(newPP);
 
-    const response = await fetch("http://localhost:9000/new-progress-point", {
+    const response = await fetch(`${API_URL}/new-progress-point`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -121,7 +121,7 @@ function YourProgress() {
   async function deleteProgressPoint(id) {
     try {
       const response = await fetch(
-        `http://localhost:9000/delete-progress-point/${id}`,
+        `${API_URL}/delete-progress-point/${id}`,
         {
           method: "DELETE",
         }
