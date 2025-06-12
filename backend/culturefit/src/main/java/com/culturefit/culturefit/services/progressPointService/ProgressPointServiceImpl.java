@@ -51,10 +51,14 @@ public class ProgressPointServiceImpl implements ProgressPointService {
 
     public boolean deleteProgressPoint(Long id) {
         try {
-            progressPointRepository.deleteById(id);
+            ProgressPoint deleted = progressPointRepository.findById(id)
+                .orElseThrow(NotFoundProgressPointException::new);
+                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" + deleted);
+            progressPointRepository.delete(deleted);
             return true;
         } catch (Exception e) {
-            throw new NotFoundProgressPointException();
+            e.printStackTrace(); // VER EL ERROR REAL
+            throw e; // NO lo enmascares aún
         }
     }
 

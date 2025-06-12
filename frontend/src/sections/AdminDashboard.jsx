@@ -7,18 +7,17 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import { Pencil, Trash2, Search, AlertCircle, Loader2 } from "lucide-react"
+import { Dialog,  DialogContent,  DialogDescription,  DialogFooter,  DialogHeader,  DialogTitle,} from "@/components/ui/dialog"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Label } from "@/components/ui/label"
+
+
+import { Pencil, Trash2, Search, AlertCircle, Loader2, Camera, Dumbbell } from "lucide-react"
+import axios from "axios"
 
 function AdminDashboard() {
   const { t } = useTranslation("adminDashboard")
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000"
 
   // --- Estado ---
   const [members, setMembers] = useState([])
@@ -41,11 +40,13 @@ function AdminDashboard() {
     nameES: "",
     nameEN: "",
   })
+  const [tempExerciseImage, setTempExerciseImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   // --- Función para Cargar Miembros ---
   const fetchMembersData = async () => {
     try {
-      const membersFetch = await fetch("http://localhost:9000/users")
+      const membersFetch = await fetch(`${API_URL}/users`)
       if (!membersFetch.ok) {
         throw new Error(`Failed to fetch members: ${membersFetch.statusText}`)
       }
@@ -62,7 +63,7 @@ function AdminDashboard() {
 
   const fetchExercisesData = async () => {
     try {
-      const exercisesFetch = await fetch("http://localhost:9000/exercise")
+      const exercisesFetch = await fetch(`${API_URL}/exercise`)
       if (!exercisesFetch.ok) {
         throw new Error(`Failed to fetch exercises: ${exercisesFetch.statusText}`)
       }
@@ -88,7 +89,7 @@ function AdminDashboard() {
   // --- Función para Borrar Miembro ---
   async function deleteMember(id) {
     try {
-      const deleteFetch = await fetch(`http://localhost:9000/user/${id}`, {
+      const deleteFetch = await fetch(`${API_URL}/user/${id}`, {
         method: "DELETE",
       })
       if (!deleteFetch.ok) {
@@ -105,7 +106,7 @@ function AdminDashboard() {
 
   async function deleteExercise(id) {
     try {
-      const deleteFetch = await fetch(`http://localhost:9000/delete-exercise/${id}`, {
+      const deleteFetch = await fetch(`${API_URL}/delete-exercise/${id}`, {
         method: "DELETE",
       })
       if (!deleteFetch.ok) {
@@ -142,6 +143,19 @@ function AdminDashboard() {
     }))
   }
 
+  const handleExerciseImageUpload = async (event) =>{
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreview(reader.result);
+        };
+        reader.readAsDataURL(file);
+        
+        setTempExerciseImage(file);
+      }
+  }
+
   const handleNewExerciseInputChange = (event) => {
     const { name, value } = event.target
     setNewExerciseData((prevData) => ({
@@ -152,7 +166,26 @@ function AdminDashboard() {
 
   async function handleSaveExerciseEdit(id) {
     try {
-      const response = await fetch(`http://localhost:9000/edit-exercise/${id}`, {
+      if (tempExerciseImage) {
+        const formData = new FormData();
+        formData.append("image", tempExerciseImage);
+
+        const uploadResponse = await axios.post(
+          `${API_URL}/exercise/upload-image/${id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (!uploadResponse.status === 200) {
+          throw new Error("Failed to upload image");
+        }
+      }
+
+      const response = await fetch(`${API_URL}/edit-exercise/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(exerciseFormData),
@@ -178,7 +211,7 @@ function AdminDashboard() {
 
   async function handleAddExercise() {
     try {
-      const response = await fetch("http://localhost:9000/new-exercise", {
+      const response = await fetch(`${API_URL}/new-exercise`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newExerciseData),
@@ -232,7 +265,7 @@ function AdminDashboard() {
   // --- Función para Guardar Cambios ---
   async function handleSaveEdit(id) {
     try {
-      const response = await fetch(`http://localhost:9000/user-edit/${id}`, {
+      const response = await fetch(`${API_URL}/user-edit/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(editFormData),
@@ -313,6 +346,8 @@ function AdminDashboard() {
                   <TableHead>{t("ID")}</TableHead>
                   <TableHead>{t("Name")}</TableHead>
                   <TableHead>{t("Email")}</TableHead>
+                  <TableHead>{t("DNI")}</TableHead>
+                  <TableHead>{t("Plan")}</TableHead>
                   <TableHead>{t("Birth Date")}</TableHead>
                   <TableHead>{t("Status")}</TableHead>
                   <TableHead>{t("Role")}</TableHead>
@@ -346,6 +381,30 @@ function AdminDashboard() {
                               readOnly
                               className="w-full"
                             />
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              type="text"
+                              name="dni"
+                              value={editFormData.dni}
+                              onChange={handleInputChange}
+                              readOnly
+                              className="w-full"
+                            />
+                          </TableCell>
+                          <TableCell>
+                          <Select 
+                              name="plan"
+                              value={editFormData.plan}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'plan', value }})}
+                              className="w-full"
+                              readOnly
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder={editFormData.plan} />
+                              </SelectTrigger>
+                            </Select>
+                            
                           </TableCell>
                           <TableCell>
                             <Input
@@ -423,6 +482,8 @@ function AdminDashboard() {
                           <TableCell className="font-medium">{member.id}</TableCell>
                           <TableCell>{member.name}</TableCell>
                           <TableCell>{member.email}</TableCell>
+                          <TableCell>{member.dni} </TableCell>
+                          <TableCell>{member.plan} </TableCell>
                           <TableCell>{member.birthDate || "-"}</TableCell>
                           <TableCell>
                             <Badge variant={member.active ? "success" : "destructive"} className="font-medium">
@@ -525,6 +586,7 @@ function AdminDashboard() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>{t("ID") || "ID"}</TableHead>
+                    <TableHead>{t("image") || "Image"}</TableHead>
                     <TableHead>{t("nameEs") || "Name (Spanish)"}</TableHead>
                     <TableHead>{t("nameEn") || "Name (English)"}</TableHead>
                     <TableHead>{t("Actions") || "Actions"}</TableHead>
@@ -538,6 +600,31 @@ function AdminDashboard() {
                           // --- Edit Mode ---
                           <>
                             <TableCell className="font-medium">{exercise.id}</TableCell>
+                            <TableCell>
+                              <Label htmlFor="profile-image-btn" className="cursor-pointer">
+                                <div className="flex items-center justify-center gap-2 p-2 border border-dashed rounded-md hover:bg-muted transition-colors">
+                                  {imagePreview ? (
+                                    <img 
+                                      src={imagePreview} 
+                                      alt="Preview" 
+                                      className="h-10 w-10 object-cover rounded-md"
+                                    />
+                                  ) : (
+                                    <>
+                                      <Camera className="h-4 w-4" />
+                                      <span>{t("change-image")}</span>
+                                    </>
+                                  )}
+                                </div>
+                                <Input
+                                  id="profile-image-btn"
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleExerciseImageUpload}
+                                />
+                              </Label>
+                            </TableCell>
                             <TableCell>
                               <Input
                                 type="text"
@@ -582,6 +669,18 @@ function AdminDashboard() {
                           // --- View Mode ---
                           <>
                             <TableCell className="font-medium">{exercise.id}</TableCell>
+                            <TableCell>
+                              <Avatar className="h-10 w-10 shadow-md">
+                                <AvatarImage
+                                  src={`${API_URL}${exercise.imageUrl}`}
+                                  alt="ejercicio"
+                                  className="object-cover"
+                                />
+                                <AvatarFallback className="text-2xl p-2 bg-primary/10 text-primary">
+                                  <Dumbbell></Dumbbell>
+                                </AvatarFallback>
+                              </Avatar>
+                            </TableCell>
                             <TableCell>{exercise.nameES}</TableCell>
                             <TableCell>{exercise.nameEN}</TableCell>
                             <TableCell>

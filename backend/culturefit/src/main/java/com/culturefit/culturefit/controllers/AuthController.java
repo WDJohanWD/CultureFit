@@ -1,5 +1,7 @@
 package com.culturefit.culturefit.controllers;
 
+import java.util.HashSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.culturefit.culturefit.domains.Role;
 import com.culturefit.culturefit.domains.User;
+import com.culturefit.culturefit.payments.service.PaymentService;
 import com.culturefit.culturefit.repositories.UserRepository;
 import com.culturefit.culturefit.security.JwtUtils;
 import com.culturefit.culturefit.security.domain.UserDetailsImpl;
@@ -23,9 +26,18 @@ import com.culturefit.culturefit.security.dto.JwtResponseDto;
 import com.culturefit.culturefit.security.dto.LoginDto;
 import com.culturefit.culturefit.security.dto.SignupDto;
 import com.culturefit.culturefit.services.userService.UserService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Customer;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+@Tag(name = "Controlador de autentificación", description = "Controlador para gestionar la autentificación de los usuarios.")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/auth")
@@ -35,12 +47,23 @@ public class AuthController {
     @Autowired
     private UserRepository userRepository;
     @Autowired
+    private PaymentService paymentService;
+    @Autowired
     private UserService userService;
     @Autowired
     private PasswordEncoder encoder;
     @Autowired
     private JwtUtils jwtUtils;
 
+    @Operation(summary = "Iniciar sesión", description = "Login/Inicio de sesión en la aplicación.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso", 
+            content = @Content(schema = @Schema(implementation = JwtResponseDto.class))),
+        @ApiResponse(responseCode = "401", description = "Credenciales inválidas o usuario inactivo", 
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos", 
+            content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginDto loginDto) {
         try {
@@ -68,8 +91,17 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Registrar usuario", description = "Registro de un nuevo usuario en la aplicación.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario registrado exitosamente", 
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = "El nombre de usuario o email ya existe", 
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor", 
+            content = @Content(schema = @Schema(implementation = String.class)))
+    })
     @PostMapping("/signup")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupDto signUpRequest) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody SignupDto signUpRequest) throws StripeException {
         if (userRepository.existsByName(signUpRequest.getName())) {
             return ResponseEntity
                     .badRequest()
@@ -80,16 +112,25 @@ public class AuthController {
                     .badRequest()
                     .body("Error: A user with that email already exists");
         }
+
+        Customer stripeUser = paymentService.createCustomer(signUpRequest.getName(), signUpRequest.getEmail());
+
         // Crear nueva cuenta de usuario
         User user = new User(
                 null,
+                signUpRequest.getDni(),
                 signUpRequest.getName(),
                 signUpRequest.getEmail(),
                 encoder.encode(signUpRequest.getPassword()),
                 signUpRequest.getBirthDate(),
                 false,
                 null,
-                Role.USER);
+                Role.USER,
+                signUpRequest.getAppointmentsAvailables(),
+                stripeUser.getId(),
+                new HashSet<>(), // Lista de amigos
+                new HashSet<>()); // Lista de peticiones de amistad
+
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
     }

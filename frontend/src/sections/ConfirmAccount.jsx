@@ -4,11 +4,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 function ConfirmAccount() {
     const { token } = useParams();
     const navigate = useNavigate();
-
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:9000';
     useEffect(() => {
         const confirmAccount = async () => {
             try {
-                const response = await fetch('http://localhost:9000/confirm-account', {
+                const response = await fetch(`${API_URL}/confirm-account`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ function ConfirmAccount() {
 
                 if (data.success) {
                     console.log('Account confirmed successfully!');
-                    navigate("/login")
+                    navigate("/")
                     window.location.reload()
                 }
             } catch (error) {
@@ -41,7 +41,7 @@ function ConfirmAccount() {
 
     return (
         <div>
-            <h1 className='absolute text-3xl top-1/2 left-1/2 -translate-x-1/2 montserrat text-primary'>Confirming your account...</h1>
+            <h1 className='absolute text-3xl top-1/2 left-1/2 -translate-x-1/2 montserrat'>Confirming your account...</h1>
         </div>
     );
 }
