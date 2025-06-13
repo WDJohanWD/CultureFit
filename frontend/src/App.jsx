@@ -22,6 +22,7 @@ const Public_Profile = lazy(() => import("./sections/Public_Profile"));
 const Lessons = lazy(() => import("./sections/Lessons"));
 const Appointment = lazy(() => import("./sections/Appointment"));
 const ResetPassword = lazy(() => import("./sections/SetNewPassword"));
+const Login = lazy(() => import("./sections/LoginModal"));
 
 function Layout() {
   const { token, isAdmin, loading, user } = useContext(AuthContext);
