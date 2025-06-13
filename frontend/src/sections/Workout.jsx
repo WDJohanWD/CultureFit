@@ -15,7 +15,7 @@ function Workout() {
   const { t } = useTranslation("workout");
 
   const { user } = useContext(AuthContext);
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   const [items, setItems] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
@@ -42,7 +42,7 @@ function Workout() {
   async function fetchWorkoutData() {
     try {
       const response = await fetch(
-        `http://localhost:9000/workout/user/${user.id}`
+        `${API_URL}/workout/user/${user.id}`
       );
       const data = await response.json();
 
@@ -62,7 +62,7 @@ function Workout() {
   }
 
   async function getExercises() {
-    const response = await fetch(`http://localhost:9000/exercise`);
+    const response = await fetch(`${API_URL}/exercise`);
     if (!response.ok) {
       throw new Error("An error ocurred while fetching");
     }
@@ -90,7 +90,7 @@ function Workout() {
     console.log(bodyPost);
 
     const response = await fetch(
-      "http://localhost:9000/workout/update-workout",
+      `${API_URL}/workout/update-workout`,
       {
         method: "POST",
         headers: {

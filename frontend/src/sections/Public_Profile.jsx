@@ -17,7 +17,7 @@ function Public_Profile() {
   const { username } = useParams();
   const [publicUser, setPublicUser] = useState([]);
   const { user } = useContext(AuthContext);
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   const [friends, setFriends] = useState([]);
 
@@ -30,7 +30,7 @@ function Public_Profile() {
   }, [publicUser]);
 
   async function obtainUser() {
-    const response = await fetch(`http://localhost:9000/username/${username}`);
+    const response = await fetch(`${API_URL}/username/${username}`);
     if (!response.ok) {
       throw new Error("An error ocurred while fetching");
     }
@@ -41,7 +41,7 @@ function Public_Profile() {
   async function getFriends(currentUser) {
     try {
       const response = await fetch(
-        `http://localhost:9000/${currentUser.id}/friends`
+        `${API_URL}/${currentUser.id}/friends`
       );
       const data = await response.json();
 
@@ -60,7 +60,7 @@ function Public_Profile() {
   async function sendFriendRequest() {
     try {
       const response = await fetch(
-        "http://localhost:9000/friend-request/send",
+        `${API_URL}/friend-request/send`,
         {
           method: "POST",
           headers: {

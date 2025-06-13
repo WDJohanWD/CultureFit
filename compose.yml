@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   springboot:
     build:
@@ -11,16 +9,7 @@ services:
     networks:
       - app-network
     depends_on:
-      - node
       - mysql
-
-  node:
-    build:
-      context: ./frontend
-    ports:
-      - "5173:5173"
-    networks:
-      - app-network
 
   mysql:
     image: mysql:8.0
@@ -28,9 +17,7 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: culturefit-db
-    ports:
-      - "3306:3306"
+      MYSQL_DATABASE: culturefit-bd
     volumes:
       - mysql_data:/var/lib/mysql
     networks:

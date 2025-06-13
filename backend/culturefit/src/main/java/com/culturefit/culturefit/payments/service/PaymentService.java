@@ -10,4 +10,5 @@ public interface PaymentService {
     Customer createCustomer(String name, String email) throws StripeException;
     Session createAppointmentSession(String priceId, String stripeId, String quantity) throws StripeException;
     ResponseEntity<String> handleStripeWebhook(String payload, String sigHeader);
+    void cancelActiveSubscriptionsByUserId(Long userId) throws StripeException;
 }

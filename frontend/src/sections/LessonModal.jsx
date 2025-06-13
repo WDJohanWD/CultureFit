@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 function LessonModal({ isOpen, onClose, lessonId }) {
   const { t } = useTranslation("lessons");
   const { user } = useContext(AuthContext);
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   const [lesson, setLesson] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ function LessonModal({ isOpen, onClose, lessonId }) {
     const fetchLesson = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:9000/lesson/${lessonId}`);
+        const res = await fetch(`${API_URL}/lesson/${lessonId}`);
         const data = await res.json();
         setLesson(data);
       } catch (err) {

@@ -13,7 +13,7 @@ import { DialogTitle } from "@radix-ui/react-dialog"
 function Signup() {
   const { t } = useTranslation("signup")
   const navigate = useNavigate()
-
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000"
   const [email, setEmail] = useState("")
   const [dni, setDni] = useState("")
   const [name, setName] = useState("")
@@ -49,7 +49,7 @@ function Signup() {
     }
 
     try {
-      const response = await fetch("http://localhost:9000/auth/signup", {
+      const response = await fetch(`${API_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ function Signup() {
   // Enviar el email de verificación
   const sendVerificationEmail = async (email) => {
     try {
-      const response = await fetch("http://localhost:9000/verification-email", {
+      const response = await fetch(`${API_URL}/verification-email`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

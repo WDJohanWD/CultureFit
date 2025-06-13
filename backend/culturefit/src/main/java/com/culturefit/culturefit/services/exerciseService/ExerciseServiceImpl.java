@@ -80,7 +80,7 @@ public class ExerciseServiceImpl implements ExerciseService {
 
             // Obtener y validar la extensión
             String extension = getExtension(file.getOriginalFilename()).toLowerCase();
-            if (!extension.matches("\\.(jpg|jpeg|png|gif)$")) {
+            if (!extension.matches("\\.(jpg|jpeg|png|gif|webp)$")) {
                 throw new RuntimeException();
             }
 
