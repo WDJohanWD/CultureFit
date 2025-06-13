@@ -97,6 +97,7 @@ function Signup() {
         return
       }
 
+
       await sendVerificationEmail(email)
       setShowDialog(true)
     } catch (err) {
@@ -134,7 +135,7 @@ function Signup() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify(email),
       })
 
       if (!response.ok) {
@@ -192,7 +193,7 @@ function Signup() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="dni">{t("Dni") || "DNI/NIE"}</Label>
+              <Label htmlFor="dni">DNI</Label>
               <Input
                 type="text"
                 id="dni"

@@ -59,9 +59,9 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    @Schema(description = "Contraseña del usuario (6-40 caracteres)", example = "password123")
-    @NotBlank(message = "El correo electrónico debe ser válido")
-    @Size(min = 6, max = 300)
+    // @Schema(description = "Contraseña del usuario (6-40 caracteres)", example = "password123")
+    // @NotBlank(message = "El correo electrónico debe ser válido")
+    // @Size(min = 6, max = 300)
     private String password;
 
     @NotNull
