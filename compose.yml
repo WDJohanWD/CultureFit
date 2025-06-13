@@ -18,8 +18,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: culturefit-bd
-      MYSQL_USER: root
-      MYSQL_PASSWORD: admin
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
