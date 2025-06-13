@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copia el .jar compilado al contenedor
 COPY target/culturefit-0.0.1-SNAPSHOT.jar app.jar
+COPY .env .
 
 # Expone el puerto
 EXPOSE 9000
