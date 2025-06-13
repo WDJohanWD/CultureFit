@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Dialog,  DialogContent,  DialogDescription,  DialogFooter,  DialogHeader,  DialogTitle,} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Label } from "@/components/ui/label"
 
@@ -42,6 +42,13 @@ function AdminDashboard() {
   })
   const [tempExerciseImage, setTempExerciseImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+
+  const [appointments, setAppointments] = useState([])
+  const [isLoadingAppointments, setIsLoadingAppointments] = useState(true)
+  const [appointmentError, setAppointmentError] = useState(null)
+  const [editingAppointmentId, setEditingAppointmentId] = useState(null)
+  const [appointmentFormData, setAppointmentFormData] = useState({})
+  const [confirmDeleteAppointment, setConfirmDeleteAppointment] = useState(null)
 
   // --- Función para Cargar Miembros ---
   const fetchMembersData = async () => {
@@ -78,12 +85,30 @@ function AdminDashboard() {
     }
   }
 
-  // --- Carga Inicial de Datos ---
+  const fetchAppointmentData = async () => {
+    try {
+      const appointmentsFetch = await fetch(`${API_URL}/appointment/all`)
+      if (!appointmentsFetch.ok) {
+        throw new Error(`Failed to fetch appointments: ${appointmentsFetch.statusText}`)
+      }
+      const data = await appointmentsFetch.json()
+      setAppointments(data)
+    } catch (error) {
+      console.error("Error fetching appointments:", error)
+      setAppointmentError(error.message)
+      setAppointments([])
+    } finally {
+      setIsLoadingAppointments(false)
+    }
+  }
+
   useEffect(() => {
     setIsLoading(true)
     setIsLoadingExercises(true)
+    setIsLoadingAppointments(true)
     fetchMembersData()
     fetchExercisesData()
+    fetchAppointmentData()
   }, [])
 
   // --- Función para Borrar Miembro ---
@@ -121,6 +146,23 @@ function AdminDashboard() {
     }
   }
 
+  async function deleteAppointment(id) {
+    try {
+      const deleteFetch = await fetch(`${API_URL}/appointment/${id}`, {
+        method: "DELETE",
+      })
+      if (!deleteFetch.ok) {
+        throw new Error(`Failed to delete appointment: ${deleteFetch.statusText}`)
+      }
+      console.log(`Appointment ${id} deleted`)
+      setConfirmDeleteAppointment(null)
+      fetchAppointmentData()
+    } catch (error) {
+      console.error("Error deleting appointment:", error)
+      setAppointmentError(`Error deleting appointment: ${error.message}`)
+    }
+  }
+
   const handleEditExerciseClick = (exercise) => {
     setEditingExerciseId(exercise.id)
     setExerciseFormData({
@@ -143,17 +185,17 @@ function AdminDashboard() {
     }))
   }
 
-  const handleExerciseImageUpload = async (event) =>{
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result);
-        };
-        reader.readAsDataURL(file);
-        
-        setTempExerciseImage(file);
-      }
+  const handleExerciseImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      setTempExerciseImage(file);
+    }
   }
 
   const handleNewExerciseInputChange = (event) => {
@@ -249,6 +291,54 @@ function AdminDashboard() {
     })
   }
 
+  const handleAppointmentInputChange = (event) => {
+    const { name, value } = event.target
+    setAppointmentFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }))
+  }
+  const handleEditAppointmentClick = (appointment) => {
+    setEditingAppointmentId(appointment.id)
+    setAppointmentFormData({
+      clientName: appointment.clientName,
+      service: appointment.service,
+      date: appointment.date,
+      time: appointment.time,
+      status: appointment.status,
+    })
+  }
+
+  const handleCancelAppointmentEdit = () => {
+    setEditingAppointmentId(null)
+    setAppointmentFormData({})
+  }
+
+  const handleSaveAppointmentEdit = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/appointment/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(appointmentFormData),
+      })
+      if (!response.ok) {
+        let errorBody = ""
+        try {
+          errorBody = await response.text()
+        } catch {
+          throw new Error(`Failed to update appointment: ${response.statusText}. ${errorBody}`)
+        }
+      }
+      console.log(`Appointment ${id} updated successfully`)
+      setEditingAppointmentId(null)
+      setAppointmentFormData({})
+      fetchAppointmentData()
+    } catch (error) {
+      console.error("Error updating appointment:", error)
+      setAppointmentError(`Error updating appointment: ${error.message}`)
+    }
+  }
+  
   const handleCancelEdit = () => {
     setEditingMemberId(null)
     setEditFormData({})
@@ -288,18 +378,48 @@ function AdminDashboard() {
     }
   }
 
-  const filteredExercises = exercises.filter(
-    (exercise) =>
-      (exercise.nameES?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()) ||
-      (exercise.nameEN?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()),
-  )
+  // Helper function to safely filter strings
+  const safeStringIncludes = (text, search) => {
+    if (!text || !search) return false;
+    return String(text).toLowerCase().includes(search.toLowerCase());
+  };
 
-  // --- Filtrado ---
-  const filteredMembers = members.filter(
-    (member) =>
-      (member.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (member.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()),
-  )
+  // Safe filtering for appointments
+  const filteredAppointments = (appointments || []).filter((appointment) => {
+    if (!searchQuery) return true;
+    if (!appointment) return false;
+    
+    const clientName = appointment?.clientName || '';
+    const service = appointment?.service || '';
+    const status = appointment?.status || '';
+    const date = appointment?.date || '';
+    
+    const searchLower = searchQuery.toLowerCase();
+    
+    return clientName.toLowerCase().includes(searchLower) ||
+           service.toLowerCase().includes(searchLower) ||
+           status.toLowerCase().includes(searchLower) ||
+           date.toLowerCase().includes(searchLower);
+  });
+
+  // Safe filtering for members
+  const filteredMembers = (members || []).filter((member) => {
+    if (!searchQuery) return true;
+    if (!member) return false;
+    
+    return safeStringIncludes(member.name, searchQuery) ||
+           safeStringIncludes(member.email, searchQuery) ||
+           safeStringIncludes(member.dni, searchQuery);
+  });
+
+  // Safe filtering for exercises
+  const filteredExercises = (exercises || []).filter((exercise) => {
+    if (!exerciseSearchQuery) return true;
+    if (!exercise) return false;
+    
+    return safeStringIncludes(exercise.nameES, exerciseSearchQuery) ||
+           safeStringIncludes(exercise.nameEN, exerciseSearchQuery);
+  }) || [];
 
   // --- Renderizado ---
   if (isLoading) {
@@ -393,10 +513,10 @@ function AdminDashboard() {
                             />
                           </TableCell>
                           <TableCell>
-                          <Select 
+                            <Select
                               name="plan"
                               value={editFormData.plan}
-                              onValueChange={(value) => handleInputChange({ target: { name: 'plan', value }})}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'plan', value } })}
                               className="w-full"
                               readOnly
                             >
@@ -404,7 +524,7 @@ function AdminDashboard() {
                                 <SelectValue placeholder={editFormData.plan} />
                               </SelectTrigger>
                             </Select>
-                            
+
                           </TableCell>
                           <TableCell>
                             <Input
@@ -420,7 +540,7 @@ function AdminDashboard() {
                             <Select
                               name="active"
                               value={editFormData.active ? "true" : "false"}
-                              onValueChange={(value) => handleInputChange({ target: { name: 'active', value: value === "true" }})}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'active', value: value === "true" } })}
                               className="w-full"
                             >
                               <SelectTrigger>
@@ -445,10 +565,10 @@ function AdminDashboard() {
                             </Select>
                           </TableCell>
                           <TableCell>
-                            <Select 
+                            <Select
                               name="role"
                               value={editFormData.role}
-                              onValueChange={(value) => handleInputChange({ target: { name: 'role', value }})}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'role', value } })}
                               className="w-full"
                             >
                               <SelectTrigger>
@@ -604,9 +724,9 @@ function AdminDashboard() {
                               <Label htmlFor="profile-image-btn" className="cursor-pointer">
                                 <div className="flex items-center justify-center gap-2 p-2 border border-dashed rounded-md hover:bg-muted transition-colors">
                                   {imagePreview ? (
-                                    <img 
-                                      src={imagePreview} 
-                                      alt="Preview" 
+                                    <img
+                                      src={imagePreview}
+                                      alt="Preview"
                                       className="h-10 w-10 object-cover rounded-md"
                                     />
                                   ) : (
@@ -722,6 +842,220 @@ function AdminDashboard() {
           )}
         </CardContent>
       </Card>
+
+      <>
+        <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">{t("appointments_h1")}</h1>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold">{t("appointments_title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {appointmentError && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{appointmentError}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="flex items-center mb-6 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                className="pl-10 w-full max-w-md"
+                placeholder={t("searchAppointments")}
+                value={searchQuery} // Assuming searchQuery is still used for general search
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            {isLoadingAppointments ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="flex flex-col items-center space-y-2">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-lg font-medium">{t("loadingAppointments")}...</p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("ID")}</TableHead>
+                      <TableHead>{t("Client Name")}</TableHead>
+                      <TableHead>{t("Service")}</TableHead>
+                      <TableHead>{t("Date")}</TableHead>
+                      <TableHead>{t("Time")}</TableHead>
+                      <TableHead>{t("Status")}</TableHead>
+                      <TableHead>{t("Actions")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {appointments?.length > 0 ? (
+                      appointments.filter(appointment => {
+                        if (!searchQuery) return true;
+                        if (!appointment) return false;
+                        
+                        const searchLower = searchQuery.toLowerCase();
+                        const clientName = appointment?.clientName || '';
+                        const service = appointment?.service || '';
+                        
+                        return clientName.toLowerCase().includes(searchLower) ||
+                               service.toLowerCase().includes(searchLower);
+                      }).map((appointment) => (
+                        <TableRow key={appointment.id}>
+                          {editingAppointmentId === appointment.id ? (
+                            // --- Edit Mode ---
+                            <>
+                              <TableCell className="font-medium">{appointment.id}</TableCell>
+                              <TableCell>
+                                <Input
+                                  type="text"
+                                  name="clientName"
+                                  value={appointmentFormData.clientName}
+                                  onChange={handleAppointmentInputChange}
+                                  className="w-full"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  type="text"
+                                  name="service"
+                                  value={appointmentFormData.service}
+                                  onChange={handleAppointmentInputChange}
+                                  className="w-full"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  type="date"
+                                  name="date"
+                                  value={appointmentFormData.date}
+                                  onChange={handleAppointmentInputChange}
+                                  className="w-full"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  type="time"
+                                  name="time"
+                                  value={appointmentFormData.time}
+                                  onChange={handleAppointmentInputChange}
+                                  className="w-full"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Select
+                                  name="status"
+                                  value={appointmentFormData.status}
+                                  onValueChange={(value) => handleAppointmentInputChange({ target: { name: 'status', value } })}
+                                  className="w-full"
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={appointmentFormData.status} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Confirmed">{t("Confirmed")}</SelectItem>
+                                    <SelectItem value="Pending">{t("Pending")}</SelectItem>
+                                    <SelectItem value="Cancelled">{t("Cancelled")}</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleSaveAppointmentEdit(appointment.id)}
+                                    className="text-green-600 border-green-600 hover:bg-green-50"
+                                  >
+                                    {t("Save")}
+                                  </Button>
+                                  <Button variant="ghost" size="sm" onClick={handleCancelAppointmentEdit} className="text-gray-600">
+                                    {t("Cancel")}
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </>
+                          ) : (
+                            // --- View Mode ---
+                            <>
+                              <TableCell className="font-medium">{appointment.id}</TableCell>
+                              <TableCell>{appointment.clientName}</TableCell>
+                              <TableCell>{appointment.service}</TableCell>
+                              <TableCell>{appointment.date}</TableCell>
+                              <TableCell>{appointment.time}</TableCell>
+                              <TableCell>
+                                <Badge
+                                  variant={
+                                    appointment.status === "Confirmed"
+                                      ? "success"
+                                      : appointment.status === "Pending"
+                                        ? "secondary"
+                                        : "destructive"
+                                  }
+                                  className="font-medium"
+                                >
+                                  {t(appointment.status)}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleEditAppointmentClick(appointment)}
+                                    className="h-8 w-8 text-blue-600"
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                    <span className="sr-only">{t("Edit")}</span>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setConfirmDeleteAppointment(appointment.id)}
+                                    className="h-8 w-8 text-red-600"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">{t("Delete")}</span>
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </>
+                          )}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="h-24 text-center">
+                          {t("NoAppointmentsFound")}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+
+          {/* Confirmation Dialog for Delete Appointment */}
+          <Dialog open={!!confirmDeleteAppointment} onOpenChange={(open) => !open && setConfirmDeleteAppointment(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("confirmDeleteAppointmentTitle")}</DialogTitle>
+                <DialogDescription>{t("confirmDeleteAppointment")}</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setConfirmDeleteAppointment(null)}>
+                  {t("Cancel")}
+                </Button>
+                <Button variant="destructive" onClick={() => confirmDeleteAppointment && deleteAppointment(confirmDeleteAppointment)}>
+                  {t("Delete")}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </Card>
+      </>
 
       {/* Add Exercise Dialog */}
       <Dialog open={showAddExerciseDialog} onOpenChange={setShowAddExerciseDialog}>
