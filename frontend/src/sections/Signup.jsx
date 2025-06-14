@@ -63,7 +63,7 @@ function Signup() {
     const birthDate = new Date(date)
     const today = new Date()
     const minAgeDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
-    
+
     if (birthDate > minAgeDate) {
       return t("ageError") || "You must be at least 18 years old"
     }
@@ -73,7 +73,7 @@ function Signup() {
   async function checkUser() {
     setIsLoading(true)
     setError(null)
-    
+
     const newUser = {
       name,
       password,
@@ -110,7 +110,7 @@ function Signup() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    
+
     // Validate all fields
     const errors = [
       validateEmail(email),
@@ -150,149 +150,161 @@ function Signup() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-gray-800">
-            {t("title") || "Create your account"}
-          </CardTitle>
-        </CardHeader>
-        
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
+      <div className="relative overflow-hidden min-h-[calc(100vh-5rem)] xl:min-h-[calc(100vh-6rem)]">
+      <div
+      className="absolute inset-0 brightness-75 blur-[2px] grayscale-75"
+      style={{
+        backgroundImage: `url(fondo4.jpg)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        transform: 'scale(1.05)',
+        zIndex: 0
+      }}
+    ></div>
+      <div className="absolute w-100 top-[5%] left-1/2 transform -translate-x-1/2 flex space-x-2 p-4 md:p-1">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-gray-800">
+              {t("title") || "Create your account"}
+            </CardTitle>
+          </CardHeader>
 
-            <div className="space-y-2">
-              <Label htmlFor="username">{t("username") || "Full Name"}</Label>
-              <Input
-                type="text"
-                id="username"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="Johan Aponte"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email">{t("email") || "Email"}</Label>
-              <Input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                placeholder="example@email.com"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="dni">DNI</Label>
-              <Input
-                type="text"
-                id="dni"
-                value={dni}
-                onChange={(e) => setDni(e.target.value)}
-                required
-                placeholder="12345678A"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="birthDate">{t("birthDate") || "Date of Birth"}</Label>
-              <Input
-                type="date"
-                id="birthDate"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                required
-                max={new Date().toISOString().split('T')[0]}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">{t("pass") || "Password"}</Label>
-              <Input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="passwordRepeat">{t("repeatPass") || "Confirm Password"}</Label>
-              <Input
-                type="password"
-                id="passwordRepeat"
-                value={passwordRepeat}
-                onChange={(e) => setPasswordRepeat(e.target.value)}
-                required
-              />
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full mt-4"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t("processing") || "Processing..."}
-                </>
-              ) : (
-                t("btn") || "Sign Up"
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
-            </Button>
-          </form>
-        </CardContent>
 
-        <div className="px-6 pb-4 text-center text-sm text-gray-600">
-          {t("account") || "Already have an account?"}
-          <Link 
-            to="/login" 
-            className="ml-1 font-medium text-orange-600 hover:text-orange-500 hover:underline"
-          >
-            {t("login") || "Log in"}
-          </Link>
-        </div>
-      </Card>
+              <div className="space-y-2">
+                <Label htmlFor="username">{t("username") || "Full Name"}</Label>
+                <Input
+                  type="text"
+                  id="username"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  placeholder="Johan Aponte"
+                />
+              </div>
 
-      {/* Success Dialog */}
-      <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">
-              {t("verificationSentTitle") || "Verification Email Sent!"}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <p className="text-gray-700">
-              {t("verificationSentMsg") || 
-                "We've sent a verification link to your email. Please check your inbox and follow the instructions to complete your registration."}
-            </p>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={() => {
-                setShowDialog(false)
-                navigate("/")
-              }}
-              className="w-full"
+              <div className="space-y-2">
+                <Label htmlFor="email">{t("email") || "Email"}</Label>
+                <Input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  placeholder="example@email.com"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dni">DNI</Label>
+                <Input
+                  type="text"
+                  id="dni"
+                  value={dni}
+                  onChange={(e) => setDni(e.target.value)}
+                  required
+                  placeholder="12345678A"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="birthDate">{t("birthDate") || "Date of Birth"}</Label>
+                <Input
+                  type="date"
+                  id="birthDate"
+                  value={birthDate}
+                  onChange={(e) => setBirthDate(e.target.value)}
+                  required
+                  max={new Date().toISOString().split('T')[0]}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">{t("pass") || "Password"}</Label>
+                <Input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="passwordRepeat">{t("repeatPass") || "Confirm Password"}</Label>
+                <Input
+                  type="password"
+                  id="passwordRepeat"
+                  value={passwordRepeat}
+                  onChange={(e) => setPasswordRepeat(e.target.value)}
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full mt-4"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t("processing") || "Processing..."}
+                  </>
+                ) : (
+                  t("btn") || "Sign Up"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+
+          <div className="px-6 pb-4 text-center text-sm text-gray-600">
+            {t("account") || "Already have an account?"}
+            <Link
+              to="/login"
+              className="ml-1 font-medium text-orange-600 hover:text-orange-500 hover:underline"
             >
-              {t("goHome") || "Go to Home"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              {t("login") || "Log in"}
+            </Link>
+          </div>
+        </Card>
+
+        {/* Success Dialog */}
+        <Dialog open={showDialog} onOpenChange={setShowDialog}>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold">
+                {t("verificationSentTitle") || "Verification Email Sent!"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-gray-700">
+                {t("verificationSentMsg") ||
+                  "We've sent a verification link to your email. Please check your inbox and follow the instructions to complete your registration."}
+              </p>
+            </div>
+            <DialogFooter>
+              <Button
+                onClick={() => {
+                  setShowDialog(false)
+                  navigate("/")
+                }}
+                className="w-full"
+              >
+                {t("goHome") || "Go to Home"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   )
 }
