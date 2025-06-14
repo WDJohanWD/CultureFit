@@ -85,6 +85,7 @@ public class User {
     @Schema(description = "ID de cliente en Stripe", example = "cus_123456789")
     private String stripeId;
 
+    @Schema(description = "Tipo de membresía que tiene el usuario", example = "BASIC")
     private MembershipEnum membership;
 
     private LocalDate lastPaymentDate;
