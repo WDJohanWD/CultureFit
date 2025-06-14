@@ -1,42 +1,18 @@
 import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthContext";
-import {
-  User,
-  Users,
-  Lock,
-  Calendar,
-  Mail,
-  CreditCard,
-  Camera,
-  CheckCircle,
-  Check,
-  X,
-  Trash2,
-  LogOut,
-} from "lucide-react";
+import { User,  Users,  Lock,  Calendar,  Mail,  CreditCard,  Camera, CheckCircle,  Check,  X,  Trash2,  LogOut} from "lucide-react";
 import axios from "axios";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import {  Card,  CardContent,  CardDescription,  CardHeader,  CardTitle,} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import {  Accordion,  AccordionContent,  AccordionItem,  AccordionTrigger,} from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import YourProgress from "./YourProgress";
@@ -47,7 +23,7 @@ export default function Profile() {
   const { user: authUser, loading } = useContext(AuthContext);
   const { logout } = useContext(AuthContext);
   const { t } = useTranslation("Profile");
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
   const navigate = useNavigate();
 
 
@@ -75,7 +51,7 @@ export default function Profile() {
   async function getFriendRequest(currentUser) {
     try {
       const response = await fetch(
-        `http://localhost:9000/${currentUser.id}/friend-requests`
+        `${API_URL}/${currentUser.id}/friend-requests`
       );
       const data = await response.json();
 
@@ -94,7 +70,7 @@ export default function Profile() {
   async function getFriends(currentUser) {
     try {
       const response = await fetch(
-        `http://localhost:9000/${currentUser.id}/friends`
+        `${API_URL}/${currentUser.id}/friends`
       );
       const data = await response.json();
 
@@ -115,7 +91,7 @@ export default function Profile() {
 
     try {
       const response = await fetch(
-        "http://localhost:9000/friend-request/accept",
+        `${API_URL}/friend-request/accept`,
         {
           method: "PUT",
           headers: {
@@ -141,7 +117,7 @@ export default function Profile() {
 
     try {
       const response = await fetch(
-        "http://localhost:9000/friend-request/reject",
+        `${API_URL}/friend-request/reject`,
         {
           method: "PUT",
           headers: {
@@ -166,7 +142,7 @@ export default function Profile() {
     const friendId = e.target.value;
 
     try {
-      const response = await fetch("http://localhost:9000/friend/delete", {
+      const response = await fetch(`${API_URL}/friend/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -250,7 +226,7 @@ export default function Profile() {
     try {
       // Realizamos la solicitud para cambiar la contraseña
       const response = await fetch(
-        `http://localhost:9000/updatePassword/${user.id}`,
+        `${API_URL}/updatePassword/${user.id}`,
         {
           method: "PUT",
           headers: {
@@ -822,6 +798,7 @@ export default function Profile() {
       </div>
       
       <div className="flex flex-col gap-y-20 mx-2 md:mx-20 mt-10 xl:mt-20">
+        {user.role == "USER" || user.role == "ANONYMOUS"  ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
         <Card>
           <CardHeader>
             <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
@@ -842,6 +819,7 @@ export default function Profile() {
             <Workout />
           </CardContent>
         </Card>
+        </>}
       </div>
     </div>
   );

@@ -14,5 +14,9 @@
     "birthDate": "Fecha de nacimiento",
     "goHome": "Ir a inicio",
     "verificationSentTitle": "Correo de verificación enviado",
-    "verificationSentText": "Por favor, revisa tu correo electrónico para verificar tu cuenta."
+    "verificationSentMsg": "Por favor, revisa tu correo electrónico para verificar tu cuenta.",
+    "passLengthError": "Tu contraseña debe ser de entre 6 y 40 caracteres",
+    "dniError": "El DNI es incorrecto",
+    "ageError": "You must be 18 years old",
+    "defaultError": "Ha habido un error con el registro, porfavor intentalo mas tarde"
 }

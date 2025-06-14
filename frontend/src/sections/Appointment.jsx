@@ -23,10 +23,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 /*ICONOS */
 import { CalendarIcon, Clock, CheckCircle, X, Loader2, CreditCard } from "lucide-react"
 
-export function Appointment() {
+export default function Appointment() {
   // --- Imports ---
   const { t } = useTranslation("appointments")
-  const API_URL = "http://localhost:9000/appointment"
+  const API_URL = (import.meta.env.VITE_API_URL + "/appointment") || "http://localhost:9000/appointment"
   const { user, fetchUser } = useContext(AuthContext)
 
   // --- Estados Generales ---
@@ -62,14 +62,14 @@ export function Appointment() {
       setPaymentSuccess(false)
 
       // Aquí llamas a tu endpoint de compra en el backend
-      const response = await fetch(`${API_URL}/manageAppointment`, {
-        method: "PATCH",
+      const response = await fetch(`${API_URL}/buy-coupon`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: user.id,
-          num: amount
+          userId: user.id,
+          quantity: amount
         }),
       });
       await fetchUser(user.id);
@@ -113,7 +113,7 @@ export function Appointment() {
     const fetchUserAppointments = async () => {
       try {
         setIsLoadingAppointments(true)
-        const response = await fetch(`http://localhost:9000/appointment/byuser/${user.id}`, {
+        const response = await fetch(`${API_URL}/byuser/${user.id}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json"
@@ -146,7 +146,7 @@ export function Appointment() {
 
       try {
         const formattedDate = format(date, "yyyy-MM-dd")
-        const response = await fetch(`http://localhost:9000/appointment/slots?date=${formattedDate}`)
+        const response = await fetch(`${API_URL}/slots?date=${formattedDate}`)
         const data = await response.json()
 
         const slots = data.map((timeString) => ({
@@ -189,35 +189,15 @@ export function Appointment() {
         notes: notes || ""
       }
 
-      const response = await fetch("http://localhost:9000/appointment/create", {
+      const response = await fetch(`${API_URL}/create-appointment`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       })
 
       if (!response.ok) throw new Error("Failed to book appointment")
-      const response1 = await fetch(`${API_URL}/manageAppointment`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id: user.id,
-          num: -1
-        }),
-      });
 
       const newAppointment = await response.json()
-
-      const response2 = await fetch(`http://localhost:9000/appointment/sendQrEmail`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: user.email,
-          qrText: `http://localhost:5173/appointment/${newAppointment.id}`,
-        }),
-      });
-
 
       setSuccess(true)
       setConfirmDialog(false)
@@ -240,7 +220,7 @@ export function Appointment() {
     try {
       setIsLoading(true)
 
-      const response = await fetch(`http://localhost:9000/appointment/${appointmentId}/cancel`, {
+      const response = await fetch(`${API_URL}/${appointmentId}/cancel`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" }
       })
@@ -288,9 +268,12 @@ export function Appointment() {
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
+        {user.role == "USER" || user.role == "ANONYMOUS" ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
         <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl mb-8">
           {t("appointmentsTitle") || "Appointments"}
         </h1>
+        
+
 
         <Tabs defaultValue="book" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
@@ -698,6 +681,7 @@ export function Appointment() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </>}
       </div>
     </div>
   )

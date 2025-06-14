@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +18,6 @@ import com.culturefit.culturefit.dto.UserEditDto;
 import com.culturefit.culturefit.exceptions.userExceptions.ErrorSavingUserException;
 import com.culturefit.culturefit.exceptions.userExceptions.NotFoundUserException;
 import com.culturefit.culturefit.repositories.UserRepository;
-import com.culturefit.culturefit.services.appointmentService.AppointmentService;
 import com.culturefit.culturefit.services.profileImageService.ProfileImageService;
 
 import io.jsonwebtoken.Claims;
@@ -61,6 +59,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Long id) {
+        // userRepository.findById(id).orElseThrow().setAppointmentsAvailables(0);
+        // userRepository.save(userRepository.findById(id).orElseThrow());
+
         return userRepository.findById(id)
                 .orElseThrow(NotFoundUserException::new);
     }
@@ -89,6 +90,13 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(NotFoundUserException::new);
     }
 
+
+    @Override
+    public User getUserByStryipeId(String id) {
+        return userRepository.findByStripeId(id)
+            .orElseThrow(NotFoundUserException::new);
+    }
+  
     @Override
     public List<User> searchUsersByName(String search) {
         List<User> users = userRepository.searchByName(search);
@@ -160,6 +168,14 @@ public class UserServiceImpl implements UserService {
         userToUpdate.setActive(user.isActive());
         userToUpdate.setRole(user.getRole());
         return userRepository.save(userToUpdate);
+    }
+
+    @Override
+    public User redeemAppointment(Long id) throws RuntimeException {
+        User user = getUser(id);
+        user.setAppointmentsAvailables(user.getAppointmentsAvailables() - 1);
+        user = userRepository.save(user);
+        return user;
     }
 
     // Peticiones de amistad

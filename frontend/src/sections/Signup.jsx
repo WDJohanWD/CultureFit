@@ -1,19 +1,19 @@
 import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import { Link, useNavigate } from "react-router-dom"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle, Loader2 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog"
 import { DialogTitle } from "@radix-ui/react-dialog"
 
 function Signup() {
   const { t } = useTranslation("signup")
   const navigate = useNavigate()
-
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000"
   const [email, setEmail] = useState("")
   const [dni, setDni] = useState("")
   const [name, setName] = useState("")
@@ -22,11 +22,20 @@ function Signup() {
   const [birthDate, setBirthDate] = useState("")
   const [error, setError] = useState(null)
   const [showDialog, setShowDialog] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const validatePassword = (password) => {
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/
-    if (!passwordPattern.test(password)) {
-      return t("passError")
+    if (password.length < 6 || password.length > 40) {
+      return t("passLengthError") || "Password must be between 6 and 40 characters"
+    }
+    if (!/(?=.*[a-z])/.test(password)) {
+      return t("passLowercaseError") || "Password must contain at least one lowercase letter"
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      return t("passUppercaseError") || "Password must contain at least one uppercase letter"
+    }
+    if (!/(?=.*\d)/.test(password)) {
+      return t("passNumberError") || "Password must contain at least one number"
     }
     return null
   }
@@ -34,17 +43,37 @@ function Signup() {
   const validateEmail = (email) => {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     if (!emailPattern.test(email)) {
-      return t("emailError")
+      return t("emailError") || "Please enter a valid email address"
+    }
+    return null
+  }
+
+  const validateDni = (dni) => {
+    if (!dni) return t("dniRequired") || "DNI is required"
+    // Basic DNI validation for Spanish format (8 numbers + optional letter)
+    const dniPattern = /^[0-9]{8}[a-zA-Z]?$/
+    if (!dniPattern.test(dni)) {
+      return t("dniError") || "Please enter a valid DNI (8 digits)"
+    }
+    return null
+  }
+
+  const validateBirthDate = (date) => {
+    if (!date) return t("birthDateRequired") || "Birth date is required"
+    const birthDate = new Date(date)
+    const today = new Date()
+    const minAgeDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+    
+    if (birthDate > minAgeDate) {
+      return t("ageError") || "You must be at least 18 years old"
     }
     return null
   }
 
   async function checkUser() {
-    // ↓↓↓ Comprobar si el usuario existe ↓↓↓
-
-    // if (userExists) {
-    //    setError(t("userExists"))
-    //} else {
+    setIsLoading(true)
+    setError(null)
+    
     const newUser = {
       name,
       password,
@@ -53,188 +82,213 @@ function Signup() {
       dni,
     }
 
-    const response = await fetch("http://localhost:9000/auth/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newUser),
-    })
-
-    await sendVerificationEmail(email)
-    setShowDialog(true)
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    const passwordError = validatePassword(password)
-    const emailError = validateEmail(email)
-
-    if (password !== passwordRepeat) {
-      setError(t("passwordMatch"))
-    } else if (passwordError) {
-      setError(passwordError)
-      return
-    } else if (emailError) {
-      setError(emailError)
-      return
-    } else {
-      setError(null)
-      checkUser()
-    }
-  }
-
-  // Enviar el email de verificación
-  const sendVerificationEmail = async (email) => {
     try {
-      const response = await fetch("http://localhost:9000/verification-email", {
+      const response = await fetch(`${API_URL}/auth/signup`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify( email ),
+        body: JSON.stringify(newUser),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        setError(errorData.message || t("defaultError") || "An error occurred during registration")
+        return
+      }
+
+
+      await sendVerificationEmail(email)
+      setShowDialog(true)
+    } catch (err) {
+      console.error("Registration error:", err)
+      setError(t("defaultError") || "There was an error during registration. Please try again later.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    
+    // Validate all fields
+    const errors = [
+      validateEmail(email),
+      validatePassword(password),
+      validateDni(dni),
+      validateBirthDate(birthDate),
+      password !== passwordRepeat ? (t("passwordMatch") || "Passwords do not match") : null
+    ].filter(Boolean)
+
+    if (errors.length > 0) {
+      setError(errors[0])
+      return
+    }
+
+    checkUser()
+  }
+
+  const sendVerificationEmail = async (email) => {
+    try {
+      const response = await fetch(`${API_URL}/verification-email`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(email),
       })
 
       if (!response.ok) {
-        throw new Error("Error al enviar el email")
+        throw new Error("Error sending verification email")
       }
 
-      const data = await response.text() // <-- Cambiado de .json() a .text()
-      console.log("Respuesta:", data)
-      return data
+      return await response.text()
     } catch (error) {
-      console.error("Error:", error)
+      console.error("Email error:", error)
       throw error
     }
   }
 
   return (
-    <div className="flex flex-col mx-10 my-10 sm:mx-10 md:mx-10 lg-mx-20 xl:mx-20 overflow-hidden bg-cover bg-center bg-no-repeat -z-10">
-          <h2 className="text-2xl font-bold mb-5">{t("title")}</h2>
+    <div className="flex items-center justify-center min-h-[calc(100vh-6rem)] bg-gray-50 p-4">
+      <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-bold text-gray-800">
+            {t("title") || "Create your account"}
+          </CardTitle>
+        </CardHeader>
+        
+        <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-medium text-gray-700">
-                {t("username")}
-              </Label>
+              <Label htmlFor="username">{t("username") || "Full Name"}</Label>
               <Input
                 type="text"
                 id="username"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
-                className="w-full"
+                placeholder="Johan Aponte"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">
-                {t("email")}
-              </Label>
+              <Label htmlFor="email">{t("email") || "Email"}</Label>
               <Input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full"
+                placeholder="example@email.com"
               />
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="dni" className="text-sm font-medium text-gray-700">
-                {t("dni")}
-              </Label>
+              <Label htmlFor="dni">DNI</Label>
               <Input
                 type="text"
                 id="dni"
                 value={dni}
                 onChange={(e) => setDni(e.target.value)}
                 required
-                className="w-full"
+                placeholder="12345678A"
               />
             </div>
+
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700">
-                {t("pass")}
-              </Label>
+              <Label htmlFor="birthDate">{t("birthDate") || "Date of Birth"}</Label>
+              <Input
+                type="date"
+                id="birthDate"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                required
+                max={new Date().toISOString().split('T')[0]}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password">{t("pass") || "Password"}</Label>
               <Input
                 type="password"
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="passwordRepeat" className="text-sm font-medium text-gray-700">
-                {t("repeatPass")}
-              </Label>
+              <Label htmlFor="passwordRepeat">{t("repeatPass") || "Confirm Password"}</Label>
               <Input
                 type="password"
                 id="passwordRepeat"
                 value={passwordRepeat}
                 onChange={(e) => setPasswordRepeat(e.target.value)}
                 required
-                className="w-full"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="date" className="text-sm font-medium text-gray-700">
-                {t("birthDate")}
-              </Label>
-              <Input
-                type="date"
-                id="date"
-                value={birthDate}
-                onChange={(e) => setBirthDate(e.target.value)}
-                required
-                className="w-full"
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full mt-6 text-white bg-gradient-to-r from-orange-400 to-orange-600 
-                hover:shadow-lg hover:shadow-orange-500/50 font-semibold rounded-lg text-lg py-2.5"
-        >
-          {t("btn")}
-        </Button>
-      </form>
+              className="w-full mt-4"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("processing") || "Processing..."}
+                </>
+              ) : (
+                t("btn") || "Sign Up"
+              )}
+            </Button>
+          </form>
+        </CardContent>
 
-      <p className="text-center">
-        {t("account")}
-        <Link to="/login" className="px-2 underline font-semibold">
-          {t("login")}
-        </Link>
-      </p>
+        <div className="px-6 pb-4 text-center text-sm text-gray-600">
+          {t("account") || "Already have an account?"}
+          <Link 
+            to="/login" 
+            className="ml-1 font-medium text-orange-600 hover:text-orange-500 hover:underline"
+          >
+            {t("login") || "Log in"}
+          </Link>
+        </div>
+      </Card>
 
-      {error && (
-        <Alert variant="destructive" className="mt-4">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Error!</AlertTitle>
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Diálogo de verificación */}
+      {/* Success Dialog */}
       <Dialog open={showDialog} onOpenChange={setShowDialog}>
-        <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">{t("verificationSentTitle") || "¡Correo de verificación enviado!"}</DialogTitle>
-        </DialogHeader>
-        <DialogContent>
-          <h2 className="text-lg font-semibold">{t("verificationSentTitle") || "¡Correo de verificación enviado!"}</h2>
-          <p>{t("verificationSentMsg") || "Hemos enviado un correo para verificar tu cuenta. Por favor, revisa tu bandeja de entrada."}</p>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              {t("verificationSentTitle") || "Verification Email Sent!"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p className="text-gray-700">
+              {t("verificationSentMsg") || 
+                "We've sent a verification link to your email. Please check your inbox and follow the instructions to complete your registration."}
+            </p>
+          </div>
           <DialogFooter>
             <Button
               onClick={() => {
                 setShowDialog(false)
                 navigate("/")
               }}
-              className="w-full mt-4"
+              className="w-full"
             >
-              {t("goHome") || "Ir a inicio"}
+              {t("goHome") || "Go to Home"}
             </Button>
           </DialogFooter>
         </DialogContent>

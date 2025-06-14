@@ -49,5 +49,6 @@
     "appointmentType": "Appointment type",
     "UserInfo": "User information",
     "name": "Name",
-    "NoNotesMessage": "No additional notes"
+    "NoNotesMessage": "No additional notes",
+    "noRole": "To have access to the full website you have to first get a membership"
 }

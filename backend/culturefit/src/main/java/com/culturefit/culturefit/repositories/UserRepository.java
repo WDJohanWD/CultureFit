@@ -18,6 +18,7 @@ public interface UserRepository  extends JpaRepository<User, Long>{
     boolean existsByName(String name);
     boolean existsByEmail(String name);
     Optional<User> findByEmail(String email);
+    Optional<User> findByStripeId(String stripeId);
 
     @Query("SELECT u FROM User u WHERE LOWER(u.name) LIKE LOWER(CONCAT('%', :search, '%'))")
     List<User> searchByName(String search);

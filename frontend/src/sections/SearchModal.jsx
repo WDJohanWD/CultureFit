@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+
+import { AuthContext } from "@/AuthContext";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,11 +11,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion, AnimatePresence } from "framer-motion";
 
 function SearchModal({ isOpen, onClose }) {
+  const { user } = useContext(AuthContext);
   const { t } = useTranslation("search");
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [users, setUsers] = useState([]);
-  const API_URL = "http://localhost:9000";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -21,7 +24,7 @@ function SearchModal({ isOpen, onClose }) {
         if (query.length > 1) {
           try {
             const res = await fetch(
-              `http://localhost:9000/search/${encodeURIComponent(query)}`
+              `${API_URL}/search/${encodeURIComponent(query)}`
             );
 
             if (res.ok) {
@@ -70,6 +73,7 @@ function SearchModal({ isOpen, onClose }) {
           <div className="fixed inset-0" onClick={onClose}></div>
 
           <Card className="w-full max-w-md p-6 space-y-6 bg-white shadow-md z-50">
+            
             <CardHeader className="p-0 space-y-1">
               <CardTitle className="text-2xl font-bold text-center">
                 {t("search")}
@@ -77,6 +81,7 @@ function SearchModal({ isOpen, onClose }) {
             </CardHeader>
 
             <CardContent className="p-0">
+              {user.role == "USER" || user.role == "ANONYMOUS" ? <div className="flex text-xl items-center mx-auto text-center font-bold uppercase">{t("noRole")}</div> : <>
               <div>
                 <input
                   placeholder={`${t("placeholder")}`}
@@ -115,6 +120,7 @@ function SearchModal({ isOpen, onClose }) {
                   ))}
                 </ScrollArea>
               </div>
+              </>}
             </CardContent>
           </Card>
         </motion.div>

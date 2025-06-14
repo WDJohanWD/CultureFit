@@ -11,6 +11,8 @@ function PasswordResetSentModal({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
+
   if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
@@ -18,7 +20,7 @@ function PasswordResetSentModal({ isOpen, onClose }) {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("http://localhost:9000/resetPassword", {
+      const response = await fetch(`${API_URL}/resetPassword`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

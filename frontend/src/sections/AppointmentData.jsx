@@ -8,9 +8,10 @@ function AppointmentData() {
     const { t } = useTranslation("appointments");
     const { id } = useParams();
     const [appointment, setAppointment] = useState();
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
     async function fetchData() {
         try {
-            const response = await fetch(`http://localhost:9000/appointment/${id}`, {
+            const response = await fetch(`${API_URL}/appointment/${id}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
