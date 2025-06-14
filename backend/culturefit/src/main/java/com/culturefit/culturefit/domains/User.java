@@ -85,6 +85,10 @@ public class User {
     @Schema(description = "ID de cliente en Stripe", example = "cus_123456789")
     private String stripeId;
 
+    private MembershipEnum membership;
+
+    private LocalDate lastPaymentDate;
+
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @ManyToMany
