@@ -1,5 +1,6 @@
 {
     "search": "Search  a profile",
     "placeholder": "Introduce a name",
-    "not-found": "No profiles found"
+    "not-found": "No profiles found",
+    "noRole": "To have access to the full website you have to first get a membership"
 }

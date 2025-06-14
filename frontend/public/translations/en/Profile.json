@@ -38,5 +38,6 @@
     "no-f": "You have no friends yet",
     "add-friend": "Send friend request",
     "add-vue": "Add this friend to see his progress",
-    "logout": "Log Out"
+    "logout": "Log Out",
+    "noRole": "To have access to the full website you have to first get a membership"
 }
