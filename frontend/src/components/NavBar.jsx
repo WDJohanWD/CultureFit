@@ -101,9 +101,6 @@ function NavBar() {
                         `}
         >
           <div className="flex flex-col gap-y-2">
-            <Link className="block hover:underline" to="/lessons">
-              {t("clases")}
-            </Link>
             <Link to="/memberships" className="block hover:underline">
               {t("planes")}
             </Link>
