@@ -45,10 +45,16 @@ public class PaymentController {
 
     // TODO: CAMBIAR LA IP EN PRODUCCION A LA IP DEL SERVIDOR
     @Operation(summary = "Manejo webhook", description = "Maneja los eventos de webhook de Stripe.")
+    // @PostMapping("/api/stripe/webhook")
+    // public ResponseEntity<String> handleStripeWebhook(
+    //         @RequestBody String payload,
+    //         @RequestHeader("Stripe-Signature") String sigHeader) {
+    //     return paymentService.handleStripeWebhook(payload, sigHeader);
+    // }
+
     @PostMapping("/api/stripe/webhook")
-    public ResponseEntity<String> handleStripeWebhook(
-            @RequestBody String payload,
-            @RequestHeader("Stripe-Signature") String sigHeader) {
-        return paymentService.handleStripeWebhook(payload, sigHeader);
+        public ResponseEntity<String> handleStripeEvent(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
+        // Lógica para verificar la firma y procesar el evento
+        return ResponseEntity.ok("");
     }
 }
