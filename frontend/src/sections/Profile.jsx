@@ -798,6 +798,7 @@ export default function Profile() {
       </div>
       
       <div className="flex flex-col gap-y-20 mx-2 md:mx-20 mt-10 xl:mt-20">
+        {user.role == "USER" || user.role == "ANONYMOUS"  ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
         <Card>
           <CardHeader>
             <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
@@ -818,6 +819,7 @@ export default function Profile() {
             <Workout />
           </CardContent>
         </Card>
+        </>}
       </div>
     </div>
   );

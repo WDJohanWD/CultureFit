@@ -1,0 +1,7 @@
+{
+    "home": "Back to home",
+    "successTitle": "Payment completed!",
+    "successDescription": "Your payment has been made successfully.",
+    "errorTitle": "There was an error with the payment!",
+    "errorDescription": "Please try again later"
+}

@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private EmailService emailService;
+
+    @Value("${api.url.front}")
+    private String apiUrl;
 
     private static final LocalTime START_TIME = LocalTime.of(9, 0);
     private static final LocalTime END_TIME = LocalTime.of(17, 30);
@@ -89,7 +93,7 @@ public class AppointmentServiceImpl implements AppointmentService {
         boolean sent = emailService.sendQRCodeEmail(
             //TODO: CAMBIAR PARA PRODUCCION
                  email,
-                "Use el próximo código QR en el mostrador del gimnasio para canjearlo.",
+                apiUrl + "/appointment/" + appointmentId,
                 200,
                 200);
 

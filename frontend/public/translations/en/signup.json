@@ -14,6 +14,9 @@
     "birthDate": "Birth Date",
     "goHome": "Go Home",
     "verificationSentTitle": "Verification email sent",
-    "verificationSentMsg": "Please check your email to verify your account."
-
+    "verificationSentMsg": "Please check your email to verify your account.",
+    "passLengthError": "Your password must be between 6 and 40 characters",
+    "dniError": "Your DNI is incorrect",
+    "ageError": "You must be 18 years old",
+    "defaultError": "There was an error in your resgistration, please try again later"
 }

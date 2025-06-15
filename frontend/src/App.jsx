@@ -22,6 +22,9 @@ const Public_Profile = lazy(() => import("./sections/Public_Profile"));
 const Lessons = lazy(() => import("./sections/Lessons"));
 const Appointment = lazy(() => import("./sections/Appointment"));
 const ResetPassword = lazy(() => import("./sections/SetNewPassword"));
+const Login = lazy(() => import("./sections/LoginModal"));
+const PaymentSuccess = lazy(() => import("./sections/PaymentSuccess"))
+const PaymentError = lazy(() => import("./sections/PaymentError"))
 
 function Layout() {
   const { token, isAdmin, loading, user } = useContext(AuthContext);
@@ -42,6 +45,9 @@ function Layout() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/profile/:username" element={<Public_Profile />} />
+          <Route path="/payment-success" element={<PaymentSuccess />} />
+          <Route path="/payment-error" element={<PaymentError />} />
+
 
           <Route path="/lessons" element={user ? <Lessons /> : <Navigate to="/error" replace />} />
           <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/error" replace />} />

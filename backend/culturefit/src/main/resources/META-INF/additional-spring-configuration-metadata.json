@@ -23,5 +23,10 @@
     "name": "app.jwt.secret.confirmation",
     "type": "java.lang.String",
     "description": "A description for 'app.jwt.secret.confirmation'"
+  },
+  {
+    "name": "api.url.front",
+    "type": "java.lang.String",
+    "description": "A description for 'api.url.front'"
   }
 ]}

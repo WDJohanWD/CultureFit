@@ -1,0 +1,7 @@
+{
+    "home": "Volver al inicio",
+    "successTitle": "¡Pago completado!",
+    "successDescription": "Tu pago se ha realizado correctamente.",
+    "errorTitle": "¡Ha habido un error en el pago!",
+    "errorDescription": "Por favor vuelve a intentarlo más tarde"
+}
