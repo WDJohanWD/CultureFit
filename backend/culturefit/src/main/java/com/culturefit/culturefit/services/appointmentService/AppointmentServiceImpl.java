@@ -65,10 +65,18 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void deleteAppointment(Long id) {
+    public void cancelAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id).orElseThrow();
         appointment.setCanceled(true);
         appointmentRepository.save(appointment);
+    }    
+    
+        @Override
+    @Transactional
+    public void deleteAppointment(Long id) {
+        Appointment appointment = appointmentRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("No se encontró la cita con ID: " + id));
+        appointmentRepository.delete(appointment);
     }
 
     @Override

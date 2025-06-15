@@ -16,6 +16,8 @@ public interface AppointmentService {
 
     public void totalDeleteAppointment(Long id);
 
+    void cancelAppointment(Long id);
+
     void deleteAppointment(Long id);
 
     boolean redeemAppointment(Long userId, Long appointmentId, String email);
