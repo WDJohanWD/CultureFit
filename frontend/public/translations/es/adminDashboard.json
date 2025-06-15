@@ -34,6 +34,15 @@
     "confirmDeleteExercise": "Esta acción no se puede deshacer.",
 
     "Save":"Guardar",
-    "Cancel":"Cancelar"
-        
+    "Cancel":"Cancelar",
+
+    "appointmentsTitle": "Citas",
+    "searchAppointments": "Buscar citas",
+    "confirmDeleteAppointmentTitle": "¿Estás seguro de eliminar esta cita?",
+    "confirmDeleteAppointment": "Esta acción no se puede deshacer.",
+    "NoAppointmentsFound": "No se encontraron citas",
+    "ClientName": "Nombre del cliente",
+    "Service": "Servicio",
+    "Date": "Fecha",
+    "Time": "Hora"
 }

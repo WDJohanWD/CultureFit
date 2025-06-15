@@ -27,4 +27,6 @@ public interface AppointmentService {
     List<LocalTime> getAvailableSlots(LocalDate date);
 
     List<Appointment> getAllAppointments();
+
+    Appointment updateAppointment(Long id, AppointmentDto appointmentDto);
 }

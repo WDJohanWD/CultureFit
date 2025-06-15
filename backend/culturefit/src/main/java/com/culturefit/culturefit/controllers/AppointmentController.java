@@ -40,6 +40,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @Tag(name = "Controlador de citas", description = "Controlador para gestionar las citas.")
 @RestController
@@ -174,5 +176,11 @@ public class AppointmentController {
     public ResponseEntity<?> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointment(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateAppointment(@PathVariable Long id, @RequestBody AppointmentDto appointmentDto) {
+        Appointment updatedAppointment = appointmentService.updateAppointment(id, appointmentDto);
+        return ResponseEntity.ok(updatedAppointment);
     }
 }

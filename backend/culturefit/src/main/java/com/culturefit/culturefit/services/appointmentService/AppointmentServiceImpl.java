@@ -133,4 +133,18 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         return availableSlots;
     }
+
+    @Override
+    public Appointment updateAppointment(Long id, AppointmentDto appointmentDto) {
+        Appointment existingAppointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cita no encontrada con ID: " + id));
+
+        existingAppointment.setDate(appointmentDto.getDate());
+        existingAppointment.setTime(appointmentDto.getTime());
+        existingAppointment.setNote(appointmentDto.getNote());
+        existingAppointment.setAppointmentType(appointmentDto.getAppointmentType());
+        existingAppointment.setCanceled(appointmentDto.isCanceled());
+
+        return appointmentRepository.save(existingAppointment);
+    }
 }

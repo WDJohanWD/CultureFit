@@ -436,7 +436,7 @@ function AdminDashboard() {
   return (
     <>
       <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">{t("h1")}</h1>
-      <Card className="w-full">
+      <Card className="w-auto m-5">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{t("title")}</CardTitle>
         </CardHeader>
@@ -669,7 +669,7 @@ function AdminDashboard() {
       </Card>
 
       {/* Exercise Management Card */}
-      <Card className="w-full mt-8">
+      <Card className="w-auto m-5">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-3xl font-bold">{t("exercisesTitle") || "Exercise Management"}</CardTitle>
           <Button onClick={() => setShowAddExerciseDialog(true)}>{t("addExercise") || "Add Exercise"}</Button>
@@ -844,10 +844,9 @@ function AdminDashboard() {
       </Card>
 
       <>
-        <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">{t("appointments_h1")}</h1>
-        <Card className="w-full">
+        <Card className="w-auto m-5">
           <CardHeader>
-            <CardTitle className="text-3xl font-bold">{t("appointments_title")}</CardTitle>
+            <CardTitle className="text-3xl font-bold">{t("appointmentsTitle")}</CardTitle>
           </CardHeader>
           <CardContent>
             {appointmentError && (
@@ -881,7 +880,7 @@ function AdminDashboard() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>{t("ID")}</TableHead>
-                      <TableHead>{t("Client Name")}</TableHead>
+                      <TableHead>{t("ClientName")}</TableHead>
                       <TableHead>{t("Service")}</TableHead>
                       <TableHead>{t("Date")}</TableHead>
                       <TableHead>{t("Time")}</TableHead>
@@ -896,8 +895,8 @@ function AdminDashboard() {
                         if (!appointment) return false;
                         
                         const searchLower = searchQuery.toLowerCase();
-                        const clientName = appointment?.clientName || '';
-                        const service = appointment?.service || '';
+                        const clientName = appointment?.user.name;
+                        const service = appointment?.appointmentType;
                         
                         return clientName.toLowerCase().includes(searchLower) ||
                                service.toLowerCase().includes(searchLower);
@@ -910,8 +909,8 @@ function AdminDashboard() {
                               <TableCell>
                                 <Input
                                   type="text"
-                                  name="clientName"
-                                  value={appointmentFormData.clientName}
+                                  name="name"
+                                  value={appointmentFormData.name || appointment.user?.name}
                                   onChange={handleAppointmentInputChange}
                                   className="w-full"
                                 />
@@ -919,8 +918,8 @@ function AdminDashboard() {
                               <TableCell>
                                 <Input
                                   type="text"
-                                  name="service"
-                                  value={appointmentFormData.service}
+                                  name="appointmentType"
+                                  value={appointmentFormData.appointmentType || appointment.appointmentType}
                                   onChange={handleAppointmentInputChange}
                                   className="w-full"
                                 />
@@ -980,8 +979,8 @@ function AdminDashboard() {
                             // --- View Mode ---
                             <>
                               <TableCell className="font-medium">{appointment.id}</TableCell>
-                              <TableCell>{appointment.clientName}</TableCell>
-                              <TableCell>{appointment.service}</TableCell>
+                              <TableCell>{appointment.user?.name}</TableCell>
+                              <TableCell>{appointment.appointmentType}</TableCell>
                               <TableCell>{appointment.date}</TableCell>
                               <TableCell>{appointment.time}</TableCell>
                               <TableCell>
