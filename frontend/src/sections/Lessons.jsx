@@ -97,7 +97,7 @@ function Lessons() {
         method: "POST",
         body: formData,
         headers: {
-          Authorization: `Bearer ${token}`,
+          
         },
       });
 
