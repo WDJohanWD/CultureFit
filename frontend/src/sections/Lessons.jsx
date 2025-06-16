@@ -97,7 +97,7 @@ function Lessons() {
         method: "POST",
         body: formData,
         headers: {
-          
+          //Authorization: `Bearer ${token}`,
         },
       });
 
@@ -135,7 +135,7 @@ function Lessons() {
       const response = await fetch(`${API_URL}/delete-lesson/${lessonId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          //Authorization: `Bearer ${token}`,
         },
       });
 
