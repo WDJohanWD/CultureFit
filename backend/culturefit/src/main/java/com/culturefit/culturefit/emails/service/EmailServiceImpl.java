@@ -170,6 +170,6 @@ public class EmailServiceImpl implements EmailService {
                 .withSubject(email)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
-                .sign(Algorithm.HMAC256(jwtSecret));
+                .sign(Algorithm.HMAC256(jwtSecretConfirmation));
     }
 }
