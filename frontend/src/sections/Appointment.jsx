@@ -62,14 +62,14 @@ export default function Appointment() {
       setPaymentSuccess(false)
 
       // Aquí llamas a tu endpoint de compra en el backend
-      const response = await fetch(`${API_URL}/manageAppointment`, {
-        method: "PATCH",
+      const response = await fetch(`${API_URL}/buy-coupon`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: user.id,
-          num: amount
+          userId: user.id,
+          quantity: amount
         }),
       });
       await fetchUser(user.id);
@@ -268,9 +268,12 @@ export default function Appointment() {
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
+        {user.role == "USER" || user.role == "ANONYMOUS" ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
         <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl mb-8">
           {t("appointmentsTitle") || "Appointments"}
         </h1>
+        
+
 
         <Tabs defaultValue="book" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
@@ -678,6 +681,7 @@ export default function Appointment() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </>}
       </div>
     </div>
   )
