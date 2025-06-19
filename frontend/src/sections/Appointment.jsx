@@ -56,29 +56,38 @@ export default function Appointment() {
   // = Función: Comprar Cupones =
   // ==========================
   const handlePurchaseCoupons = async (amount) => {
-    try {
-      setIsProcessing(true)
-      setPaymentError("")
-      setPaymentSuccess(false)
+    if (!user?.id) {
+      setPaymentError(t("mustBeLoggedIn"))
+      return
+    }
 
-      // Aquí llamas a tu endpoint de compra en el backend
-      const response = await fetch(`${API_URL}/manageAppointment`, {
-        method: "PATCH",
+    setIsProcessing(true)
+    setPaymentError("")
+
+    try {
+      const response = await fetch(`${API_URL}/buy-coupon`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: user.id,
-          num: amount
+          userId: user.id,
+          quantity: amount
         }),
-      });
-      await fetchUser(user.id);
-      setPaymentSuccess(true)
-      setSelectedCouponAmount(null)
+      })
 
+      if (!response.ok) {
+        throw new Error("Failed to create payment session")
+      }
 
-    } catch (err) {
-      setPaymentError(t("purchaseFailed") || "Something went wrong.")
+      const data = await response.json()
+      
+      // Redirigir al usuario a la página de pago de Stripe
+      window.location.href = data.checkoutUrl
+      
+    } catch (error) {
+      console.error("Error purchasing coupons:", error)
+      setPaymentError(t("errorPurchasing"))
     } finally {
       setIsProcessing(false)
     }
@@ -262,6 +271,56 @@ export default function Appointment() {
           <p className="text-lg font-medium">{t("loading") || "Loading"}...</p>
         </div>
       </div>
+    )
+  }
+
+  const renderCouponPurchaseSection = () => {
+    return (
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle>{t("purchaseCoupons")}</CardTitle>
+          <CardDescription>{t("purchaseCouponsDesc")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <Select
+              value={selectedCouponAmount?.toString()}
+              onValueChange={(value) => setSelectedCouponAmount(parseInt(value))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("selectAmount")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1 {t("coupon")}</SelectItem>
+                <SelectItem value="5">5 {t("coupons")}</SelectItem>
+                <SelectItem value="10">10 {t("coupons")}</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {paymentError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>{t("error")}</AlertTitle>
+                <AlertDescription>{paymentError}</AlertDescription>
+              </Alert>
+            )}
+
+            <Button 
+              onClick={() => handlePurchaseCoupons(selectedCouponAmount)}
+              disabled={!selectedCouponAmount || isProcessing}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("processing")}
+                </>
+              ) : (
+                t("purchase")
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     )
   }
 
