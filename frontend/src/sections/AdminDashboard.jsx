@@ -50,6 +50,9 @@ function AdminDashboard() {
   const [appointmentFormData, setAppointmentFormData] = useState({})
   const [confirmDeleteAppointment, setConfirmDeleteAppointment] = useState(null)
 
+  const [services, setServices] = useState([])
+  const [isLoadingServices, setIsLoadingServices] = useState(true)
+
   // --- Función para Cargar Miembros ---
   const fetchMembersData = async () => {
     try {
@@ -102,13 +105,30 @@ function AdminDashboard() {
     }
   }
 
+  const fetchServices = async () => {
+    try {
+      const servicesFetch = await fetch(`${API_URL}/appointment/services`)
+      if (!servicesFetch.ok) {
+        throw new Error('Failed to fetch services')
+      }
+      const data = await servicesFetch.json()
+      setServices(data)
+    } catch (error) {
+      console.error("Error fetching services:", error)
+    } finally {
+      setIsLoadingServices(false)
+    }
+  }
+
   useEffect(() => {
     setIsLoading(true)
     setIsLoadingExercises(true)
     setIsLoadingAppointments(true)
+    setIsLoadingServices(true)
     fetchMembersData()
     fetchExercisesData()
     fetchAppointmentData()
+    fetchServices()
   }, [])
 
   // --- Función para Borrar Miembro ---
@@ -298,14 +318,15 @@ function AdminDashboard() {
       [name]: value,
     }))
   }
+
   const handleEditAppointmentClick = (appointment) => {
     setEditingAppointmentId(appointment.id)
     setAppointmentFormData({
-      clientName: appointment.clientName,
-      service: appointment.service,
+      clientName: appointment.user?.name,
+      service: appointment.appointmentType,
       date: appointment.date,
       time: appointment.time,
-      status: appointment.status,
+      isCanceled: Boolean(appointment.isCanceled)
     })
   }
 
@@ -318,24 +339,28 @@ function AdminDashboard() {
     try {
       const response = await fetch(`${API_URL}/appointment/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(appointmentFormData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          appointmentType: appointmentFormData.service,
+          date: appointmentFormData.date,
+          time: appointmentFormData.time,
+          isCanceled: appointmentFormData.isCanceled
+        }),
       })
+
       if (!response.ok) {
-        let errorBody = ""
-        try {
-          errorBody = await response.text()
-        } catch {
-          throw new Error(`Failed to update appointment: ${response.statusText}. ${errorBody}`)
-        }
+        throw new Error("Failed to update appointment")
       }
-      console.log(`Appointment ${id} updated successfully`)
+
+      // Recargar los datos
+      await fetchAppointmentData()
+        // Limpiar el estado de edición
       setEditingAppointmentId(null)
       setAppointmentFormData({})
-      fetchAppointmentData()
     } catch (error) {
       console.error("Error updating appointment:", error)
-      setAppointmentError(`Error updating appointment: ${error.message}`)
     }
   }
   
@@ -916,13 +941,23 @@ function AdminDashboard() {
                                 />
                               </TableCell>
                               <TableCell>
-                                <Input
-                                  type="text"
-                                  name="appointmentType"
-                                  value={appointmentFormData.appointmentType || appointment.appointmentType}
-                                  onChange={handleAppointmentInputChange}
+                                <Select
+                                  name="service"
+                                  value={appointmentFormData.service}
+                                  onValueChange={(value) => handleAppointmentInputChange({ target: { name: 'service', value } })}
                                   className="w-full"
-                                />
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={t("selectService")} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {services.map((service) => (
+                                      <SelectItem key={service} value={service}>
+                                        {service}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
                               </TableCell>
                               <TableCell>
                                 <Input
@@ -942,20 +977,30 @@ function AdminDashboard() {
                                   className="w-full"
                                 />
                               </TableCell>
-                              <TableCell>
-                                <Select
-                                  name="status"
-                                  value={appointmentFormData.status}
-                                  onValueChange={(value) => handleAppointmentInputChange({ target: { name: 'status', value } })}
+                              <TableCell>                              <Select
+                                  name="isCanceled"
+                                  value={String(Boolean(appointmentFormData.isCanceled))}
+                                  onValueChange={(value) => handleAppointmentInputChange({ target: { name: 'isCanceled', value: value === "true" } })}
                                   className="w-full"
                                 >
                                   <SelectTrigger>
-                                    <SelectValue placeholder={appointmentFormData.status} />
+                                    <SelectValue>
+                                      <Badge variant={!appointmentFormData.isCanceled ? "success" : "destructive"} className="font-medium">
+                                        {!appointmentFormData.isCanceled ? t("active") : t("canceled")}
+                                      </Badge>
+                                    </SelectValue>
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="Confirmed">{t("Confirmed")}</SelectItem>
-                                    <SelectItem value="Pending">{t("Pending")}</SelectItem>
-                                    <SelectItem value="Cancelled">{t("Cancelled")}</SelectItem>
+                                    <SelectItem value="false">
+                                      <Badge variant="success" className="font-medium">
+                                        {t("active")}
+                                      </Badge>
+                                    </SelectItem>
+                                    <SelectItem value="true">
+                                      <Badge variant="destructive" className="font-medium">
+                                        {t("canceled")}
+                                      </Badge>
+                                    </SelectItem>
                                   </SelectContent>
                                 </Select>
                               </TableCell>
@@ -982,19 +1027,12 @@ function AdminDashboard() {
                               <TableCell>{appointment.user?.name}</TableCell>
                               <TableCell>{appointment.appointmentType}</TableCell>
                               <TableCell>{appointment.date}</TableCell>
-                              <TableCell>{appointment.time}</TableCell>
-                              <TableCell>
+                              <TableCell>{appointment.time}</TableCell>                              <TableCell>
                                 <Badge
-                                  variant={
-                                    appointment.status === "Confirmed"
-                                      ? "success"
-                                      : appointment.status === "Pending"
-                                        ? "secondary"
-                                        : "destructive"
-                                  }
+                                  variant={!appointment.isCanceled ? "success" : "destructive"}
                                   className="font-medium"
                                 >
-                                  {t(appointment.status)}
+                                  {!appointment.isCanceled ? t("active") : t("canceled")}
                                 </Badge>
                               </TableCell>
                               <TableCell>
