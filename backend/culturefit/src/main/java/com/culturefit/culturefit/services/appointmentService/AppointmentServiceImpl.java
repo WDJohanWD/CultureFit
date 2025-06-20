@@ -69,10 +69,18 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void deleteAppointment(Long id) {
+    public void cancelAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id).orElseThrow();
         appointment.setCanceled(true);
         appointmentRepository.save(appointment);
+    }    
+    
+        @Override
+    @Transactional
+    public void deleteAppointment(Long id) {
+        Appointment appointment = appointmentRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("No se encontró la cita con ID: " + id));
+        appointmentRepository.delete(appointment);
     }
 
     @Override
@@ -128,5 +136,19 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return availableSlots;
+    }
+
+    @Override
+    public Appointment updateAppointment(Long id, AppointmentDto appointmentDto) {
+        Appointment existingAppointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cita no encontrada con ID: " + id));
+
+        existingAppointment.setDate(appointmentDto.getDate());
+        existingAppointment.setTime(appointmentDto.getTime());
+        existingAppointment.setNote(appointmentDto.getNote());
+        existingAppointment.setAppointmentType(appointmentDto.getAppointmentType());
+        existingAppointment.setCanceled(appointmentDto.isCanceled());
+
+        return appointmentRepository.save(existingAppointment);
     }
 }

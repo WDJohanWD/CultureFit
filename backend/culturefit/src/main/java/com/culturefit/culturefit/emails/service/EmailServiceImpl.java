@@ -37,7 +37,8 @@ public class EmailServiceImpl implements EmailService {
     private String jwtSecret;
 
     @Value("${api.url.front}")
-    private String apiUrl;
+    private String frontUrl;
+
 
     @Override
     public boolean sendEmail(String destination, String subject, String textMessage) {
@@ -58,7 +59,9 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public boolean sendConfirmationEmail(String toEmail) {
         String token = generateToken(toEmail);
-        String confirmationUrl = apiUrl + "/confirm-account/" + token;
+
+        String confirmationUrl = frontUrl + "/confirm-account/" + token;
+
 
         try {
             MimeMessage message = sender.createMimeMessage();

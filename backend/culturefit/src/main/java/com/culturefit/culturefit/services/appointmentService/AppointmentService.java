@@ -16,6 +16,8 @@ public interface AppointmentService {
 
     public void totalDeleteAppointment(Long id);
 
+    void cancelAppointment(Long id);
+
     void deleteAppointment(Long id);
 
     boolean redeemAppointment(Long userId, Long appointmentId, String email);
@@ -25,4 +27,6 @@ public interface AppointmentService {
     List<LocalTime> getAvailableSlots(LocalDate date);
 
     List<Appointment> getAllAppointments();
+
+    Appointment updateAppointment(Long id, AppointmentDto appointmentDto);
 }
