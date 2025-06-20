@@ -4,21 +4,6 @@ services:
       context: ./backend/culturefit
     ports:
       - "9000:9000"
-    environment:
-      SERVER_PORT: 9000
-      DB_HOST: mysql
-      DB_PORT: 3306
-      DB_NAME: culturefit-bd
-      DB_USER: root
-      DB_PASSWORD: admin
-      STRIPE_SECRET_KEY: sk_test_51R3xIo2esfOHTwEzn09AazYBoH4x02tSF0p4Ezr2DzPv0RxSIdrzVtylSi5kUNqFpOu8ZDPd4953s0rsQPaW6UGx00kh8HqPqW
-      STRIPE_PUBLIC_KEY: pk_test_51R3xIo2esfOHTwEzeGdS0QmqFFdZXRZn4ZnWUUywrUo44DbwV8Ea1zuSklxljkx0nmACJ3OchABD5OMRVwx5Dj2s00YNpOe6Kb
-      DIRECTORY_PROFILE_IMAGES: uploads/profileImages/
-      DIRECTORY_LESSON_VIDEOS: uploads/lessonVideos/
-      DIRECTORY_LESSON_THUMBNAILS: uploads/lessonThumbnails/
-      MAIL_PASS: mnsk jzyn julx czgt
-      JWT_SECRET_CONFIRMATION: JT2HOK/NlyZiAIY0nOQBOAS0dtY8nKULypVMxuFXHpo=
-      JWT_SECRET: JT2HOK/NlyZiAIY0nOQBOAS0dtY8nKULypVMxuFXHpo=
     volumes:
       - ./backend/culturefit/uploads:/app/uploads
     networks:
@@ -33,8 +18,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: admin
       MYSQL_DATABASE: culturefit-bd
-      MYSQL_USER: root
-      MYSQL_PASSWORD: admin
     volumes:
       - mysql_data:/var/lib/mysql
     networks:

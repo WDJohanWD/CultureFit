@@ -35,8 +35,10 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    @Size(min = 6, max = 40)
-    @NotBlank(message = "El correo electrónico debe ser válido")
+
+    // @Schema(description = "Contraseña del usuario (6-40 caracteres)", example = "password123")
+    // @NotBlank(message = "El correo electrónico debe ser válido")
+    // @Size(min = 6, max = 300)
     private String password;
 
     @NotNull
@@ -53,6 +55,11 @@ public class User {
 
     @Column(unique = true)
     private String stripeId;
+
+    @Schema(description = "Tipo de membresía que tiene el usuario", example = "BASIC")
+    private MembershipEnum membership;
+
+    private LocalDate lastPaymentDate;
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
