@@ -130,7 +130,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public boolean sendEmailResetPassword(String toEmail) {
         String token = generateToken(toEmail);
-        String resetUrl = apiUrl + "/reset-password/" + token;
+        String resetUrl = frontUrl + "/reset-password/" + token;
 
         try {
             MimeMessage message = sender.createMimeMessage();
