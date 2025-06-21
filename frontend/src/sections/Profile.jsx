@@ -392,6 +392,10 @@ export default function Profile() {
                   <Calendar className="h-3.5 w-3.5" />
                   <span>{user.birthDate}</span>
                 </div>
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <CreditCard className="h-3.5 w-3.5" />
+                  <span>{t("plan", "Plan")}: {user.membership}</span>
+                </div>
               </div>
 
               {isEditing && (
@@ -531,6 +535,23 @@ export default function Profile() {
                               className={!isEditing ? "bg-muted/50" : ""}
                             />
                           </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label
+                            htmlFor="membership"
+                            className="flex items-center gap-2 text-sm font-medium"
+                          >
+                            <CreditCard className="h-4 w-4 text-primary" />
+                            {t("plan", "Plan")}
+                          </Label>
+                          <Input
+                            id="membership"
+                            name="membership"
+                            value={user.membership || "N/A"}
+                            readOnly
+                            className="bg-muted/50"
+                          />
                         </div>
 
                         <div className="flex justify-end space-x-3 pt-4">

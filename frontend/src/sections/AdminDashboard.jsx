@@ -53,6 +53,9 @@ function AdminDashboard() {
   const [services, setServices] = useState([])
   const [isLoadingServices, setIsLoadingServices] = useState(true)
 
+  const [memberships, setMemberships] = useState([])
+  const [isLoadingMemberships, setIsLoadingMemberships] = useState(true)
+
   // --- Función para Cargar Miembros ---
   const fetchMembersData = async () => {
     try {
@@ -120,15 +123,30 @@ function AdminDashboard() {
     }
   }
 
+  const fetchMemberships = async () => {
+    try {
+      const res = await fetch(`${API_URL}/memberships`)
+      if (!res.ok) throw new Error('Failed to fetch memberships')
+      const data = await res.json()
+      setMemberships(data)
+    } catch (error) {
+      console.error('Error fetching memberships:', error)
+    } finally {
+      setIsLoadingMemberships(false)
+    }
+  }
+
   useEffect(() => {
     setIsLoading(true)
     setIsLoadingExercises(true)
     setIsLoadingAppointments(true)
     setIsLoadingServices(true)
+    setIsLoadingMemberships(true)
     fetchMembersData()
     fetchExercisesData()
     fetchAppointmentData()
     fetchServices()
+    fetchMemberships()
   }, [])
 
   // --- Función para Borrar Miembro ---
@@ -305,9 +323,11 @@ function AdminDashboard() {
     setEditFormData({
       name: member.name,
       email: member.email,
+      dni: member.dni,
       role: member.role,
       birthDate: member.birthDate || "",
       active: member.active,
+      membership: member.membership // debe ser string, no índice
     })
   }
 
@@ -380,10 +400,14 @@ function AdminDashboard() {
   // --- Función para Guardar Cambios ---
   async function handleSaveEdit(id) {
     try {
+      const payload = {
+        ...editFormData,
+        membership: editFormData.membership 
+      };
       const response = await fetch(`${API_URL}/user-edit/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editFormData),
+        body: JSON.stringify(payload),
       })
       if (!response.ok) {
         let errorBody = ""
@@ -539,15 +563,19 @@ function AdminDashboard() {
                           </TableCell>
                           <TableCell>
                             <Select
-                              name="plan"
-                              value={editFormData.plan}
-                              onValueChange={(value) => handleInputChange({ target: { name: 'plan', value } })}
+                              name="membership"
+                              value={editFormData.membership}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'membership', value } })}
                               className="w-full"
-                              readOnly
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder={editFormData.plan} />
+                                <SelectValue placeholder={editFormData.membership} />
                               </SelectTrigger>
+                              <SelectContent>
+                                {memberships.map((m) => (
+                                  <SelectItem key={m} value={m}>{m}</SelectItem>
+                                ))}
+                              </SelectContent>
                             </Select>
 
                           </TableCell>
@@ -628,7 +656,7 @@ function AdminDashboard() {
                           <TableCell>{member.name}</TableCell>
                           <TableCell>{member.email}</TableCell>
                           <TableCell>{member.dni} </TableCell>
-                          <TableCell>{member.plan} </TableCell>
+                          <TableCell>{member.membership} </TableCell>
                           <TableCell>{member.birthDate || "-"}</TableCell>
                           <TableCell>
                             <Badge variant={member.active ? "success" : "destructive"} className="font-medium">

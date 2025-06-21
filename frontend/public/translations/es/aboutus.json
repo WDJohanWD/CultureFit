@@ -1,5 +1,17 @@
 {
-    "title": "Quienes somos",
-    "text": "",
-    "ubication": "Nuestra ubication"
+    "title": "Descubre CultureFit",
+    "ubication": "Tu gimnasio de élite en Vigo",
+    "eliteTraining": {
+        "title": "Entrenamiento de élite",
+        "description": "Pensado para culturistas, powerlifters y atletas de fuerza que buscan mejorar su rendimiento."
+    },
+    "professionalCare": {
+        "title": "Atención profesional",
+        "description": "Acceso a fisioterapeutas, nutricionistas y rutinas personalizadas desde la plataforma web."
+    },
+    "globalAccess": {
+        "title": "Acceso global",
+        "description": "Disponible desde cualquier lugar gracias a su contenido online y sistema de suscripciones."
+    },
+    "gymName": "CultureFit"
 }
