@@ -99,7 +99,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         userRepository.save(user);
 
         boolean sent = emailService.sendQRCodeEmail(
-            //TODO: CAMBIAR PARA PRODUCCION
                  email,
                 apiUrl + "/appointment/" + appointmentId,
                 200,

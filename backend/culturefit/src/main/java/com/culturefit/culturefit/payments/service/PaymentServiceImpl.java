@@ -43,9 +43,8 @@ public class PaymentServiceImpl implements PaymentService {
     public Session createCheckoutSession(String priceId, String stripeId) throws StripeException {
         try {
             SessionCreateParams params = SessionCreateParams.builder()
-                    // TODO: Cambiar urls de exito y de cancelación
-                    .setSuccessUrl("https://example.com/success")
-                    .setCancelUrl("https://example.com/cancel")
+                    .setSuccessUrl("https://culturefit.lareira.digital/payment-success")
+                    .setCancelUrl("https://culturefit.lareira.digital/payment-error")
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setPrice(priceId)
@@ -64,9 +63,8 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             User user = userRepository.findByStripeId(stripeId).orElseThrow();
             SessionCreateParams params = SessionCreateParams.builder()
-                    // TODO: Cambiar urls de exito y de cancelación
-                    .setSuccessUrl("https://example.com/success")
-                    .setCancelUrl("https://example.com/cancel")
+                    .setSuccessUrl("https://culturefit.lareira.digital/payment-success")
+                    .setCancelUrl("https://culturefit.lareira.digital/payment-error")
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setPrice(priceId)
