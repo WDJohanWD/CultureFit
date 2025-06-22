@@ -49,5 +49,6 @@
     "UserInfo": "Información del usuario",
     "name": "Nombre",
     "NoNotesMessage": "No hay notas adicionales",
-    "noRole": "Para tener acceso a las funcionalidades de la página tienes que contratar una membresía"
+    "noRole": "Para tener acceso a las funcionalidades de la página tienes que contratar una membresía",
+    "seeMore": "Ver más"
 }

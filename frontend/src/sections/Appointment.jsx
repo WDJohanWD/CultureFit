@@ -2,6 +2,7 @@
 import { useState, useEffect, useContext } from "react"
 import { useTranslation } from "react-i18next"
 import { AuthContext } from "@/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 /*UTILIDADES */
 import { format, addDays, startOfDay, isBefore, isAfter, parseISO } from "date-fns"
@@ -28,6 +29,7 @@ export default function Appointment() {
   const { t } = useTranslation("appointments")
   const API_URL = (import.meta.env.VITE_API_URL + "/appointment") || "http://localhost:9000/appointment"
   const { user, fetchUser } = useContext(AuthContext)
+  const navigate = useNavigate();
 
   // --- Estados Generales ---
   const [date, setDate] = useState(startOfDay(new Date()))
@@ -51,6 +53,7 @@ export default function Appointment() {
   const [paymentError, setPaymentError] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
 
+  const [activeTab, setActiveTab] = useState("book")
 
   // ==========================
   // = Función: Comprar Cupones =
@@ -82,7 +85,6 @@ export default function Appointment() {
 
       const data = await response.json()
       
-      // Redirigir al usuario a la página de pago de Stripe
       window.location.href = data.checkoutUrl
       
     } catch (error) {
@@ -92,7 +94,6 @@ export default function Appointment() {
       setIsProcessing(false)
     }
   }
-
 
   // = Fetch: Servicios Disponibles =
   useEffect(() => {
@@ -115,36 +116,26 @@ export default function Appointment() {
   }, [API_URL, t])
 
 
-  // ==========================
-  // = Fetch: Citas del Usuario =
-  // ==========================
-  useEffect(() => {
-    const fetchUserAppointments = async () => {
-      try {
-        setIsLoadingAppointments(true)
-        const response = await fetch(`${API_URL}/byuser/${user.id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          },
-        })
+  const fetchUserAppointments = async () => {
+    try {
+      setIsLoadingAppointments(true)
+      const response = await fetch(`${API_URL}/byuser/${user.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        },
+      })
 
-        if (!response.ok) throw new Error("Failed to fetch appointments")
+      if (!response.ok) throw new Error("Failed to fetch appointments")
 
-        const data = await response.json()
-        setUserAppointments(data)
-      } catch (err) {
-        console.error("Error fetching user appointments:", err)
-      } finally {
-        setIsLoadingAppointments(false)
-      }
+      const data = await response.json()
+      setUserAppointments(data)
+    } catch (err) {
+      console.error("Error fetching user appointments:", err)
+    } finally {
+      setIsLoadingAppointments(false)
     }
-
-    if (user?.id) {
-      fetchUserAppointments()
-    }
-  }, [user?.id])
-
+  }
 
   // ==========================
   // = Fetch: Horarios Disponibles por Día =
@@ -173,9 +164,17 @@ export default function Appointment() {
     fetchSlotsFromBackend()
   }, [date])
 
+  useEffect(() => {
+    if (activeTab === "my-appointments" && user?.id) {
+      fetchUserAppointments();
+    }
+  }, [activeTab, user?.id]);
 
   // = Acción: Reservar Cita =
   const handleBookAppointment = async () => {
+    setError(null);
+    setSuccess(false);
+
     if (!selectedTimeSlot || !selectedService) {
       setError(t("pleaseSelectTimeAndService") || "Please select a time slot and service")
       return
@@ -206,23 +205,33 @@ export default function Appointment() {
 
       if (!response.ok) throw new Error("Failed to book appointment")
 
-      const newAppointment = await response.json()
+      let newAppointment = null;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        newAppointment = await response.json();
+      } else {
+        await response.text();
+      }
 
       setSuccess(true)
-      setConfirmDialog(false)
+      setError(null)
       setSelectedTimeSlot(null)
       setSelectedService("")
       setNotes("")
-      setUserAppointments((prev) => [...prev, newAppointment])
+      if (newAppointment) {
+        setUserAppointments((prev) => [...prev, newAppointment])
+      }
       fetchUser(user.id);
+      setConfirmDialog(false)
     } catch (err) {
       console.error("Error booking appointment:", err)
       setError(t("errorBookingAppointment") || "Error al reservar la cita")
+      setSuccess(false)
+      setConfirmDialog(false)
     } finally {
       setIsLoading(false)
     }
   }
-
 
   // = Acción: Cancelar Cita =
   const handleCancelAppointment = async (appointmentId) => {
@@ -249,7 +258,6 @@ export default function Appointment() {
     }
   }
 
-
   // = Utilidad: Formatear Fecha =
   const formatAppointmentDate = (dateString) => {
     try {
@@ -260,7 +268,6 @@ export default function Appointment() {
       return dateString
     }
   }
-
 
   // = Render: Estado de Carga =
   if (isLoading && services.length === 0) {
@@ -324,6 +331,21 @@ export default function Appointment() {
     )
   }
 
+
+  const openConfirmDialog = () => {
+    setError(null);
+    setSuccess(false);
+    setIsLoading(false);
+    setConfirmDialog(true);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setError(null);
+    setSuccess(false);
+    setIsLoading(false);
+  }
+
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
@@ -334,26 +356,17 @@ export default function Appointment() {
         
 
 
-        <Tabs defaultValue="book" className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger
-              value="buy-coupons"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
+            <TabsTrigger value="buy-coupons">
               <CreditCard className="h-4 w-4 mr-2" />
               {t("buyCoupons") || "Buy Coupons"}
             </TabsTrigger>
-            <TabsTrigger
-              value="book"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
+            <TabsTrigger value="book">
               <CalendarIcon className="h-4 w-4 mr-2" />
               {t("bookAppointment") || "Book Appointment"}
             </TabsTrigger>
-            <TabsTrigger
-              value="my-appointments"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
+            <TabsTrigger value="my-appointments">
               <Clock className="h-4 w-4 mr-2" />
               {t("myAppointments") || "My Appointments"}
             </TabsTrigger>
@@ -489,7 +502,7 @@ export default function Appointment() {
               <CardFooter className="flex justify-end space-x-2">
                 <Button
                   disabled={!selectedTimeSlot || !selectedService || isLoading}
-                  onClick={() => setConfirmDialog(true)}
+                  onClick={openConfirmDialog}
                 >
                   {isLoading ? (
                     <>
@@ -583,6 +596,15 @@ export default function Appointment() {
                                       {t("cancel") || "Cancel"}
                                     </Button>
                                   )}
+
+                                  <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    className="ml-2"
+                                    onClick={() => navigate(`/appointment/${appointment.id}`)}
+                                  >
+                                    {t("seeMore")}
+                                  </Button>
                                 </div>
                               </div>
                             </div>
@@ -641,7 +663,7 @@ export default function Appointment() {
                     >
                       <span className="text-3xl font-bold">{count}</span>
                       <span className="text-muted-foreground text-sm mt-1">
-                        ${count * 5} USD
+                        ${count * 15} USD
                       </span>
                     </Button>
                   ))}
