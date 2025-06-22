@@ -166,6 +166,7 @@ public class UserServiceImpl implements UserService {
     public User updateUserEdit(Long id, UserEditDto user) throws RuntimeException {
         User userToUpdate = getUser(id);
         userToUpdate.setActive(user.isActive());
+        userToUpdate.setMembership(user.getMembership());
         userToUpdate.setRole(user.getRole());
         return userRepository.save(userToUpdate);
     }

@@ -3,6 +3,7 @@ package com.culturefit.culturefit.controllers;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.culturefit.culturefit.domains.MembershipEnum;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.services.userService.UserService;
 import com.stripe.exception.StripeException;
@@ -307,5 +308,15 @@ public class UserController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error inesperado al cancelar la suscripción.");
         }
+    }
+
+    @Operation(summary = "Obtener tipos de membresía", description = "Devuelve los valores posibles del enum MembershipEnum.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista de tipos de membresía obtenida exitosamente"),
+        @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @GetMapping("/memberships")
+    public ResponseEntity<MembershipEnum[]> getMemberships() {
+        return ResponseEntity.ok(MembershipEnum.values());
     }
 }
