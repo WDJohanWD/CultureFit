@@ -39,5 +39,6 @@
     "add-friend": "Enviar petición de amistad",
     "add-vue": "Añadelo como amigo para ver su progreso",
     "logout": "Cerrar sesión",
-    "noRole": "Para tener acceso a las funcionalidades de la página tienes que contratar una membresía"
+    "noRole": "Para tener acceso a las funcionalidades de la página tienes que contratar una membresía",
+    "deactivate": "Desactivar cuenta"
 }

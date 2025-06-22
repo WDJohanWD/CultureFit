@@ -44,5 +44,6 @@
     "ClientName": "Nombre del cliente",
     "Service": "Servicio",
     "Date": "Fecha",
-    "Time": "Hora"
+    "Time": "Hora",
+    "Add": "Añadir"
 }
