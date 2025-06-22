@@ -22,6 +22,7 @@ function Workout() {
   const [exerciseList, setExerciseList] = useState([]);
   const [draggingId, setDraggingId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [exercisesLoading, setExercisesLoading] = useState(true);
 
   const initialContainers = [
     { id: "1", title: t("monday"), color: "bg-orange-200" },
@@ -66,12 +67,18 @@ function Workout() {
   }
 
   async function getExercises() {
+    try {
     const response = await fetch(`${API_URL}/exercise`);
     if (!response.ok) {
       throw new Error("An error ocurred while fetching");
     }
     const data = await response.json();
     setExerciseList(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setExercisesLoading(false);
+    }
   }
 
   async function saveWorkout() {
@@ -434,7 +441,7 @@ function Workout() {
     );
   };
 
-  if (isLoading) {
+  if (isLoading || exercisesLoading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="flex flex-col items-center space-y-2">
