@@ -116,7 +116,7 @@ function Public_Workout({ id }) {
           <span className="text-sm flex xl:grid xl:grid-cols-[20%_60%_20%] w-full gap-x-3 xl:gap-x-0 delay:20 items-center">
             <Avatar className="h-7 w-7 shadow me-1">
               <AvatarImage
-                src={`${API_URL}${exerciseList[exercise - 1].imageUrl}`}
+                src={currentExercise?.imageUrl ? `${API_URL}${currentExercise.imageUrl}` : ''}
                 alt="ejercicio"
                 className="object-cover"
                 loading="lazy"
