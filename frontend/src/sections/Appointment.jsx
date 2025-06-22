@@ -663,7 +663,7 @@ export default function Appointment() {
                     >
                       <span className="text-3xl font-bold">{count}</span>
                       <span className="text-muted-foreground text-sm mt-1">
-                        ${count * 15} USD
+                        ${count * 15} €
                       </span>
                     </Button>
                   ))}
