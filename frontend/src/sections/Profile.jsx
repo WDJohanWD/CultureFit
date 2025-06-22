@@ -1,19 +1,21 @@
 import { useTranslation } from "react-i18next";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../AuthContext";
-import { User,  Users,  Lock,  Calendar,  Mail,  CreditCard,  Camera, CheckCircle,  Check,  X,  Trash2,  LogOut} from "lucide-react";
+import { User, Users, Lock, Calendar, Mail, CreditCard, Camera, CheckCircle, Check, X, Trash2, LogOut } from "lucide-react";
 import axios from "axios";
 
 import { Button } from "@/components/ui/button";
-import {  Card,  CardContent,  CardDescription,  CardHeader,  CardTitle,} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
-import {  Accordion,  AccordionContent,  AccordionItem,  AccordionTrigger,} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, } from "@/components/ui/accordion";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog"
+
 
 import YourProgress from "./YourProgress";
 import Workout from "./Workout";
@@ -38,6 +40,7 @@ export default function Profile() {
 
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
+  const [deleteUserDialog, setDeleteUserDialog] = useState(false)
 
   useEffect(() => {
     if (!loading && authUser) {
@@ -306,6 +309,26 @@ export default function Profile() {
         });
         console.error("Error uploading image:", error);
       }
+    }
+  };
+
+  const handleDeleteAccount = async (e) => {
+    try {
+      const response = await fetch(
+        `${API_URL}/cancel-subscription/${user.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      setDeleteUserDialog(false)
+      window.location.reload()
+
+      if (!response.ok) throw new Error("Error deactivating your account");
+    } catch (error) {
+      console.error("Error deactivating your account:", error);
     }
   };
 
@@ -808,7 +831,8 @@ export default function Profile() {
             </Tabs>
           </div>
         </div>
-        <button
+        <div className="flex justify-between">
+          <button
             className="flex gap-3 text-white bg-light-primary transition hover:ring-3 hover:outline-none 
             hover:ring-orange-400 shadow-lg shadow-red-500/50 font-semibold rounded-lg 
             cursor-pointer px-2 py-2.5 text-center mt-3"
@@ -816,32 +840,65 @@ export default function Profile() {
           >
             <LogOut /> {t("logout")}
           </button>
+          <button
+            className="flex gap-3 text-white bg-red-500 transition hover:ring-3 hover:outline-none 
+            hover:ring-orange-400 shadow-lg shadow-red-500/50 font-semibold rounded-lg 
+            cursor-pointer px-2 py-2.5 text-center mt-3"
+            onClick={() => setDeleteUserDialog(true)}
+          >
+            <LogOut /> {t("deactivate")}
+          </button>
+
+          <Dialog open={deleteUserDialog} onOpenChange={setDeleteUserDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("confirmDeactivateAccountTitle") || "Confirm Delete"}</DialogTitle>
+                <DialogDescription>
+                  {t("confirmDeactivateAccount") ||
+                    "Are you sure you want to delete your account? This action cannot be undone."}
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setDeleteUserDialog(false)}>
+                  {t("cancel") || "Cancel"}
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteAccount}
+                >
+                  {t("deactivate") || "Delete"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
+
       </div>
-      
+
       <div className="flex flex-col gap-y-20 mx-2 md:mx-20 mt-10 xl:mt-20">
-        {user.role == "USER" || user.role == "ANONYMOUS"  ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
-        <Card>
-          <CardHeader>
-            <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
-              "progress"
-            )}`}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <YourProgress />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
-              "workout"
-            )}`}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Workout />
-          </CardContent>
-        </Card>
+        {user.role == "USER" || user.role == "ANONYMOUS" ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
+          <Card>
+            <CardHeader>
+              <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
+                "progress"
+              )}`}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <YourProgress />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className={"text-xl font-bold uppercase"}>{`${t(
+                "workout"
+              )}`}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Workout />
+            </CardContent>
+          </Card>
         </>}
       </div>
-    </div>
+    </div >
   );
 }

@@ -39,5 +39,9 @@
     "add-friend": "Send friend request",
     "add-vue": "Add this friend to see his progress",
     "logout": "Log Out",
-    "noRole": "To have access to the full website you have to first get a membership"
+    "noRole": "To have access to the full website you have to first get a membership",
+    "confirmDeactivateAccountTitle": "Deactivate your account",
+    "confirmDeactivateAccount": "Deactivating your account will immediately revoke your access to all website features, but your account will remain active.",
+    "cancel": "Cancel",
+    "deactivate": "Deactivate account"
 }
