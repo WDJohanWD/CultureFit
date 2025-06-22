@@ -15,6 +15,32 @@ import { Label } from "@/components/ui/label"
 import { Pencil, Trash2, Search, AlertCircle, Loader2, Camera, Dumbbell } from "lucide-react"
 import axios from "axios"
 
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  return (
+    <div className="flex justify-center items-center gap-2 my-4">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        {"<"}
+      </Button>
+      <span>
+        {currentPage} / {totalPages}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages || totalPages === 0}
+      >
+        {">"}
+      </Button>
+    </div>
+  );
+}
+
 function AdminDashboard() {
   const { t } = useTranslation("adminDashboard")
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000"
@@ -55,6 +81,17 @@ function AdminDashboard() {
 
   const [memberships, setMemberships] = useState([])
   const [isLoadingMemberships, setIsLoadingMemberships] = useState(true)
+
+  // --- Estados de paginación ---
+  // Usuarios
+  const [currentMemberPage, setCurrentMemberPage] = useState(1);
+  const [membersPerPage] = useState(10);
+  // Ejercicios
+  const [currentExercisePage, setCurrentExercisePage] = useState(1);
+  const [exercisesPerPage] = useState(10);
+  // Citas
+  const [currentAppointmentPage, setCurrentAppointmentPage] = useState(1);
+  const [appointmentsPerPage] = useState(10);
 
   // --- Función para Cargar Miembros ---
   const fetchMembersData = async () => {
@@ -465,6 +502,28 @@ function AdminDashboard() {
            safeStringIncludes(exercise.nameEN, exerciseSearchQuery);
   }) || [];
 
+  // --- Lógica de paginación ---
+  // Usuarios
+  const paginatedMembers = filteredMembers.slice(
+    (currentMemberPage - 1) * membersPerPage,
+    currentMemberPage * membersPerPage
+  );
+  const totalMemberPages = Math.ceil(filteredMembers.length / membersPerPage);
+
+  // Ejercicios
+  const paginatedExercises = filteredExercises.slice(
+    (currentExercisePage - 1) * exercisesPerPage,
+    currentExercisePage * exercisesPerPage
+  );
+  const totalExercisePages = Math.ceil(filteredExercises.length / exercisesPerPage);
+
+  // Citas
+  const paginatedAppointments = filteredAppointments.slice(
+    (currentAppointmentPage - 1) * appointmentsPerPage,
+    currentAppointmentPage * appointmentsPerPage
+  );
+  const totalAppointmentPages = Math.ceil(filteredAppointments.length / appointmentsPerPage);
+
   // --- Renderizado ---
   if (isLoading) {
     return (
@@ -519,8 +578,8 @@ function AdminDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredMembers.length > 0 ? (
-                  filteredMembers.map((member) => (
+                {paginatedMembers.length > 0 ? (
+                  paginatedMembers.map((member) => (
                     <TableRow key={member.id}>
                       {editingMemberId === member.id ? (
                         // --- Modo Edición ---
@@ -694,6 +753,11 @@ function AdminDashboard() {
                 )}
               </TableBody>
             </Table>
+            <Pagination
+              currentPage={currentMemberPage}
+              totalPages={totalMemberPages}
+              onPageChange={setCurrentMemberPage}
+            />
           </div>
         </CardContent>
 
@@ -761,8 +825,8 @@ function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredExercises.length > 0 ? (
-                    filteredExercises.map((exercise) => (
+                  {paginatedExercises.length > 0 ? (
+                    paginatedExercises.map((exercise) => (
                       <TableRow key={exercise.id}>
                         {editingExerciseId === exercise.id ? (
                           // --- Edit Mode ---
@@ -886,6 +950,11 @@ function AdminDashboard() {
                   )}
                 </TableBody>
               </Table>
+              <Pagination
+                currentPage={currentExercisePage}
+                totalPages={totalExercisePages}
+                onPageChange={setCurrentExercisePage}
+              />
             </div>
           )}
         </CardContent>
@@ -937,18 +1006,8 @@ function AdminDashboard() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {appointments?.length > 0 ? (
-                      appointments.filter(appointment => {
-                        if (!searchQuery) return true;
-                        if (!appointment) return false;
-                        
-                        const searchLower = searchQuery.toLowerCase();
-                        const clientName = appointment?.user.name;
-                        const service = appointment?.appointmentType;
-                        
-                        return clientName.toLowerCase().includes(searchLower) ||
-                               service.toLowerCase().includes(searchLower);
-                      }).map((appointment) => (
+                    {paginatedAppointments.length > 0 ? (
+                      paginatedAppointments.map((appointment) => (
                         <TableRow key={appointment.id}>
                           {editingAppointmentId === appointment.id ? (
                             // --- Edit Mode ---
@@ -1093,6 +1152,11 @@ function AdminDashboard() {
                     )}
                   </TableBody>
                 </Table>
+                <Pagination
+                  currentPage={currentAppointmentPage}
+                  totalPages={totalAppointmentPages}
+                  onPageChange={setCurrentAppointmentPage}
+                />
               </div>
             )}
           </CardContent>

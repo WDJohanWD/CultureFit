@@ -2,6 +2,7 @@
 import { useState, useEffect, useContext } from "react"
 import { useTranslation } from "react-i18next"
 import { AuthContext } from "@/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 /*UTILIDADES */
 import { format, addDays, startOfDay, isBefore, isAfter, parseISO } from "date-fns"
@@ -28,6 +29,7 @@ export default function Appointment() {
   const { t } = useTranslation("appointments")
   const API_URL = (import.meta.env.VITE_API_URL + "/appointment") || "http://localhost:9000/appointment"
   const { user, fetchUser } = useContext(AuthContext)
+  const navigate = useNavigate();
 
   // --- Estados Generales ---
   const [date, setDate] = useState(startOfDay(new Date()))
@@ -594,6 +596,15 @@ export default function Appointment() {
                                       {t("cancel") || "Cancel"}
                                     </Button>
                                   )}
+
+                                  <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    className="ml-2"
+                                    onClick={() => navigate(`/appointment/${appointment.id}`)}
+                                  >
+                                    {t("seeMore")}
+                                  </Button>
                                 </div>
                               </div>
                             </div>
