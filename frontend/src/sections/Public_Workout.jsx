@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast"
 
-import { Trash2, Dumbbell } from "lucide-react";
+import { Trash2, Dumbbell, Loader2 } from "lucide-react";
 import { LuRotateCcw } from "react-icons/lu";
 import { IoReorderThreeOutline } from "react-icons/io5";
 
@@ -19,6 +19,7 @@ function Public_Workout({ id }) {
   const [items, setItems] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
   const [draggingId, setDraggingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const initialContainers = [
     { id: "1", title: t("monday"), color: "bg-orange-200" },
@@ -58,6 +59,8 @@ function Public_Workout({ id }) {
       setItems(transformedData);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -150,6 +153,8 @@ function Public_Workout({ id }) {
       placeholderIndex = containerItems.findIndex((i) => i.id === overId);
     }
 
+
+
     return (
       <div
         ref={setNodeRef}
@@ -186,6 +191,17 @@ function Public_Workout({ id }) {
       </div>
     );
   };
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center space-y-2">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-lg font-medium">{t("loading")}...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (exerciseList.length == 0)
     return (
