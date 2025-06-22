@@ -85,7 +85,7 @@ public class ExerciseController {
     })
     @Parameter(name = "id", description = "Id del ejercicio", required = true)
     @PostMapping("/exercise/upload-image/{id}")
-    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestParam MultipartFile image) throws IOException {
+    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) throws IOException {
         exerciseService.saveImage(image, id);
         return ResponseEntity.ok("The image has been uploaded successfully");
     }
