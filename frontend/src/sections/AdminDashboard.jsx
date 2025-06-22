@@ -253,14 +253,9 @@ function AdminDashboard() {
         const uploadResponse = await axios.post(
           `${API_URL}/exercise/upload-image/${id}`,
           formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
         );
 
-        if (!uploadResponse.status === 200) {
+        if (uploadResponse.status !== 200) {
           throw new Error("Failed to upload image");
         }
       }
