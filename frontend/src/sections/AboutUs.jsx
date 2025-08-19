@@ -97,7 +97,7 @@ function AboutUs() {
               key={index}
               position={marker.geocode}
               icon={customIcon}
-              title={marker.popUp}
+              title={t("gymName")}
             >
               <Popup>{t("gymName")}</Popup>
             </Marker>
