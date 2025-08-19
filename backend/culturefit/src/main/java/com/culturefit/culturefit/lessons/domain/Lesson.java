@@ -21,8 +21,10 @@ public class Lesson{
     private Long id;
     private String nameES;
     private String nameEN;
+    private String nameGL;
     private String descriptionES;
     private String descriptionEN;
+    private String descriptionGL;
     private String videoUrl;
     private String thumbnailUrl;
     private LocalDate uploadDate;
