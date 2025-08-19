@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -139,4 +140,19 @@ public class AuthController {
         userRepository.save(user);
         return ResponseEntity.ok("Successfully registered user");
     }
+
+    @Operation(summary = "Activar usuario", description = "Activar un usuario en la aplicación.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Usuario activado exitosamente", 
+            content = @Content(schema = @Schema(implementation = String.class))),
+        @ApiResponse(responseCode = "400", description = "El usuario no existe", 
+            content = @Content(schema = @Schema(implementation = String.class)))
+    })
+
+    @PostMapping("/activate/{id}")
+    public ResponseEntity<?> activateUser(@PathVariable Long id) {
+        User user = userService.getUser(id);
+        userService.activateUser(user);
+        return ResponseEntity.ok("Usuario activado exitosamente");
+    }   
 }

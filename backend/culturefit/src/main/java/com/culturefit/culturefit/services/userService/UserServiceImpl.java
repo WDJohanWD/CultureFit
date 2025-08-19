@@ -105,9 +105,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User activateUser(User user) {
-        user.setActive(true);
+        User userToActivate = getUser(user.getId());
+        userToActivate.setActive(true);
         try {
-            return userRepository.save(user);
+            return userRepository.save(userToActivate);
         } catch (Exception e) {
             throw new ErrorSavingUserException();
         }
