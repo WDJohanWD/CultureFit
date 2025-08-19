@@ -18,8 +18,9 @@
     "addExerciseDescription": "Engadir un novo exercicio á base de datos",
     "searchExercises": "Buscar exercicios",
     "image": "Imaxe",
-    "nameEs": "Nome (GL)",
+    "nameEs": "Nome (ES)",
     "nameEn": "Nome (EN)",
+    "nameGl": "Nome (GL)",
     "actions": "Accións",
     "NoExercisesFound": "Non se atoparon exercicios",
 
