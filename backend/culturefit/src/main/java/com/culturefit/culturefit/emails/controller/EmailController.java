@@ -63,12 +63,15 @@ public class EmailController {
     public ResponseEntity<?> confirmAccount(@RequestBody Map<String, String> request) {
         String token = request.get("token");
         try {
-            // Verifica el token
+
             DecodedJWT jwt = JWT.require(Algorithm.HMAC256(jwtSecretConfirmation))
                     .build()
                     .verify(token);
 
             String email = jwt.getSubject();
+            email = email.trim()
+                    .replaceAll("^\"+|\"+$", "");
+            System.out.println(email);
 
             User user = userService.getUserByEmail(email);
             userService.activateUser(user);

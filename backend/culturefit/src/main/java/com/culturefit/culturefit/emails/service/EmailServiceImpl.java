@@ -36,6 +36,10 @@ public class EmailServiceImpl implements EmailService {
     @Value("${jwt.secret}")
     private String jwtSecret;
 
+    @Value("${api.url.front}")
+    private String frontUrl;
+
+
     @Override
     public boolean sendEmail(String destination, String subject, String textMessage) {
         try {
@@ -55,7 +59,9 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public boolean sendConfirmationEmail(String toEmail) {
         String token = generateToken(toEmail);
-        String confirmationUrl = "http://localhost:5173/confirm-account/" + token;
+
+        String confirmationUrl = frontUrl + "/confirm-account/" + token;
+
 
         try {
             MimeMessage message = sender.createMimeMessage();
@@ -124,7 +130,7 @@ public class EmailServiceImpl implements EmailService {
     @Override
     public boolean sendEmailResetPassword(String toEmail) {
         String token = generateToken(toEmail);
-        String resetUrl = "http://localhost:5173/reset-password/" + token;
+        String resetUrl = frontUrl + "/reset-password/" + token;
 
         try {
             MimeMessage message = sender.createMimeMessage();
@@ -167,6 +173,6 @@ public class EmailServiceImpl implements EmailService {
                 .withSubject(email)
                 .withIssuedAt(new Date())
                 .withExpiresAt(new Date(System.currentTimeMillis() + 3600000))
-                .sign(Algorithm.HMAC256(jwtSecret));
+                .sign(Algorithm.HMAC256(jwtSecretConfirmation));
     }
 }

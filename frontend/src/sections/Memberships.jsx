@@ -43,11 +43,12 @@ function Memberships() {
 
   // Metodo para redirigir al checkout-session
   const handleCheckout = async (priceId) => {
+    const stripeId = user?.stripeId
     setIsLoading(true)
     const CHECKOUT_SESSION_URL = `${API_URL}/payments/create-checkout-session/`
 
     try {
-      const response = await fetch(CHECKOUT_SESSION_URL + priceId, {
+      const response = await fetch(CHECKOUT_SESSION_URL + priceId + "/"+ stripeId, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

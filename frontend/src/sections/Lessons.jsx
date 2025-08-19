@@ -97,7 +97,7 @@ function Lessons() {
         method: "POST",
         body: formData,
         headers: {
-          Authorization: `Bearer ${token}`,
+          //Authorization: `Bearer ${token}`,
         },
       });
 
@@ -135,7 +135,7 @@ function Lessons() {
       const response = await fetch(`${API_URL}/delete-lesson/${lessonId}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
+          //Authorization: `Bearer ${token}`,
         },
       });
 
@@ -257,6 +257,7 @@ function Lessons() {
             </form>
           </div>
         )}
+        {user.role == "USER" || user.role == "ANONYMOUS"  ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
         <div className="mt-10 text-4xl font-bold montserrat uppercase mb-10">
           {t("lessons")}
         </div>
@@ -303,8 +304,10 @@ function Lessons() {
                 ))}
               </div>
             )}
+            
           </CardContent>
         </Card>
+        </>}
       </div>
 
       <LessonModal

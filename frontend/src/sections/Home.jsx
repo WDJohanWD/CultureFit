@@ -55,20 +55,20 @@ function Home() {
   )
 
   const slideImgs = [
-    "fondo1.webp",
-    "fondo2.webp",
-    "fondo3.webp"
+    "fondo1.jpg",
+    "fondo2.jpg",
+    "fondo3.jpg"
   ];
 
   return (
     <div className="montserrat">
       <div className="relative w-full mx-auto -mt-20">
-        <div ref={sliderRef} className="keen-slider mb-15 shadow-xl">
+        <div ref={sliderRef} className="keen-slider mb-15 shadow-xl" style={{boxShadow: 'inset 0 0 0px 10px black'}}>
           {[...Array(3)].map((_, idx) => (
             <div
               key={idx}
-              className={`keen-slider__slide flex items-center justify-center text-white text-4xl font-medium h-72`}
-              style={{ backgroundImage: `url(${slideImgs[idx]})`, backgroundSize: 'cover', height: '100vh', width: '100vh', backgroundPosition: 'center' }}
+              className={`keen-slider__slide flex items-center justify-center text-white brightness-50 text-4xl blur-[2px] saturate-75 grayscale-50 font-medium h-72`}
+              style={{ backgroundImage: `url(${slideImgs[idx]})`, backgroundSize: 'cover', height: '100vh', width: '100vh', backgroundPosition: 'center'}}
             >
             </div>
           ))}
@@ -87,7 +87,7 @@ function Home() {
             )}
           </div>
         )}
-        <div className="text-white text-center text-4xl font-medium h-72 absolute top-1/2 left-1/2 -translate-x-1/2 select-none pointer-events-none">
+        <div className="text-center text-5xl montserat font-bold text-white h-72 absolute top-1/2 left-1/2 -translate-x-1/2 select-none pointer-events-none">
           {t("welcome")}
         </div>
       </div>

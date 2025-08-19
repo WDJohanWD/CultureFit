@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/components/ui/use-toast"
 
-import { Trash2, Dumbbell } from "lucide-react";
+import { Trash2, Dumbbell, Loader2 } from "lucide-react";
 import { LuRotateCcw } from "react-icons/lu";
 import { IoReorderThreeOutline } from "react-icons/io5";
 
@@ -19,6 +19,8 @@ function Public_Workout({ id }) {
   const [items, setItems] = useState([]);
   const [exerciseList, setExerciseList] = useState([]);
   const [draggingId, setDraggingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [exercisesLoading, setExercisesLoading] = useState(true);
 
   const initialContainers = [
     { id: "1", title: t("monday"), color: "bg-orange-200" },
@@ -58,22 +60,31 @@ function Public_Workout({ id }) {
       setItems(transformedData);
     } catch (error) {
       console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function getExercises() {
-    const response = await fetch(`${API_URL}/exercise`);
-    if (!response.ok) {
-      throw new Error("An error ocurred while fetching");
+    try {
+      const response = await fetch(`${API_URL}/exercise`);
+      if (!response.ok) {
+        throw new Error("An error ocurred while fetching");
+      }
+      const data = await response.json();
+      setExerciseList(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setExercisesLoading(false);
     }
-    const data = await response.json();
-    setExerciseList(data);
   }
+
 
   useEffect(() => {
     getExercises();
   }, []);
-  
+
   const DraggableItem = ({ id, content, sets, exercise, isDragging }) => {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({
       id,
@@ -82,13 +93,13 @@ function Public_Workout({ id }) {
 
     const style = transform
       ? {
-          transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
-          touchAction: "none",
-          opacity: 0.8,
-        }
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+        touchAction: "none",
+        opacity: 0.8,
+      }
       : {
-          touchAction: "none",
-        };
+        touchAction: "none",
+      };
 
     return (
       <div
@@ -102,27 +113,27 @@ function Public_Workout({ id }) {
       >
         <div className="flex transition-all duration-200 delay-100 flex-col justi">
 
-            <span className="text-sm flex xl:grid xl:grid-cols-[20%_60%_20%] w-full gap-x-3 xl:gap-x-0 delay:20 items-center">
-              <Avatar className="h-7 w-7 shadow me-1">
-                <AvatarImage
-                  src={`${API_URL}${exerciseList[exercise-1].imageUrl}`}
-                  alt="ejercicio"
-                  className="object-cover"
-                  loading="lazy"
-                />
-                <AvatarFallback className="text-2xl p-2 bg-primary/10 text-primary">
-                  <Dumbbell></Dumbbell>
-                </AvatarFallback>
-              </Avatar>
-              <div className="xl:ms-3">
-                {currentExercise[t("exerciseName")]}
-              </div>
-              <div className="font-bold text-right">
-                {sets}
-              </div>
-            </span>
-          </div>
-        
+          <span className="text-sm flex xl:grid xl:grid-cols-[20%_60%_20%] w-full gap-x-3 xl:gap-x-0 delay:20 items-center">
+            <Avatar className="h-7 w-7 shadow me-1">
+              <AvatarImage
+                src={currentExercise?.imageUrl ? `${API_URL}${currentExercise.imageUrl}` : ''}
+                alt="ejercicio"
+                className="object-cover"
+                loading="lazy"
+              />
+              <AvatarFallback className="text-2xl p-2 bg-primary/10 text-primary">
+                <Dumbbell></Dumbbell>
+              </AvatarFallback>
+            </Avatar>
+            <div className="xl:ms-3">
+              {currentExercise[t("exerciseName")]}
+            </div>
+            <div className="font-bold text-right">
+              {sets}
+            </div>
+          </span>
+        </div>
+
       </div>
     );
   };
@@ -150,12 +161,13 @@ function Public_Workout({ id }) {
       placeholderIndex = containerItems.findIndex((i) => i.id === overId);
     }
 
+
+
     return (
       <div
         ref={setNodeRef}
-        className={`${
-          activeId ? "" : "hover:bg-gray-100"
-        } w-full h-full xl:h-100 px-2 py-4 transition-all`}
+        className={`${activeId ? "" : "hover:bg-gray-100"
+          } w-full h-full xl:h-100 px-2 py-4 transition-all`}
       >
         <h3 className="mb-2 uppercase font-bold">{title}:</h3>
         {containerItems
@@ -176,16 +188,26 @@ function Public_Workout({ id }) {
           activeId &&
           placeholderIndex === -1 && (
             <div
-              className={`h-9 bg-orange-300 opacity-50 rounded-lg mb-10 ${
-                originId === id
-                  ? "transform -translate-y-10 transition-transform"
-                  : ""
-              }`}
+              className={`h-9 bg-orange-300 opacity-50 rounded-lg mb-10 ${originId === id
+                ? "transform -translate-y-10 transition-transform"
+                : ""
+                }`}
             />
           )}
       </div>
     );
   };
+
+  if (isLoading || exercisesLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center space-y-2">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-lg font-medium">{t("loading")}...</p>
+        </div>
+      </div>
+    )
+  }
 
   if (exerciseList.length == 0)
     return (

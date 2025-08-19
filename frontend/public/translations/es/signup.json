@@ -14,5 +14,15 @@
     "birthDate": "Fecha de nacimiento",
     "goHome": "Ir a inicio",
     "verificationSentTitle": "Correo de verificación enviado",
-    "verificationSentMsg": "Por favor, revisa tu correo electrónico para verificar tu cuenta."
+    "verificationSentMsg": "Por favor, revisa tu correo electrónico para verificar tu cuenta.",
+    "passLengthError": "Tu contraseña debe ser de entre 6 y 40 caracteres",
+    "dniError": "El DNI es incorrecto",
+    "ageError": "Debes tener al menos 18 años",
+    "defaultError": "Ha habido un error con el registro, por favor inténtalo más tarde",
+    "dniRequired": "El DNI es obligatorio",
+    "birthDateRequired": "La fecha de nacimiento es obligatoria",
+    "passLowercaseError": "La contraseña debe contener al menos una letra minúscula",
+    "passUppercaseError": "La contraseña debe contener al menos una letra mayúscula",
+    "passNumberError": "La contraseña debe contener al menos un número",
+    "processing": "Procesando..."
 }

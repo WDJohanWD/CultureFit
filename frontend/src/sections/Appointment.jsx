@@ -2,6 +2,7 @@
 import { useState, useEffect, useContext } from "react"
 import { useTranslation } from "react-i18next"
 import { AuthContext } from "@/AuthContext"
+import { useNavigate } from "react-router-dom"
 
 /*UTILIDADES */
 import { format, addDays, startOfDay, isBefore, isAfter, parseISO } from "date-fns"
@@ -28,6 +29,7 @@ export default function Appointment() {
   const { t } = useTranslation("appointments")
   const API_URL = (import.meta.env.VITE_API_URL + "/appointment") || "http://localhost:9000/appointment"
   const { user, fetchUser } = useContext(AuthContext)
+  const navigate = useNavigate();
 
   // --- Estados Generales ---
   const [date, setDate] = useState(startOfDay(new Date()))
@@ -51,17 +53,21 @@ export default function Appointment() {
   const [paymentError, setPaymentError] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
 
+  const [activeTab, setActiveTab] = useState("book")
 
   // ==========================
   // = Función: Comprar Cupones =
   // ==========================
   const handlePurchaseCoupons = async (amount) => {
-    try {
-      setIsProcessing(true)
-      setPaymentError("")
-      setPaymentSuccess(false)
+    if (!user?.id) {
+      setPaymentError(t("mustBeLoggedIn"))
+      return
+    }
+    setIsProcessing(true)
+    setPaymentError("")
 
-      // Aquí llamas a tu endpoint de compra en el backend
+    try {
+
       const response = await fetch(`${API_URL}/buy-coupon`, {
         method: "POST",
         headers: {
@@ -71,19 +77,23 @@ export default function Appointment() {
           userId: user.id,
           quantity: amount
         }),
-      });
-      await fetchUser(user.id);
-      setPaymentSuccess(true)
-      setSelectedCouponAmount(null)
+      })
 
+      if (!response.ok) {
+        throw new Error("Failed to create payment session")
+      }
 
-    } catch (err) {
-      setPaymentError(t("purchaseFailed") || "Something went wrong.")
+      const data = await response.json()
+      
+      window.location.href = data.checkoutUrl
+      
+    } catch (error) {
+      console.error("Error purchasing coupons:", error)
+      setPaymentError(t("errorPurchasing"))
     } finally {
       setIsProcessing(false)
     }
   }
-
 
   // = Fetch: Servicios Disponibles =
   useEffect(() => {
@@ -106,36 +116,26 @@ export default function Appointment() {
   }, [API_URL, t])
 
 
-  // ==========================
-  // = Fetch: Citas del Usuario =
-  // ==========================
-  useEffect(() => {
-    const fetchUserAppointments = async () => {
-      try {
-        setIsLoadingAppointments(true)
-        const response = await fetch(`${API_URL}/byuser/${user.id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json"
-          },
-        })
+  const fetchUserAppointments = async () => {
+    try {
+      setIsLoadingAppointments(true)
+      const response = await fetch(`${API_URL}/byuser/${user.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        },
+      })
 
-        if (!response.ok) throw new Error("Failed to fetch appointments")
+      if (!response.ok) throw new Error("Failed to fetch appointments")
 
-        const data = await response.json()
-        setUserAppointments(data)
-      } catch (err) {
-        console.error("Error fetching user appointments:", err)
-      } finally {
-        setIsLoadingAppointments(false)
-      }
+      const data = await response.json()
+      setUserAppointments(data)
+    } catch (err) {
+      console.error("Error fetching user appointments:", err)
+    } finally {
+      setIsLoadingAppointments(false)
     }
-
-    if (user?.id) {
-      fetchUserAppointments()
-    }
-  }, [user?.id])
-
+  }
 
   // ==========================
   // = Fetch: Horarios Disponibles por Día =
@@ -164,9 +164,17 @@ export default function Appointment() {
     fetchSlotsFromBackend()
   }, [date])
 
+  useEffect(() => {
+    if (activeTab === "my-appointments" && user?.id) {
+      fetchUserAppointments();
+    }
+  }, [activeTab, user?.id]);
 
   // = Acción: Reservar Cita =
   const handleBookAppointment = async () => {
+    setError(null);
+    setSuccess(false);
+
     if (!selectedTimeSlot || !selectedService) {
       setError(t("pleaseSelectTimeAndService") || "Please select a time slot and service")
       return
@@ -197,23 +205,33 @@ export default function Appointment() {
 
       if (!response.ok) throw new Error("Failed to book appointment")
 
-      const newAppointment = await response.json()
+      let newAppointment = null;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        newAppointment = await response.json();
+      } else {
+        await response.text();
+      }
 
       setSuccess(true)
-      setConfirmDialog(false)
+      setError(null)
       setSelectedTimeSlot(null)
       setSelectedService("")
       setNotes("")
-      setUserAppointments((prev) => [...prev, newAppointment])
+      if (newAppointment) {
+        setUserAppointments((prev) => [...prev, newAppointment])
+      }
       fetchUser(user.id);
+      setConfirmDialog(false)
     } catch (err) {
       console.error("Error booking appointment:", err)
       setError(t("errorBookingAppointment") || "Error al reservar la cita")
+      setSuccess(false)
+      setConfirmDialog(false)
     } finally {
       setIsLoading(false)
     }
   }
-
 
   // = Acción: Cancelar Cita =
   const handleCancelAppointment = async (appointmentId) => {
@@ -240,7 +258,6 @@ export default function Appointment() {
     }
   }
 
-
   // = Utilidad: Formatear Fecha =
   const formatAppointmentDate = (dateString) => {
     try {
@@ -251,7 +268,6 @@ export default function Appointment() {
       return dateString
     }
   }
-
 
   // = Render: Estado de Carga =
   if (isLoading && services.length === 0) {
@@ -265,33 +281,92 @@ export default function Appointment() {
     )
   }
 
+  const renderCouponPurchaseSection = () => {
+    return (
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle>{t("purchaseCoupons")}</CardTitle>
+          <CardDescription>{t("purchaseCouponsDesc")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <Select
+              value={selectedCouponAmount?.toString()}
+              onValueChange={(value) => setSelectedCouponAmount(parseInt(value))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder={t("selectAmount")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1">1 {t("coupon")}</SelectItem>
+                <SelectItem value="5">5 {t("coupons")}</SelectItem>
+                <SelectItem value="10">10 {t("coupons")}</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {paymentError && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>{t("error")}</AlertTitle>
+                <AlertDescription>{paymentError}</AlertDescription>
+              </Alert>
+            )}
+
+            <Button 
+              onClick={() => handlePurchaseCoupons(selectedCouponAmount)}
+              disabled={!selectedCouponAmount || isProcessing}
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("processing")}
+                </>
+              ) : (
+                t("purchase")
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    )
+  }
+
+
+  const openConfirmDialog = () => {
+    setError(null);
+    setSuccess(false);
+    setIsLoading(false);
+    setConfirmDialog(true);
+  };
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setError(null);
+    setSuccess(false);
+    setIsLoading(false);
+  }
+
   return (
     <div className="container mx-auto py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
+        {user.role == "USER" || user.role == "ANONYMOUS" ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
         <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl mb-8">
           {t("appointmentsTitle") || "Appointments"}
         </h1>
+        
 
-        <Tabs defaultValue="book" className="w-full">
+
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger
-              value="buy-coupons"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
+            <TabsTrigger value="buy-coupons">
               <CreditCard className="h-4 w-4 mr-2" />
               {t("buyCoupons") || "Buy Coupons"}
             </TabsTrigger>
-            <TabsTrigger
-              value="book"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
+            <TabsTrigger value="book">
               <CalendarIcon className="h-4 w-4 mr-2" />
               {t("bookAppointment") || "Book Appointment"}
             </TabsTrigger>
-            <TabsTrigger
-              value="my-appointments"
-              className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
+            <TabsTrigger value="my-appointments">
               <Clock className="h-4 w-4 mr-2" />
               {t("myAppointments") || "My Appointments"}
             </TabsTrigger>
@@ -427,7 +502,7 @@ export default function Appointment() {
               <CardFooter className="flex justify-end space-x-2">
                 <Button
                   disabled={!selectedTimeSlot || !selectedService || isLoading}
-                  onClick={() => setConfirmDialog(true)}
+                  onClick={openConfirmDialog}
                 >
                   {isLoading ? (
                     <>
@@ -521,6 +596,15 @@ export default function Appointment() {
                                       {t("cancel") || "Cancel"}
                                     </Button>
                                   )}
+
+                                  <Button
+                                    variant="secondary"
+                                    size="sm"
+                                    className="ml-2"
+                                    onClick={() => navigate(`/appointment/${appointment.id}`)}
+                                  >
+                                    {t("seeMore")}
+                                  </Button>
                                 </div>
                               </div>
                             </div>
@@ -579,7 +663,7 @@ export default function Appointment() {
                     >
                       <span className="text-3xl font-bold">{count}</span>
                       <span className="text-muted-foreground text-sm mt-1">
-                        ${count * 5} USD
+                        {count * 15}€
                       </span>
                     </Button>
                   ))}
@@ -678,6 +762,7 @@ export default function Appointment() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </>}
       </div>
     </div>
   )

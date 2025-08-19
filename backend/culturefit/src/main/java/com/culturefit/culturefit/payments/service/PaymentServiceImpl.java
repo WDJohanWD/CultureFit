@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.culturefit.culturefit.domains.MembershipEnum;
 import com.culturefit.culturefit.domains.Role;
 import com.culturefit.culturefit.domains.User;
 import com.culturefit.culturefit.exceptions.paymentExceptions.StripePaymentException;
@@ -42,9 +43,8 @@ public class PaymentServiceImpl implements PaymentService {
     public Session createCheckoutSession(String priceId, String stripeId) throws StripeException {
         try {
             SessionCreateParams params = SessionCreateParams.builder()
-                    // TODO: Cambiar urls de exito y de cancelación
-                    .setSuccessUrl("https://example.com/success")
-                    .setCancelUrl("https://example.com/cancel")
+                    .setSuccessUrl("https://culturefit.lareira.digital/payment-success")
+                    .setCancelUrl("https://culturefit.lareira.digital/payment-error")
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setPrice(priceId)
@@ -63,9 +63,8 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             User user = userRepository.findByStripeId(stripeId).orElseThrow();
             SessionCreateParams params = SessionCreateParams.builder()
-                    // TODO: Cambiar urls de exito y de cancelación
-                    .setSuccessUrl("https://example.com/success")
-                    .setCancelUrl("https://example.com/cancel")
+                    .setSuccessUrl("https://culturefit.lareira.digital/payment-success")
+                    .setCancelUrl("https://culturefit.lareira.digital/payment-error")
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setPrice(priceId)
@@ -102,6 +101,7 @@ public class PaymentServiceImpl implements PaymentService {
             subscription.cancel();
         }
 
+        user.setMembership(null);
         user.setRole(Role.USER);
         userRepository.save(user);
     }
@@ -137,8 +137,24 @@ public class PaymentServiceImpl implements PaymentService {
             } else if (session != null && session.getSubscription() != null) {
                 String stripeId = session.getCustomer();
                 User user = userRepository.findByStripeId(stripeId).orElseThrow();
-                user.setRole(Role.SUBSCRIBER);
-                userRepository.save(user);
+
+                String subscriptionId = session.getSubscription();
+                try {
+                    Subscription subscription = Subscription.retrieve(subscriptionId);
+                    String priceId = subscription.getItems().getData().get(0).getPrice().getId();
+                    
+                    if ("price_1R4jFS2esfOHTwEzogii8lfq".equals(priceId)) {
+                        user.setMembership(MembershipEnum.BASIC);
+                    } else if ("price_1R4jNE2esfOHTwEzlJUbL54J".equals(priceId)) {
+                        user.setMembership(MembershipEnum.PLUS);
+                    } else if ("price_1R4jRN2esfOHTwEzAfcJXAOi".equals(priceId)) {
+                        user.setMembership(MembershipEnum.ELITE);
+                    }
+                    user.setRole(Role.SUBSCRIBER);
+                    userRepository.save(user);
+                } catch (StripeException e) {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al recuperar la suscripción de Stripe");
+                }
             }
         }
 

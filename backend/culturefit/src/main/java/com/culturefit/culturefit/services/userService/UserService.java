@@ -58,4 +58,12 @@ public interface UserService {
     void rejectFriendRequest(Long receiverId, Long senderId);
 
     void removeFriend(Long userId, Long friendId);
+
+    void setUserBasic(Long userId);
+
+    void setUserPlus(Long userId);
+
+    void setUserElite(Long userId);
+
+    void updateCouponsMonthly();
 }

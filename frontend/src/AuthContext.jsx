@@ -23,7 +23,6 @@ const AuthProvider = ({ children }) => {
             roles = rawRoles;
           }
 
-          console.log("Decoded roles:", roles);
           setIsAdmin(roles.includes("ROLE_ADMIN"));
           await fetchUser(decoded?.sub);
         } catch (error) {

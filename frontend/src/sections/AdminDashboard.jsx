@@ -7,13 +7,39 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Dialog,  DialogContent,  DialogDescription,  DialogFooter,  DialogHeader,  DialogTitle,} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/components/ui/dialog"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Label } from "@/components/ui/label"
 
 
 import { Pencil, Trash2, Search, AlertCircle, Loader2, Camera, Dumbbell } from "lucide-react"
 import axios from "axios"
+
+function Pagination({ currentPage, totalPages, onPageChange }) {
+  return (
+    <div className="flex justify-center items-center gap-2 my-4">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        {"<"}
+      </Button>
+      <span>
+        {currentPage} / {totalPages}
+      </span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages || totalPages === 0}
+      >
+        {">"}
+      </Button>
+    </div>
+  );
+}
 
 function AdminDashboard() {
   const { t } = useTranslation("adminDashboard")
@@ -42,6 +68,30 @@ function AdminDashboard() {
   })
   const [tempExerciseImage, setTempExerciseImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
+
+  const [appointments, setAppointments] = useState([])
+  const [isLoadingAppointments, setIsLoadingAppointments] = useState(true)
+  const [appointmentError, setAppointmentError] = useState(null)
+  const [editingAppointmentId, setEditingAppointmentId] = useState(null)
+  const [appointmentFormData, setAppointmentFormData] = useState({})
+  const [confirmDeleteAppointment, setConfirmDeleteAppointment] = useState(null)
+
+  const [services, setServices] = useState([])
+  const [isLoadingServices, setIsLoadingServices] = useState(true)
+
+  const [memberships, setMemberships] = useState([])
+  const [isLoadingMemberships, setIsLoadingMemberships] = useState(true)
+
+  // --- Estados de paginación ---
+  // Usuarios
+  const [currentMemberPage, setCurrentMemberPage] = useState(1);
+  const [membersPerPage] = useState(10);
+  // Ejercicios
+  const [currentExercisePage, setCurrentExercisePage] = useState(1);
+  const [exercisesPerPage] = useState(10);
+  // Citas
+  const [currentAppointmentPage, setCurrentAppointmentPage] = useState(1);
+  const [appointmentsPerPage] = useState(10);
 
   // --- Función para Cargar Miembros ---
   const fetchMembersData = async () => {
@@ -78,12 +128,62 @@ function AdminDashboard() {
     }
   }
 
-  // --- Carga Inicial de Datos ---
+  const fetchAppointmentData = async () => {
+    try {
+      const appointmentsFetch = await fetch(`${API_URL}/appointment/all`)
+      if (!appointmentsFetch.ok) {
+        throw new Error(`Failed to fetch appointments: ${appointmentsFetch.statusText}`)
+      }
+      const data = await appointmentsFetch.json()
+      setAppointments(data)
+    } catch (error) {
+      console.error("Error fetching appointments:", error)
+      setAppointmentError(error.message)
+      setAppointments([])
+    } finally {
+      setIsLoadingAppointments(false)
+    }
+  }
+
+  const fetchServices = async () => {
+    try {
+      const servicesFetch = await fetch(`${API_URL}/appointment/services`)
+      if (!servicesFetch.ok) {
+        throw new Error('Failed to fetch services')
+      }
+      const data = await servicesFetch.json()
+      setServices(data)
+    } catch (error) {
+      console.error("Error fetching services:", error)
+    } finally {
+      setIsLoadingServices(false)
+    }
+  }
+
+  const fetchMemberships = async () => {
+    try {
+      const res = await fetch(`${API_URL}/memberships`)
+      if (!res.ok) throw new Error('Failed to fetch memberships')
+      const data = await res.json()
+      setMemberships(data)
+    } catch (error) {
+      console.error('Error fetching memberships:', error)
+    } finally {
+      setIsLoadingMemberships(false)
+    }
+  }
+
   useEffect(() => {
     setIsLoading(true)
     setIsLoadingExercises(true)
+    setIsLoadingAppointments(true)
+    setIsLoadingServices(true)
+    setIsLoadingMemberships(true)
     fetchMembersData()
     fetchExercisesData()
+    fetchAppointmentData()
+    fetchServices()
+    fetchMemberships()
   }, [])
 
   // --- Función para Borrar Miembro ---
@@ -121,6 +221,23 @@ function AdminDashboard() {
     }
   }
 
+  async function deleteAppointment(id) {
+    try {
+      const deleteFetch = await fetch(`${API_URL}/appointment/${id}`, {
+        method: "DELETE",
+      })
+      if (!deleteFetch.ok) {
+        throw new Error(`Failed to delete appointment: ${deleteFetch.statusText}`)
+      }
+      console.log(`Appointment ${id} deleted`)
+      setConfirmDeleteAppointment(null)
+      fetchAppointmentData()
+    } catch (error) {
+      console.error("Error deleting appointment:", error)
+      setAppointmentError(`Error deleting appointment: ${error.message}`)
+    }
+  }
+
   const handleEditExerciseClick = (exercise) => {
     setEditingExerciseId(exercise.id)
     setExerciseFormData({
@@ -143,17 +260,17 @@ function AdminDashboard() {
     }))
   }
 
-  const handleExerciseImageUpload = async (event) =>{
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setImagePreview(reader.result);
-        };
-        reader.readAsDataURL(file);
-        
-        setTempExerciseImage(file);
-      }
+  const handleExerciseImageUpload = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+
+      setTempExerciseImage(file);
+    }
   }
 
   const handleNewExerciseInputChange = (event) => {
@@ -173,14 +290,9 @@ function AdminDashboard() {
         const uploadResponse = await axios.post(
           `${API_URL}/exercise/upload-image/${id}`,
           formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
         );
 
-        if (!uploadResponse.status === 200) {
+        if (uploadResponse.status !== 200) {
           throw new Error("Failed to upload image");
         }
       }
@@ -243,12 +355,67 @@ function AdminDashboard() {
     setEditFormData({
       name: member.name,
       email: member.email,
+      dni: member.dni,
       role: member.role,
       birthDate: member.birthDate || "",
       active: member.active,
+      membership: member.membership // debe ser string, no índice
     })
   }
 
+  const handleAppointmentInputChange = (event) => {
+    const { name, value } = event.target
+    setAppointmentFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }))
+  }
+
+  const handleEditAppointmentClick = (appointment) => {
+    setEditingAppointmentId(appointment.id)
+    setAppointmentFormData({
+      clientName: appointment.user?.name,
+      service: appointment.appointmentType,
+      date: appointment.date,
+      time: appointment.time,
+      isCanceled: Boolean(appointment.isCanceled)
+    })
+  }
+
+  const handleCancelAppointmentEdit = () => {
+    setEditingAppointmentId(null)
+    setAppointmentFormData({})
+  }
+
+  const handleSaveAppointmentEdit = async (id) => {
+    try {
+      const response = await fetch(`${API_URL}/appointment/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          appointmentType: appointmentFormData.service,
+          date: appointmentFormData.date,
+          time: appointmentFormData.time,
+          isCanceled: appointmentFormData.isCanceled
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to update appointment")
+      }
+
+      // Recargar los datos
+      await fetchAppointmentData()
+        // Limpiar el estado de edición
+      setEditingAppointmentId(null)
+      setAppointmentFormData({})
+    } catch (error) {
+      console.error("Error updating appointment:", error)
+    }
+  }
+  
   const handleCancelEdit = () => {
     setEditingMemberId(null)
     setEditFormData({})
@@ -265,10 +432,14 @@ function AdminDashboard() {
   // --- Función para Guardar Cambios ---
   async function handleSaveEdit(id) {
     try {
+      const payload = {
+        ...editFormData,
+        membership: editFormData.membership 
+      };
       const response = await fetch(`${API_URL}/user-edit/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editFormData),
+        body: JSON.stringify(payload),
       })
       if (!response.ok) {
         let errorBody = ""
@@ -288,18 +459,70 @@ function AdminDashboard() {
     }
   }
 
-  const filteredExercises = exercises.filter(
-    (exercise) =>
-      (exercise.nameES?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()) ||
-      (exercise.nameEN?.toLowerCase() || "").includes(exerciseSearchQuery.toLowerCase()),
-  )
+  // Helper function to safely filter strings
+  const safeStringIncludes = (text, search) => {
+    if (!text || !search) return false;
+    return String(text).toLowerCase().includes(search.toLowerCase());
+  };
 
-  // --- Filtrado ---
-  const filteredMembers = members.filter(
-    (member) =>
-      (member.name?.toLowerCase() || "").includes(searchQuery.toLowerCase()) ||
-      (member.email?.toLowerCase() || "").includes(searchQuery.toLowerCase()),
-  )
+  // Safe filtering for appointments
+  const filteredAppointments = (appointments || []).filter((appointment) => {
+    if (!searchQuery) return true;
+    if (!appointment) return false;
+    
+    const clientName = appointment?.clientName || '';
+    const service = appointment?.service || '';
+    const status = appointment?.status || '';
+    const date = appointment?.date || '';
+    
+    const searchLower = searchQuery.toLowerCase();
+    
+    return clientName.toLowerCase().includes(searchLower) ||
+           service.toLowerCase().includes(searchLower) ||
+           status.toLowerCase().includes(searchLower) ||
+           date.toLowerCase().includes(searchLower);
+  });
+
+  // Safe filtering for members
+  const filteredMembers = (members || []).filter((member) => {
+    if (!searchQuery) return true;
+    if (!member) return false;
+    
+    return safeStringIncludes(member.name, searchQuery) ||
+           safeStringIncludes(member.email, searchQuery) ||
+           safeStringIncludes(member.dni, searchQuery);
+  });
+
+  // Safe filtering for exercises
+  const filteredExercises = (exercises || []).filter((exercise) => {
+    if (!exerciseSearchQuery) return true;
+    if (!exercise) return false;
+    
+    return safeStringIncludes(exercise.nameES, exerciseSearchQuery) ||
+           safeStringIncludes(exercise.nameEN, exerciseSearchQuery);
+  }) || [];
+
+  // --- Lógica de paginación ---
+  // Usuarios
+  const paginatedMembers = filteredMembers.slice(
+    (currentMemberPage - 1) * membersPerPage,
+    currentMemberPage * membersPerPage
+  );
+  const totalMemberPages = Math.ceil(filteredMembers.length / membersPerPage);
+
+  // Ejercicios
+  const paginatedExercises = filteredExercises.slice(
+    (currentExercisePage - 1) * exercisesPerPage,
+    currentExercisePage * exercisesPerPage
+  );
+  const totalExercisePages = Math.ceil(filteredExercises.length / exercisesPerPage);
+
+  // Citas
+  const paginatedAppointments = filteredAppointments.slice(
+    (currentAppointmentPage - 1) * appointmentsPerPage,
+    currentAppointmentPage * appointmentsPerPage
+  );
+  const totalAppointmentPages = Math.ceil(filteredAppointments.length / appointmentsPerPage);
 
   // --- Renderizado ---
   if (isLoading) {
@@ -315,8 +538,8 @@ function AdminDashboard() {
 
   return (
     <>
-      <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl">{t("h1")}</h1>
-      <Card className="w-full">
+      <h1 className="text-4xl font-semibold tracking-tight m-5 text-balance text-gray-900 sm:text-5xl">{t("h1")}</h1>
+      <Card className="w-auto m-5">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">{t("title")}</CardTitle>
         </CardHeader>
@@ -355,8 +578,8 @@ function AdminDashboard() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredMembers.length > 0 ? (
-                  filteredMembers.map((member) => (
+                {paginatedMembers.length > 0 ? (
+                  paginatedMembers.map((member) => (
                     <TableRow key={member.id}>
                       {editingMemberId === member.id ? (
                         // --- Modo Edición ---
@@ -393,18 +616,22 @@ function AdminDashboard() {
                             />
                           </TableCell>
                           <TableCell>
-                          <Select 
-                              name="plan"
-                              value={editFormData.plan}
-                              onValueChange={(value) => handleInputChange({ target: { name: 'plan', value }})}
+                            <Select
+                              name="membership"
+                              value={editFormData.membership}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'membership', value } })}
                               className="w-full"
-                              readOnly
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder={editFormData.plan} />
+                                <SelectValue placeholder={editFormData.membership} />
                               </SelectTrigger>
+                              <SelectContent>
+                                {memberships.map((m) => (
+                                  <SelectItem key={m} value={m}>{m}</SelectItem>
+                                ))}
+                              </SelectContent>
                             </Select>
-                            
+
                           </TableCell>
                           <TableCell>
                             <Input
@@ -420,7 +647,7 @@ function AdminDashboard() {
                             <Select
                               name="active"
                               value={editFormData.active ? "true" : "false"}
-                              onValueChange={(value) => handleInputChange({ target: { name: 'active', value: value === "true" }})}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'active', value: value === "true" } })}
                               className="w-full"
                             >
                               <SelectTrigger>
@@ -445,10 +672,10 @@ function AdminDashboard() {
                             </Select>
                           </TableCell>
                           <TableCell>
-                            <Select 
+                            <Select
                               name="role"
                               value={editFormData.role}
-                              onValueChange={(value) => handleInputChange({ target: { name: 'role', value }})}
+                              onValueChange={(value) => handleInputChange({ target: { name: 'role', value } })}
                               className="w-full"
                             >
                               <SelectTrigger>
@@ -483,7 +710,7 @@ function AdminDashboard() {
                           <TableCell>{member.name}</TableCell>
                           <TableCell>{member.email}</TableCell>
                           <TableCell>{member.dni} </TableCell>
-                          <TableCell>{member.plan} </TableCell>
+                          <TableCell>{member.membership} </TableCell>
                           <TableCell>{member.birthDate || "-"}</TableCell>
                           <TableCell>
                             <Badge variant={member.active ? "success" : "destructive"} className="font-medium">
@@ -526,6 +753,11 @@ function AdminDashboard() {
                 )}
               </TableBody>
             </Table>
+            <Pagination
+              currentPage={currentMemberPage}
+              totalPages={totalMemberPages}
+              onPageChange={setCurrentMemberPage}
+            />
           </div>
         </CardContent>
 
@@ -549,7 +781,7 @@ function AdminDashboard() {
       </Card>
 
       {/* Exercise Management Card */}
-      <Card className="w-full mt-8">
+      <Card className="w-auto m-5">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-3xl font-bold">{t("exercisesTitle") || "Exercise Management"}</CardTitle>
           <Button onClick={() => setShowAddExerciseDialog(true)}>{t("addExercise") || "Add Exercise"}</Button>
@@ -593,8 +825,8 @@ function AdminDashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredExercises.length > 0 ? (
-                    filteredExercises.map((exercise) => (
+                  {paginatedExercises.length > 0 ? (
+                    paginatedExercises.map((exercise) => (
                       <TableRow key={exercise.id}>
                         {editingExerciseId === exercise.id ? (
                           // --- Edit Mode ---
@@ -604,9 +836,9 @@ function AdminDashboard() {
                               <Label htmlFor="profile-image-btn" className="cursor-pointer">
                                 <div className="flex items-center justify-center gap-2 p-2 border border-dashed rounded-md hover:bg-muted transition-colors">
                                   {imagePreview ? (
-                                    <img 
-                                      src={imagePreview} 
-                                      alt="Preview" 
+                                    <img
+                                      src={imagePreview}
+                                      alt="Preview"
                                       className="h-10 w-10 object-cover rounded-md"
                                     />
                                   ) : (
@@ -718,10 +950,236 @@ function AdminDashboard() {
                   )}
                 </TableBody>
               </Table>
+              <Pagination
+                currentPage={currentExercisePage}
+                totalPages={totalExercisePages}
+                onPageChange={setCurrentExercisePage}
+              />
             </div>
           )}
         </CardContent>
       </Card>
+
+      <>
+        <Card className="w-auto m-5">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold">{t("appointmentsTitle")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {appointmentError && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{appointmentError}</AlertDescription>
+              </Alert>
+            )}
+
+            <div className="flex items-center mb-6 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input
+                type="text"
+                className="pl-10 w-full max-w-md"
+                placeholder={t("searchAppointments")}
+                value={searchQuery} // Assuming searchQuery is still used for general search
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+
+            {isLoadingAppointments ? (
+              <div className="flex items-center justify-center h-64">
+                <div className="flex flex-col items-center space-y-2">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-lg font-medium">{t("loadingAppointments")}...</p>
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{t("ID")}</TableHead>
+                      <TableHead>{t("ClientName")}</TableHead>
+                      <TableHead>{t("Service")}</TableHead>
+                      <TableHead>{t("Date")}</TableHead>
+                      <TableHead>{t("Time")}</TableHead>
+                      <TableHead>{t("Status")}</TableHead>
+                      <TableHead>{t("Actions")}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {paginatedAppointments.length > 0 ? (
+                      paginatedAppointments.map((appointment) => (
+                        <TableRow key={appointment.id}>
+                          {editingAppointmentId === appointment.id ? (
+                            // --- Edit Mode ---
+                            <>
+                              <TableCell className="font-medium">{appointment.id}</TableCell>
+                              <TableCell>
+                                <Input
+                                  type="text"
+                                  name="name"
+                                  value={appointmentFormData.name || appointment.user?.name}
+                                  onChange={handleAppointmentInputChange}
+                                  className="w-full"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Select
+                                  name="service"
+                                  value={appointmentFormData.service}
+                                  onValueChange={(value) => handleAppointmentInputChange({ target: { name: 'service', value } })}
+                                  className="w-full"
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder={t("selectService")} />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {services.map((service) => (
+                                      <SelectItem key={service} value={service}>
+                                        {service}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  type="date"
+                                  name="date"
+                                  value={appointmentFormData.date}
+                                  onChange={handleAppointmentInputChange}
+                                  className="w-full"
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <Input
+                                  type="time"
+                                  name="time"
+                                  value={appointmentFormData.time}
+                                  onChange={handleAppointmentInputChange}
+                                  className="w-full"
+                                />
+                              </TableCell>
+                              <TableCell>                              <Select
+                                  name="isCanceled"
+                                  value={String(Boolean(appointmentFormData.isCanceled))}
+                                  onValueChange={(value) => handleAppointmentInputChange({ target: { name: 'isCanceled', value: value === "true" } })}
+                                  className="w-full"
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue>
+                                      <Badge variant={!appointmentFormData.isCanceled ? "success" : "destructive"} className="font-medium">
+                                        {!appointmentFormData.isCanceled ? t("active") : t("canceled")}
+                                      </Badge>
+                                    </SelectValue>
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="false">
+                                      <Badge variant="success" className="font-medium">
+                                        {t("active")}
+                                      </Badge>
+                                    </SelectItem>
+                                    <SelectItem value="true">
+                                      <Badge variant="destructive" className="font-medium">
+                                        {t("canceled")}
+                                      </Badge>
+                                    </SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleSaveAppointmentEdit(appointment.id)}
+                                    className="text-green-600 border-green-600 hover:bg-green-50"
+                                  >
+                                    {t("Save")}
+                                  </Button>
+                                  <Button variant="ghost" size="sm" onClick={handleCancelAppointmentEdit} className="text-gray-600">
+                                    {t("Cancel")}
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </>
+                          ) : (
+                            // --- View Mode ---
+                            <>
+                              <TableCell className="font-medium">{appointment.id}</TableCell>
+                              <TableCell>{appointment.user?.name}</TableCell>
+                              <TableCell>{appointment.appointmentType}</TableCell>
+                              <TableCell>{appointment.date}</TableCell>
+                              <TableCell>{appointment.time}</TableCell>                              <TableCell>
+                                <Badge
+                                  variant={!appointment.isCanceled ? "success" : "destructive"}
+                                  className="font-medium"
+                                >
+                                  {!appointment.isCanceled ? t("active") : t("canceled")}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex space-x-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleEditAppointmentClick(appointment)}
+                                    className="h-8 w-8 text-blue-600"
+                                  >
+                                    <Pencil className="h-4 w-4" />
+                                    <span className="sr-only">{t("Edit")}</span>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setConfirmDeleteAppointment(appointment.id)}
+                                    className="h-8 w-8 text-red-600"
+                                  >
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">{t("Delete")}</span>
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </>
+                          )}
+                        </TableRow>
+                      ))
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7} className="h-24 text-center">
+                          {t("NoAppointmentsFound")}
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
+                <Pagination
+                  currentPage={currentAppointmentPage}
+                  totalPages={totalAppointmentPages}
+                  onPageChange={setCurrentAppointmentPage}
+                />
+              </div>
+            )}
+          </CardContent>
+
+          {/* Confirmation Dialog for Delete Appointment */}
+          <Dialog open={!!confirmDeleteAppointment} onOpenChange={(open) => !open && setConfirmDeleteAppointment(null)}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("confirmDeleteAppointmentTitle")}</DialogTitle>
+                <DialogDescription>{t("confirmDeleteAppointment")}</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setConfirmDeleteAppointment(null)}>
+                  {t("Cancel")}
+                </Button>
+                <Button variant="destructive" onClick={() => confirmDeleteAppointment && deleteAppointment(confirmDeleteAppointment)}>
+                  {t("Delete")}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </Card>
+      </>
 
       {/* Add Exercise Dialog */}
       <Dialog open={showAddExerciseDialog} onOpenChange={setShowAddExerciseDialog}>

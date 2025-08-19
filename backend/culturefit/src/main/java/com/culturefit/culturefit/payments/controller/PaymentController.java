@@ -43,7 +43,6 @@ public class PaymentController {
         return ResponseEntity.ok(response);
     }
 
-    // TODO: CAMBIAR LA IP EN PRODUCCION A LA IP DEL SERVIDOR
     @Operation(summary = "Manejo webhook", description = "Maneja los eventos de webhook de Stripe.")
     @PostMapping("/api/stripe/webhook")
     public ResponseEntity<String> handleStripeWebhook(

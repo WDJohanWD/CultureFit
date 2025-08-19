@@ -54,7 +54,20 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configure(http))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // Permitir TODAS las solicitudes sin autenticación
+                        // Rutas públicas (acceso sin autenticación)
+                        // .requestMatchers("/", "/memberships", "/aboutus", "/confirm-account/**", "/reset-password/**", "/profile/**", "/payment-success", "/payment-error", "/signup", "/login", "/error").permitAll()
+
+                        // Rutas solo para usuarios autenticados (USER, SUBSCRIBER, ADMIN)
+                        // .requestMatchers("/lessons", "/appointment", "/appointment/**", "/your-progress", "/workout").hasAnyRole("USER", "SUBSCRIBER", "ADMIN")
+
+                        // Rutas solo para administradores
+                        // .requestMatchers("/admin").hasRole("ADMIN")
+
+                        // Cualquier otra ruta requiere autenticación
+                        // .anyRequest().authenticated()
+
+                        // Temporal: Permitir todas las solicitudes sin autenticación
+                        .anyRequest().permitAll()
                 )
                 .csrf(csrf -> csrf.disable()); // Opcional: Deshabilita CSRF si usas APIs públicas
         return http.build();

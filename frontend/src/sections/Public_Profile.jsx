@@ -18,8 +18,11 @@ function Public_Profile() {
   const [publicUser, setPublicUser] = useState([]);
   const { user } = useContext(AuthContext);
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
+  const [isLoading, setIsLoading] = useState(true);
+
 
   const [friends, setFriends] = useState([]);
+
 
   useEffect(() => {
     obtainUser(username);
@@ -30,12 +33,20 @@ function Public_Profile() {
   }, [publicUser]);
 
   async function obtainUser() {
-    const response = await fetch(`${API_URL}/username/${username}`);
-    if (!response.ok) {
-      throw new Error("An error ocurred while fetching");
+    try {
+
+
+      const response = await fetch(`${API_URL}/username/${username}`);
+      if (!response.ok) {
+        throw new Error("An error ocurred while fetching");
+      }
+      const data = await response.json();
+      setPublicUser(data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
+      setIsLoading(false);
     }
-    const data = await response.json();
-    setPublicUser(data);
   }
 
   async function getFriends(currentUser) {
@@ -98,6 +109,17 @@ function Public_Profile() {
         </div>
       </div>
     );
+  }
+
+    if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="flex flex-col items-center space-y-2">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-lg font-medium">{t("loading")}...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -171,7 +193,7 @@ function Public_Profile() {
           <UserRoundPlus className="w-8 h-8" />
           {t("add-vue")}
         </div>
-      ) }
+      )}
     </>
   );
 }

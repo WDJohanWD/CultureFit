@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,9 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private EmailService emailService;
+
+    @Value("${api.url.front}")
+    private String apiUrl;
 
     private static final LocalTime START_TIME = LocalTime.of(9, 0);
     private static final LocalTime END_TIME = LocalTime.of(17, 30);
@@ -65,10 +69,18 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void deleteAppointment(Long id) {
+    public void cancelAppointment(Long id) {
         Appointment appointment = appointmentRepository.findById(id).orElseThrow();
         appointment.setCanceled(true);
         appointmentRepository.save(appointment);
+    }    
+    
+        @Override
+    @Transactional
+    public void deleteAppointment(Long id) {
+        Appointment appointment = appointmentRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("No se encontró la cita con ID: " + id));
+        appointmentRepository.delete(appointment);
     }
 
     @Override
@@ -87,9 +99,8 @@ public class AppointmentServiceImpl implements AppointmentService {
         userRepository.save(user);
 
         boolean sent = emailService.sendQRCodeEmail(
-            //TODO: CAMBIAR PARA PRODUCCION
                  email,
-                "Use el próximo código QR en el mostrador del gimnasio para canjearlo.",
+                apiUrl + "/appointment/" + appointmentId,
                 200,
                 200);
 
@@ -124,5 +135,19 @@ public class AppointmentServiceImpl implements AppointmentService {
         }
 
         return availableSlots;
+    }
+
+    @Override
+    public Appointment updateAppointment(Long id, AppointmentDto appointmentDto) {
+        Appointment existingAppointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Cita no encontrada con ID: " + id));
+
+        existingAppointment.setDate(appointmentDto.getDate());
+        existingAppointment.setTime(appointmentDto.getTime());
+        existingAppointment.setNote(appointmentDto.getNote());
+        existingAppointment.setAppointmentType(appointmentDto.getAppointmentType());
+        existingAppointment.setCanceled(appointmentDto.isCanceled());
+
+        return appointmentRepository.save(existingAppointment);
     }
 }

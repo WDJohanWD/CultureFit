@@ -5,5 +5,6 @@
     "name": "nameES",
     "description": "descriptionES",
     "date": "Publicado el:",
-    "not-found": "Parece que no hemos encontrado la clase, intentalo más tarde"
+    "not-found": "Parece que no hemos encontrado la clase, intentalo más tarde",
+    "noRole": "Para tener acceso a las funcionalidades de la página tienes que contratar una membresía"
 }

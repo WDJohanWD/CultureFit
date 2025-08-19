@@ -29,7 +29,7 @@ function ConfirmAccount() {
                 }
             } catch (error) {
                 console.log('Error confirming account: ' + error.response?.data?.message || error.message);
-                window.location.href("/")
+                navigate("/")
                 window.location.reload()
             }
         };

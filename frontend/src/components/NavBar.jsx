@@ -59,11 +59,13 @@ function NavBar() {
             <Link to="/aboutus" className="pt-1 hover:underline">
               {t("about")}
             </Link>
-            <Link className="pt-1 hover:underline" to="lessons">{t("clases")}</Link>
             {user ? (
-              <Link to="/appointment" className="pt-1 hover:underline">
-                {t("appointment")}
-              </Link>
+              <>
+                <Link className="pt-1 hover:underline" to="lessons">{t("clases")}</Link>
+                <Link to="/appointment" className="pt-1 hover:underline">
+                  {t("appointment")}
+                </Link>
+              </>
             ) : (
               <></>
             )}
@@ -91,18 +93,14 @@ function NavBar() {
                           absolute top-20 left-0 w-full bg-primary 
                           overflow-hidden
                           transition-all duration-300 ease-in-out 
-                          ${
-                            menuOpen
-                              ? "max-h-[500px] opacity-100 py-4"
-                              : "max-h-0 opacity-0 py-0"
-                          }
+                          ${menuOpen
+              ? "max-h-[500px] opacity-100 py-4"
+              : "max-h-0 opacity-0 py-0"
+            }
                           text-center
                         `}
         >
           <div className="flex flex-col gap-y-2">
-            <Link className="block hover:underline" to="/lessons">
-              {t("clases")}
-            </Link>
             <Link to="/memberships" className="block hover:underline">
               {t("planes")}
             </Link>
@@ -110,9 +108,12 @@ function NavBar() {
               {t("about")}
             </Link>
             {user ? (
-              <Link to="/appointment" className="pt-1 hover:underline">
-                {t("appointment")}
-              </Link>
+              <>
+                <Link className="pt-1 hover:underline" to="lessons">{t("clases")}</Link>
+                <Link to="/appointment" className="pt-1 hover:underline">
+                  {t("appointment")}
+                </Link>
+              </>
             ) : (
               <></>
             )}
@@ -197,7 +198,7 @@ function NavBar() {
                 onClick={() => setIsSearchOpen(true)}
               >
                 <UserRoundSearch />
-              </button> 
+              </button>
               <div className="flex flex-col items-center me-2">
                 <Link
                   to="/profile"

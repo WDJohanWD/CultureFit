@@ -1,5 +1,17 @@
 {
-    "title": "About us",
-    "text": "",
-    "ubication": "Ubication"
+    "title": "Discover CultureFit",
+    "ubication": "Your elite gym in Vigo",
+    "eliteTraining": {
+        "title": "Elite Training",
+        "description": "Designed for bodybuilders, powerlifters and strength athletes looking to improve their performance."
+    },
+    "professionalCare": {
+        "title": "Professional Care",
+        "description": "Access to physiotherapists, nutritionists and personalized routines through the web platform."
+    },
+    "globalAccess": {
+        "title": "Global Access",
+        "description": "Available from anywhere thanks to its online content and subscription system."
+    },
+    "gymName": "CultureFit"
 }

@@ -5,5 +5,6 @@
     "name": "nameEN",
     "description": "descriptionEN",
     "date": "Uplodad date:",
-    "not-found": "We didn't find the lesson, try again later"
+    "not-found": "We didn't find the lesson, try again later",
+    "noRole": "To have access to the full website you have to first get a membership"
 }

@@ -23,6 +23,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -84,7 +85,7 @@ public class ExerciseController {
     })
     @Parameter(name = "id", description = "Id del ejercicio", required = true)
     @PostMapping("/exercise/upload-image/{id}")
-    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestBody MultipartFile image) throws IOException {
+    public ResponseEntity<?> uploadProfileImage(@PathVariable Long id, @RequestParam("image") MultipartFile image) throws IOException {
         exerciseService.saveImage(image, id);
         return ResponseEntity.ok("The image has been uploaded successfully");
     }
