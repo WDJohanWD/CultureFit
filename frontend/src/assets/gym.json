@@ -1,0 +1,48 @@
+{
+    "type": "FeatureCollection",
+    "generator": "overpass-turbo",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL.",
+    "timestamp": "2025-08-19T11:34:45Z",
+    "features": [
+      {
+        "type": "Feature",
+        "properties": {
+          "@id": "way/152349355",
+          "building": "yes",
+          "building:levels": "1",
+          "leisure": "fitness_centre",
+          "name": "Ximnasio de Poio",
+          "name:es": "Gimnasio de Poio",
+          "name:gl": "Ximnasio de Poio"
+        },
+        "geometry": {
+          "type": "Polygon",
+          "coordinates": [
+            [
+              [
+                -8.6920837,
+                42.4391068
+              ],
+              [
+                -8.6918356,
+                42.4389014
+              ],
+              [
+                -8.6916927,
+                42.4389954
+              ],
+              [
+                -8.6919407,
+                42.4392009
+              ],
+              [
+                -8.6920837,
+                42.4391068
+              ]
+            ]
+          ]
+        },
+        "id": "way/152349355"
+      }
+    ]
+  }

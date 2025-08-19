@@ -4,19 +4,21 @@ import "leaflet/dist/leaflet.css";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { Dumbbell, Users, Globe } from "lucide-react"; // Iconos informativos
+import { Dumbbell, Users, Globe } from "lucide-react";
+import { GeoJSON } from "react-leaflet";
+import gymData from "../assets/gym.json";
 
 const customIcon = new Icon({
-  iconUrl: "Mark.png",
-  iconSize: [45, 40],
-  iconAnchor: [22, 40],
-  popupAnchor: [0, -40],
+  iconUrl: "/Mark.webp",
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+  popupAnchor: [0, -20],  
 });
 
 const markers = [
   {
-    geocode: [42.242879, -8.696784],
-    popUp: "CultureFit",
+    geocode: [42.439049, -8.691886],
+    popUp: "Ximnasio municipal de Poio",
   },
 ];
 
@@ -81,14 +83,15 @@ function AboutUs() {
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <MapContainer
-          center={[42.242794462547636, -8.696215562890764]}
-          zoom={15}
+          center={[42.4390, -8.6919]}
+          zoom={18}
           className="h-[400px] rounded-xl shadow-md overflow-hidden"
           attributionControl={false}
         >
           <TileLayer
-            url="https://tile.jawg.io/35e6ff0b-cb69-4fa9-9e05-6606986d694d/{z}/{x}/{y}{r}.png?access-token=gKJKSFJEZfMAAS1eLraY1gTLsV7NKuosbvKrfwSsJH5ZHHl24sRaTiM9pMjzhtG1"
+            url="https://tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token=gKJKSFJEZfMAAS1eLraY1gTLsV7NKuosbvKrfwSsJH5ZHHl24sRaTiM9pMjzhtG1"
           />
+
           {markers.map((marker, index) => (
             <Marker
               key={index}
@@ -99,28 +102,21 @@ function AboutUs() {
               <Popup>{t("gymName")}</Popup>
             </Marker>
           ))}
+
+          <GeoJSON
+            data={gymData}
+            style={{ color: "orange", weight: 2, fillOpacity: 0.4 }}
+            onEachFeature={(feature, layer) => {
+              if (feature.properties && feature.properties.name) {
+                layer.bindPopup(feature.properties.name);
+              }
+            }}
+          />
+
           <InvalidateMapSize />
-          <div className="absolute bottom-2 left-2 z-[999] text-[10px] text-gray-500 bg-white/70 px-1.5 py-0.5 rounded-md backdrop-blur-sm shadow-sm">
-            &copy;{" "}
-            <a
-              href="https://www.openstreetmap.org/copyright"
-              className="underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              OpenStreetMap
-            </a>{" "}
-            contributors &nbsp;&copy;&nbsp;
-            <a
-              href="https://www.jawg.io"
-              className="underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Jawg
-            </a>
-          </div>
         </MapContainer>
+
+
       </motion.div>
     </section>
   );
