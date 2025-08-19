@@ -112,8 +112,8 @@ function Lessons() {
         nameEN: "",
         descriptionES: "",
         descriptionEN: "",
-        videoUrl: "",
-        thumbnailUrl: "",
+        videoUrl: null,
+        thumbnailUrl: null,
       });
       setThumbnailFile(null);
       setVideoFile(null);

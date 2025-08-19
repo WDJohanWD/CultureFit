@@ -1,0 +1,17 @@
+{
+    "title": "Descubre CultureFit",
+    "ubication": "O teu ximnasio de élite en Vigo",
+    "eliteTraining": {
+        "title": "Adestramento de élite",
+        "description": "Pensado para culturistas, powerlifters e atletas de forza que buscan mellorar o seu rendemento."
+    },
+    "professionalCare": {
+        "title": "Atención profesional",
+        "description": "Acceso a fisioterapeutas, nutricionistas e rutinas personalizadas dende a plataforma web."
+    },
+    "globalAccess": {
+        "title": "Acceso global",
+        "description": "Dispoñible desde calquera lugar grazas ao seu contido online e sistema de subscricións."
+    },
+    "gymName": "CultureFit"
+}

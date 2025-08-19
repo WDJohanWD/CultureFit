@@ -1,0 +1,48 @@
+{
+    "h1": "Panel de administración",
+    "title": "Usuarios ",
+    "ID": "ID",
+    "Name": "Nome",
+    "Email": "Email",
+    "Birth Date": "Data de nacemento",
+    "Status": "Estado",
+    "Role": "Rol",
+    "Actions": "Accións",
+    "Edit": "Editar",
+    "Delete": "Eliminar",
+    "NoFound": "Membros non atopados",
+    "search": "Buscar membros",
+
+    "exercisesTitle": "Exercicios",
+    "addExercise": "Engadir exercicio",
+    "addExerciseDescription": "Engadir un novo exercicio á base de datos",
+    "searchExercises": "Buscar exercicios",
+    "image": "Imaxe",
+    "nameEs": "Nome (GL)",
+    "nameEn": "Nome (EN)",
+    "actions": "Accións",
+    "NoExercisesFound": "Non se atoparon exercicios",
+
+    "active":"Activo",
+    "inactive":"Inactivo",
+
+    "confirmDeleteTitle":"¿Estás seguro de eliminar este membro?",
+    "confirmDelete": "Esta acción non se pode desfacer.",
+
+    "confirmDeleteExerciseTitle":"¿Estás seguro de eliminar este exercicio?",
+    "confirmDeleteExercise": "Esta acción non se pode desfacer.",
+
+    "Save":"Gardar",
+    "Cancel":"Cancelar",
+
+    "appointmentsTitle": "Citas",
+    "searchAppointments": "Buscar citas",
+    "confirmDeleteAppointmentTitle": "¿Estás seguro de eliminar esta cita?",
+    "confirmDeleteAppointment": "Esta acción non se pode desfacer.",
+    "NoAppointmentsFound": "Non se atoparon citas",
+    "ClientName": "Nome do cliente",
+    "Service": "Servizo",
+    "Date": "Data",
+    "Time": "Hora",
+    "Add": "Engadir"
+}
