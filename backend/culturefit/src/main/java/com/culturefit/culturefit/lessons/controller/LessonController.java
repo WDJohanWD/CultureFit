@@ -50,7 +50,7 @@ public class LessonController {
         @RequestParam("nameGL") String lessonNameGL,
         @RequestParam("descriptionES") String lessonDescriptionES,
         @RequestParam("descriptionEN") String lessonDescriptionEN,
-        @RequestParam("descriptionEN") String lessonDescriptionGL) {
+        @RequestParam("descriptionGL") String lessonDescriptionGL) {
         Lesson createdLesson = lessonService.createLesson(lessonNameES, lessonNameEN, lessonNameGL , lessonDescriptionES, lessonDescriptionEN, lessonDescriptionGL);
         Lesson savedLesson = lessonService.save(createdLesson, file, thumbnail);
         

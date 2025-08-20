@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import LessonModal from "./LessonModal";
+import { de } from "date-fns/locale";
 
 function Lessons() {
   const { t } = useTranslation("lessons");
@@ -25,8 +26,10 @@ function Lessons() {
     id: "",
     nameES: "",
     nameEN: "",
+    nameGL: "",
     descriptionES: "",
     descriptionEN: "",
+    descriptionGL: "",
     videoUrl: "",
     thumbnailUrl: "",
   });
@@ -88,8 +91,10 @@ function Lessons() {
       formData.append("file", videoFile);
       formData.append("nameES", newLesson.nameES);
       formData.append("nameEN", newLesson.nameEN);
+      formData.append("nameGL", newLesson.nameGL);
       formData.append("descriptionES", newLesson.descriptionES);
       formData.append("descriptionEN", newLesson.descriptionEN);
+      formData.append("descriptionGL", newLesson.descriptionGL);
       formData.append("videoUrl", newLesson.videoUrl);
       formData.append("thumbnailUrl", newLesson.thumbnailUrl);
 
@@ -110,8 +115,10 @@ function Lessons() {
       setNewLesson({
         nameES: "",
         nameEN: "",
+        nameGL: "", 
         descriptionES: "",
         descriptionEN: "",
+        descriptionGL: "",
         videoUrl: null,
         thumbnailUrl: null,
       });
@@ -184,6 +191,18 @@ function Lessons() {
                 />
               </div>
 
+              <div className="flex flex-col gap-2 col-span-1">
+                <label htmlFor="descriptionES">Descripción (ES):</label>
+                <textarea
+                  id="descriptionES"
+                  name="descriptionES"
+                  value={newLesson.descriptionES}
+                  onChange={handleInputChange}
+                  required
+                  className="border bg-white border-gray-300 text-gray-900 text-sm rounded-lg hover:bg-gray-100 p-2 h-20"
+                />
+              </div>
+
               <div className="flex flex-col gap-2">
                 <label htmlFor="nameEN">Nombre de la clase (EN):</label>
                 <input
@@ -198,23 +217,36 @@ function Lessons() {
               </div>
 
               <div className="flex flex-col gap-2 col-span-1">
-                <label htmlFor="descriptionES">Descripción (ES):</label>
+                <label htmlFor="descriptionEN">Description (EN):</label>
                 <textarea
-                  id="descriptionES"
-                  name="descriptionES"
-                  value={newLesson.descriptionES}
+                  id="descriptionEN"
+                  name="descriptionEN"
+                  value={newLesson.descriptionEN}
                   onChange={handleInputChange}
                   required
                   className="border bg-white border-gray-300 text-gray-900 text-sm rounded-lg hover:bg-gray-100 p-2 h-20"
                 />
               </div>
 
+              <div className="flex flex-col gap-2">
+                <label htmlFor="nameGL">Nombre de la clase (GL):</label>
+                <input
+                  type="text"
+                  id="nameGL"
+                  name="nameGL"
+                  value={newLesson.nameGL}
+                  onChange={handleInputChange}
+                  required
+                  className="border bg-white border-gray-300 text-gray-900 text-sm rounded-lg hover:bg-gray-100 p-2"
+                />
+              </div>
+
               <div className="flex flex-col gap-2 col-span-1">
-                <label htmlFor="descriptionEN">Description (EN):</label>
+                <label htmlFor="descriptionGL">Description (GL):</label>
                 <textarea
-                  id="descriptionEN"
-                  name="descriptionEN"
-                  value={newLesson.descriptionEN}
+                  id="descriptionGL"
+                  name="descriptionGL"
+                  value={newLesson.descriptionGL}
                   onChange={handleInputChange}
                   required
                   className="border bg-white border-gray-300 text-gray-900 text-sm rounded-lg hover:bg-gray-100 p-2 h-20"
@@ -257,56 +289,56 @@ function Lessons() {
             </form>
           </div>
         )}
-        {user.role == "USER" || user.role == "ANONYMOUS"  ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
-        <div className="mt-10 text-4xl font-bold montserrat uppercase mb-10">
-          {t("lessons")}
-        </div>
+        {user.role == "USER" || user.role == "ANONYMOUS" ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
+          <div className="mt-10 text-4xl font-bold montserrat uppercase mb-10">
+            {t("lessons")}
+          </div>
 
-        <Card>
-          <CardContent>
-            {lessonsList.length === 0 ? (
-              <div className="text-center py-10">{t("no-lessons")}</div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {lessonsList.map((lesson, index) => (
-                  <div className="flex flex-col w-auto">
-                    <button
-                      className="flex flex-col w-auto col-span-1 shadow-lg bg-gray-200 rounded-lg h-auto overflow-hidden p-0 hover:scale-105 hover:-translate-y-1 transition"
-                      key={index}
-                      onClick={() => handleLessonClick(lesson.id)}
-                    >
-                      <img
-                        src={`${API_URL}${lesson.thumbnailUrl}`}
-                        alt={lesson[t("name")]}
-                        className="w-full h-40 object-cover"
-                      />
-                      <div className="px-3 py-2 capitalize text-lg">
-                        <span className="block overflow-hidden text-clip">
-                          {lesson[t("name")]}
-                        </span>
-                      </div>
-                      {isAdmin && <></>}
-                    </button>
-                    {isAdmin && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="border border-red-600 hover:bg-red-600 text-red-600 hover:text-white 
-                        font-semibold shadow-md rounded-lg px-5 hover:scale-105 transition mt-3"
-                        onClick={() => {
-                          deleteLesson(lesson.id)
-                        }}
+          <Card>
+            <CardContent>
+              {lessonsList.length === 0 ? (
+                <div className="text-center py-10">{t("no-lessons")}</div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {lessonsList.map((lesson, index) => (
+                    <div className="flex flex-col w-auto">
+                      <button
+                        className="flex flex-col w-auto col-span-1 shadow-lg bg-gray-200 rounded-lg h-auto overflow-hidden p-0 hover:scale-105 hover:-translate-y-1 transition"
+                        key={index}
+                        onClick={() => handleLessonClick(lesson.id)}
                       >
-                        <Trash2 className="h-5 w-5" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-            
-          </CardContent>
-        </Card>
+                        <img
+                          src={`${API_URL}${lesson.thumbnailUrl}`}
+                          alt={lesson[t("name")]}
+                          className="w-full h-40 object-cover"
+                        />
+                        <div className="px-3 py-2 capitalize text-lg">
+                          <span className="block overflow-hidden text-clip">
+                            {lesson[t("name")]}
+                          </span>
+                        </div>
+                        {isAdmin && <></>}
+                      </button>
+                      {isAdmin && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="border border-red-600 hover:bg-red-600 text-red-600 hover:text-white 
+                        font-semibold shadow-md rounded-lg px-5 hover:scale-105 transition mt-3"
+                          onClick={() => {
+                            deleteLesson(lesson.id)
+                          }}
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+            </CardContent>
+          </Card>
         </>}
       </div>
 
