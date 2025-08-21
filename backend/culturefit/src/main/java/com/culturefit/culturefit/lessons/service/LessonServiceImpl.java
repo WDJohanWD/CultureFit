@@ -39,8 +39,8 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public Lesson createLesson(String lessonNameES, String lessonNameEN, String lessonDescriptionES, String lessonDescriptionEN) {
-        return new Lesson(null, lessonNameES, lessonNameEN, lessonDescriptionES, lessonDescriptionEN, null, null, null);
+    public Lesson createLesson(String lessonNameES, String lessonNameEN, String lessonNameGL, String lessonDescriptionES, String lessonDescriptionEN, String lessonDescriptionGL) {
+        return new Lesson(null, lessonNameES, lessonNameEN, lessonNameGL, lessonDescriptionES, lessonDescriptionEN, lessonDescriptionGL, null, null, null);
     }
 
     @Override
