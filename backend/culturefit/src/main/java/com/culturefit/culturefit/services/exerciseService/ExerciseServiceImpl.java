@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,8 +22,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 @Service
 public class ExerciseServiceImpl implements ExerciseService {
 
-    Dotenv dotenv = Dotenv.load();
-    String DIRECTORY_EXERCISE_IMAGES = dotenv.get("DIRECTORY_EXERCISE_IMAGES");
+    @Value("${directory.exercise.images}")
+    private String DIRECTORY_EXERCISE_IMAGES ;
 
     @Autowired
     ExerciseRepository exerciseRepository;
