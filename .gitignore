@@ -4,3 +4,4 @@ backend/culturefit/uploads
 frontend/.env
 backend/culturefit/Dockerfile
 compose.yml
+.env

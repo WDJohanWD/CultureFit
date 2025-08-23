@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.stripe.Stripe;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import jakarta.annotation.PostConstruct;
 
 @Configuration

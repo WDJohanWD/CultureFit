@@ -12,7 +12,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingImageException;
 
-import io.github.cdimascio.dotenv.Dotenv;
 
 //TODO: Tocar el manejo de errores
 @Service

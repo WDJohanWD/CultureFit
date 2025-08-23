@@ -17,7 +17,6 @@ import com.culturefit.culturefit.exceptions.exerciseExceptions.NotFoundExerciseE
 import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingImageException;
 import com.culturefit.culturefit.repositories.ExerciseRepository;
 
-import io.github.cdimascio.dotenv.Dotenv;
 
 @Service
 public class ExerciseServiceImpl implements ExerciseService {
