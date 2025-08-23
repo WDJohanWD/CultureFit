@@ -9,6 +9,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { AlertCircle, Loader2 } from "lucide-react"
 import { Dialog, DialogContent, DialogHeader, DialogFooter } from "@/components/ui/dialog"
 import { DialogTitle } from "@radix-ui/react-dialog"
+import LoginModal from "./LoginModal"
 
 function Signup() {
   const { t } = useTranslation("signup")
@@ -23,6 +24,7 @@ function Signup() {
   const [error, setError] = useState(null)
   const [showDialog, setShowDialog] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isLoginOpen, setIsLoginOpen] = useState(false)
 
   const validatePassword = (password) => {
     if (password.length < 6 || password.length > 40) {
@@ -150,19 +152,20 @@ function Signup() {
   }
 
   return (
-      <div className="relative overflow-hidden min-h-[calc(100vh-5rem)] xl:min-h-[calc(100vh-6rem)]">
+    <div className="relative overflow-hidden min-h-[calc(100vh-5rem)] xl:min-h-[calc(100vh-6rem)]">
       <div
-      className="absolute inset-0 brightness-75 blur-[2px] grayscale-75"
-      style={{
-        backgroundImage: `url(fondo4.jpg)`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        transform: 'scale(1.05)',
-        zIndex: 0
-      }}
-    ></div>
-      <div className="absolute w-100 top-[5%] left-1/2 transform -translate-x-1/2 flex space-x-2 p-4 md:p-1">
-        <Card className="w-full max-w-md">
+        className="absolute inset-0 brightness-75 blur-[2px] grayscale-75"
+        style={{
+          backgroundImage: `url(fondo4.jpg)`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          transform: 'scale(1.05)',
+          zIndex: 0
+        }}
+      ></div>
+
+      <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-5rem)] xl:min-h-[calc(100vh-6rem)] p-4 md:p-6 lg:p-8">
+        <Card className="w-full max-w-md mx-auto shadow-xl">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-800">
               {t("title") || "Create your account"}
@@ -266,10 +269,10 @@ function Signup() {
             </form>
           </CardContent>
 
-          <div className="px-6 pb-4 text-center text-sm text-gray-600">
+          <div className="px-6 pb-6 text-center text-sm text-gray-600">
             {t("account") || "Already have an account?"}
             <Link
-              to="/login"
+              onClick={() => setIsLoginOpen(true)}
               className="ml-1 font-medium text-orange-600 hover:text-orange-500 hover:underline"
             >
               {t("login") || "Log in"}
@@ -305,6 +308,10 @@ function Signup() {
           </DialogContent>
         </Dialog>
       </div>
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+      />
     </div>
   )
 }

@@ -11,9 +11,10 @@
           "building": "yes",
           "building:levels": "1",
           "leisure": "fitness_centre",
-          "name": "Ximnasio de Poio",
-          "name:es": "Gimnasio de Poio",
-          "name:gl": "Ximnasio de Poio"
+          "name": "Ximnasio municipal de Poio",
+          "name:es": "Gimnasio municipalde Poio",
+          "name:gl": "Ximnasio municipal de Poio",
+          "name:en": "Poio Municipal Gym"
         },
         "geometry": {
           "type": "Polygon",
