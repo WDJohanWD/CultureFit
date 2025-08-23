@@ -1,8 +1,10 @@
 import React from 'react';
 import { Dumbbell, Zap, Heart } from 'lucide-react';
-
+import { useTranslation } from 'react-i18next';
 
 const GymSpinnerLoader = ({ message }) => {
+  const { t } = useTranslation("loading");
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[350px] space-y-8 p-6">
       {/* Contenedor principal del spinner */}
@@ -59,7 +61,7 @@ const GymSpinnerLoader = ({ message }) => {
         
         {/* Texto motivacional */}
         <p className="text-muted-foreground font-medium">
-          ¡Mantente fuerte mientras preparamos todo!
+          {t("message2")}
         </p>
         
         {/* Indicadores de carga mejorados */}

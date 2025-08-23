@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, AuthContext } from "./AuthContext";
 import { useContext, Suspense, lazy } from "react";
 import GymSpinnerLoader from "./components/Loading";
+import { useTranslation } from 'react-i18next';
 
 // Lazy-loaded components
 const Home = lazy(() => import("./sections/Home"));
@@ -28,9 +29,10 @@ const PaymentError = lazy(() => import("./sections/PaymentError"))
 
 function Layout() {
   const { token, isAdmin, loading, user } = useContext(AuthContext);
+  const { t } = useTranslation("loading");
 
   if (loading) {
-    return <><GymSpinnerLoader message="Cargando..."/></>;
+    return <><GymSpinnerLoader message={t("message")}/></>;
   }
 
   return (

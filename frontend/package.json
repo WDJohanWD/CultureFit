@@ -39,6 +39,7 @@
     "i18next-http-backend": "^3.0.2",
     "jwt-decode": "^4.0.0",
     "keen-slider": "^6.8.6",
+    "leaflet-routing-machine": "^3.2.12",
     "lucide-react": "^0.487.0",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",

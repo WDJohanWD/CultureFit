@@ -360,15 +360,15 @@ export default function Appointment() {
             <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="buy-coupons">
                 <CreditCard className="h-4 w-4 mr-2" />
-                {t("buyCoupons") || "Buy Coupons"}
+                <p className="hidden sm:block">{t("buyCoupons") || "Buy Coupons"}</p>
               </TabsTrigger>
               <TabsTrigger value="book">
                 <CalendarIcon className="h-4 w-4 mr-2" />
-                {t("bookAppointment") || "Book Appointment"}
+                <p className="hidden sm:block">{t("bookAppointment") || "Book Appointment"}</p>
               </TabsTrigger>
               <TabsTrigger value="my-appointments">
                 <Clock className="h-4 w-4 mr-2" />
-                {t("myAppointments") || "My Appointments"}
+                <p className="hidden sm:block">{t("myAppointments") || "My Appointments"}</p>
               </TabsTrigger>
             </TabsList>
 
