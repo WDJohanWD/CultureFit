@@ -1,0 +1,15 @@
+{
+    "noData": "Aínda non comezaches o teu progreso neste exercicio",
+    "noPublicData": "O usuario non ten progreso neste exercicio",
+    "add": "Engadir récord",    
+    "exercise": "Exercicio",
+    "date": "Data",
+    "weight": "Peso",
+    "reps": "Repeticións",
+    "select": "Selecciona o exercicio",
+    "exerciseName": "nameGL",
+    "confirmTitle": "¿Eliminar este rexistro?",
+    "confirmDesc": "Estás a piques de eliminar o rexistro do",
+    "confirmY": "Confirmar",
+    "confirmN": "Cancelar"
+}

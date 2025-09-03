@@ -1,6 +1,7 @@
 package com.culturefit.culturefit.payments.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class PaymentServiceImpl implements PaymentService {
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${api.url.front}")
+    private String frontUrl;
+
     // Método para crear el usuario de Stripe
     public Customer createCustomer(String name, String email) throws StripeException {
         CustomerCreateParams params = CustomerCreateParams.builder()
@@ -43,8 +47,8 @@ public class PaymentServiceImpl implements PaymentService {
     public Session createCheckoutSession(String priceId, String stripeId) throws StripeException {
         try {
             SessionCreateParams params = SessionCreateParams.builder()
-                    .setSuccessUrl("https://culturefit.lareira.digital/payment-success")
-                    .setCancelUrl("https://culturefit.lareira.digital/payment-error")
+                    .setSuccessUrl(frontUrl + "/payment-success")
+                    .setCancelUrl(frontUrl + "/payment-error")
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setPrice(priceId)
@@ -63,8 +67,8 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             User user = userRepository.findByStripeId(stripeId).orElseThrow();
             SessionCreateParams params = SessionCreateParams.builder()
-                    .setSuccessUrl("https://culturefit.lareira.digital/payment-success")
-                    .setCancelUrl("https://culturefit.lareira.digital/payment-error")
+                    .setSuccessUrl(frontUrl + "/payment-success")
+                    .setCancelUrl(frontUrl + "/payment-error")
                     .addLineItem(
                             SessionCreateParams.LineItem.builder()
                                     .setPrice(priceId)

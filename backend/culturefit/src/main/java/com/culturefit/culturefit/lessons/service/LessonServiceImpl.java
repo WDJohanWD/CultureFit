@@ -9,23 +9,24 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.lessons.domain.Lesson;
 import com.culturefit.culturefit.lessons.repository.LessonRepository;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 @Service
 public class LessonServiceImpl implements LessonService {
 
     @Autowired
     private LessonRepository repository;
+    
+    @Value("${directory.lesson.videos}")
+    private String DIRECTORY_LESSON_VIDEOS;
 
-    private final Dotenv dotenv = Dotenv.load();
-    private final String DIRECTORY_LESSON_VIDEOS = dotenv.get("DIRECTORY_LESSON_VIDEOS");
-    private final String DIRECTORY_LESSON_THUMBNAILS = dotenv.get("DIRECTORY_LESSON_THUMBNAILS");
+    @Value("${directory.lesson.thumbnails}")
+    private String DIRECTORY_LESSON_THUMBNAILS;
 
     @Override
     public Lesson getLesson(Long id) {
@@ -39,8 +40,8 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public Lesson createLesson(String lessonNameES, String lessonNameEN, String lessonDescriptionES, String lessonDescriptionEN) {
-        return new Lesson(null, lessonNameES, lessonNameEN, lessonDescriptionES, lessonDescriptionEN, null, null, null);
+    public Lesson createLesson(String lessonNameES, String lessonNameEN, String lessonNameGL, String lessonDescriptionES, String lessonDescriptionEN, String lessonDescriptionGL) {
+        return new Lesson(null, lessonNameES, lessonNameEN, lessonNameGL, lessonDescriptionES, lessonDescriptionEN, lessonDescriptionGL, null, null, null);
     }
 
     @Override

@@ -1,35 +1,92 @@
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { Icon } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import "leaflet-routing-machine";
 import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Dumbbell, Users, Globe } from "lucide-react"; // Iconos informativos
+import { Dumbbell, Users, Globe } from "lucide-react";
+import { GeoJSON } from "react-leaflet";
+import gymData from "../assets/gym.json";
 
 const customIcon = new Icon({
-  iconUrl: "Mark.png",
-  iconSize: [45, 40],
-  iconAnchor: [22, 40],
-  popupAnchor: [0, -40],
+  iconUrl: "/Mark.webp",
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+  popupAnchor: [0, -20],
+});   
+
+const customIconPerson = new Icon({
+  iconUrl: "/PersonMark.svg",
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+  popupAnchor: [0, -20],
 });
 
 const markers = [
   {
-    geocode: [42.242879, -8.696784],
-    popUp: "CultureFit",
+    geocode: [42.439049, -8.691886],
+    popUp: "Ximnasio municipal de Poio",
   },
 ];
 
-function InvalidateMapSize() {
+function RoutingButton({ userPosition, destination }) {
   const map = useMap();
-  useEffect(() => {
-    map.invalidateSize();
-  }, [map]);
-  return null;
+  const [routeControl, setRouteControl] = useState(null);
+
+  const handleRouting = () => {
+    if (!userPosition) return;
+
+    if (routeControl) {
+      map.removeControl(routeControl);
+    }
+
+    const L = window.L;
+    if (!L || !L.Routing) {
+      console.error("Leaflet Routing Machine is not loaded.");
+      return;
+    }
+
+    const control = L.Routing.control({
+      waypoints: [
+        L.latLng(userPosition[0], userPosition[1]),
+        L.latLng(destination[0], destination[1])
+      ],
+      routeWhileDragging: false,
+      addWaypoints: false,
+      draggableWaypoints: false,
+      fitSelectedRoutes: true,
+      createMarker: () => null,
+    }).addTo(map);
+
+    if (control._container) {
+      control._container.style.display = "none";
+    }
+
+    setRouteControl(control);
+  };
+
+  return (
+    <button
+      onClick={handleRouting}
+      className="absolute top-2 right-2 z-[1000] bg-orange-500 text-white px-3 py-2 rounded-lg shadow hover:bg-orange-600"
+    >
+      Cómo llegar
+    </button>
+  );
 }
 
 function AboutUs() {
   const { t } = useTranslation("aboutus");
+  const [userPosition, setUserPosition] = useState(null);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setUserPosition([position.coords.latitude, position.coords.longitude]);
+      });
+    }
+  }, []);
 
   return (
     <section className="relative z-0 px-4 py-10 flex flex-col items-center gap-10">
@@ -42,7 +99,6 @@ function AboutUs() {
         </h2>
       </header>
 
-      {/* Información sobre CultureFit */}
       <motion.div
         className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl w-full"
         initial={{ opacity: 0, y: 20 }}
@@ -50,29 +106,23 @@ function AboutUs() {
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
       >
-        <div className="bg-white shadow-md p-6 rounded-xl flex flex-col items-center text-center gap-3">          <Dumbbell className="w-10 h-10 text-orange-500" />
+        <div className="bg-white shadow-md p-6 rounded-xl flex flex-col items-center text-center gap-3">
+          <Dumbbell className="w-10 h-10 text-orange-500" />
           <h3 className="font-semibold text-lg">{t("eliteTraining.title")}</h3>
-          <p className="text-sm text-gray-600">
-            {t("eliteTraining.description")}
-          </p>
+          <p className="text-sm text-gray-600">{t("eliteTraining.description")}</p>
         </div>
         <div className="bg-white shadow-md p-6 rounded-xl flex flex-col items-center text-center gap-3">
           <Users className="w-10 h-10 text-orange-500" />
           <h3 className="font-semibold text-lg">{t("professionalCare.title")}</h3>
-          <p className="text-sm text-gray-600">
-            {t("professionalCare.description")}
-          </p>
+          <p className="text-sm text-gray-600">{t("professionalCare.description")}</p>
         </div>
         <div className="bg-white shadow-md p-6 rounded-xl flex flex-col items-center text-center gap-3">
           <Globe className="w-10 h-10 text-orange-500" />
           <h3 className="font-semibold text-lg">{t("globalAccess.title")}</h3>
-          <p className="text-sm text-gray-600">
-            {t("globalAccess.description")}
-          </p>
+          <p className="text-sm text-gray-600">{t("globalAccess.description")}</p>
         </div>
       </motion.div>
 
-      {/* Mapa */}
       <motion.div
         className="w-full max-w-5xl relative"
         initial={{ opacity: 0, y: 20 }}
@@ -81,45 +131,44 @@ function AboutUs() {
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <MapContainer
-          center={[42.242794462547636, -8.696215562890764]}
-          zoom={15}
+          center={[42.4390, -8.6919]}
+          zoom={18}
           className="h-[400px] rounded-xl shadow-md overflow-hidden"
           attributionControl={false}
         >
-          <TileLayer
-            url="https://tile.jawg.io/35e6ff0b-cb69-4fa9-9e05-6606986d694d/{z}/{x}/{y}{r}.png?access-token=gKJKSFJEZfMAAS1eLraY1gTLsV7NKuosbvKrfwSsJH5ZHHl24sRaTiM9pMjzhtG1"
-          />
+          <TileLayer url="https://tile.jawg.io/jawg-streets/{z}/{x}/{y}{r}.png?access-token=gKJKSFJEZfMAAS1eLraY1gTLsV7NKuosbvKrfwSsJH5ZHHl24sRaTiM9pMjzhtG1" />
+
+          {userPosition && (
+            <Marker position={userPosition} icon={customIconPerson}>
+              <Popup>Tu ubicación</Popup>
+            </Marker>
+          )}
+
           {markers.map((marker, index) => (
             <Marker
               key={index}
               position={marker.geocode}
               icon={customIcon}
-              title={marker.popUp}
+              title={t("gymName")}
             >
               <Popup>{t("gymName")}</Popup>
             </Marker>
           ))}
-          <InvalidateMapSize />
-          <div className="absolute bottom-2 left-2 z-[999] text-[10px] text-gray-500 bg-white/70 px-1.5 py-0.5 rounded-md backdrop-blur-sm shadow-sm">
-            &copy;{" "}
-            <a
-              href="https://www.openstreetmap.org/copyright"
-              className="underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              OpenStreetMap
-            </a>{" "}
-            contributors &nbsp;&copy;&nbsp;
-            <a
-              href="https://www.jawg.io"
-              className="underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Jawg
-            </a>
-          </div>
+
+          <GeoJSON
+            data={gymData}
+            style={{ color: "orange", weight: 2, fillOpacity: 0.4 }}
+            onEachFeature={(feature, layer) => {
+              if (feature.properties && feature.properties.name) {
+                layer.bindPopup(feature.properties.name);
+              }
+            }}
+          />
+
+          <RoutingButton
+            userPosition={userPosition}
+            destination={markers[0].geocode}
+          />
         </MapContainer>
       </motion.div>
     </section>

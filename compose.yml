@@ -6,22 +6,47 @@ services:
       - "9000:9000"
     volumes:
       - ./backend/culturefit/uploads:/app/uploads
+    environment:
+      SERVER_PORT: ${SERVER_PORT}
+
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      MAIL_PASS: ${MAIL_PASS}
+      JWT_SECRET_CONFIRMATION: ${JWT_SECRET_CONFIRMATION}
+      JWT_SECRET: ${JWT_SECRET}
+
+      DIRECTORY_EXERCISE_IMAGES: ${DIRECTORY_EXERCISE_IMAGES}
+      DIRECTORY_PROFILE_IMAGES: ${DIRECTORY_PROFILE_IMAGES}
+      DIRECTORY_LESSON_THUMBNAILS: ${DIRECTORY_LESSON_THUMBNAILS}
+      DIRECTORY_LESSON_VIDEOS: ${DIRECTORY_LESSON_VIDEOS}
+      API_URL_FRONT: ${API_URL_FRONT}
     networks:
       - app-network
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   mysql:
     image: mysql:8.0
     container_name: culturefit-bd
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: admin
-      MYSQL_DATABASE: culturefit-bd
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 networks:
   app-network:

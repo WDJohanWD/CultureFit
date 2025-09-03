@@ -302,7 +302,7 @@ function Workout() {
                   <Dumbbell></Dumbbell>
                 </AvatarFallback>
               </Avatar>
-              <div className="xl:ms-3 w-full">
+              <div className="xl:ms-3 line-clamp-2">
                 {currentExercise[t("exerciseName")]}
               </div>
               <div className="font-bold text-right">{sets}</div>

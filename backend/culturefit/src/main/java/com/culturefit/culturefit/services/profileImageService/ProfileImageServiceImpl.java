@@ -6,19 +6,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.culturefit.culturefit.exceptions.profileImageExceptions.ErrorSavingImageException;
 
-import io.github.cdimascio.dotenv.Dotenv;
 
 //TODO: Tocar el manejo de errores
 @Service
 public class ProfileImageServiceImpl implements ProfileImageService {
-    // Cargar configuración del entorno
-    Dotenv dotenv = Dotenv.load();
-    String DIRECTORY_PROFILE_IMAGES = dotenv.get("DIRECTORY_PROFILE_IMAGES");
+
+    @Value("${directory.profile.images}")
+    private String DIRECTORY_PROFILE_IMAGES ;
 
     @Override
     public String saveImage(Long userId, MultipartFile file, String userDni) throws IOException {

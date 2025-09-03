@@ -1,0 +1,38 @@
+{ 
+  "titulo1":"Escolle o teu plan",
+  "subtitulo1":"Elixe un plan de ximnasio asequible coas mellores características para manterte motivado, alcanzar os teus obxectivos fitness e desfrutar dun estilo de vida máis saudable.",
+  "mes": "mes",
+  "elegir": "Elixir este plan",
+  "processingPayment": "Procesando pago",
+  "redirecting": "Redirixindo á páxina de pago...",
+  "warning": "Advertencia",
+  "warningDescription": "Non podes subscribirte se non es un usuario rexistrado.",
+
+  "n1": "Basic",
+  "id1": "tier-basic",
+  "p1": "45€",
+  "d1": "Plan ideal para quen buscan adestrar con liberdade, mellorar o seu rendemento e adentrarse na competición.",
+  "f11": "Acceso ilimitado ao ximnasio",
+  "f12": "Vídeos online exclusivos",
+  "f13": "Uso de todas as máquinas e pesos dispoñibles",
+  "f14": "Asesoría básica no uso de equipos e execución de técnicas",
+
+  "n2": "Plus",
+  "id2": "tier-plus",
+  "p2": "65€",
+  "d2": "Este plan é ideal para quen buscan maior comodidade e un control preciso do seu progreso na preparación para competición.",
+  "f21": "Todo o incluído no plan Basic",
+  "f22": "Acceso ao aparcadoiro privado",
+  "f23": "Revisión mensual por un dos nosos coaches",
+  "f24": "Acceso á sauna",
+  "f25": "Acceso á báscula de análise corporal",
+
+  "n3": "Elite",
+  "id3": "tier-elite",
+  "p3": "90€",
+  "d3": "Deseñado para atletas de élite de halterofilia, culturismo ou powerlifting que buscan perfeccionar o seu adestramento e presentación para competir ao máximo nivel.",
+  "f31": "Todo o incluído nos plans Basic e Plus",
+  "f32": "Acceso gratuíto a bebidas isotónicas",
+  "f33": "Sesións semanais con adestradores persoais",
+  "f34": "Citas con nutricionistas e fisioterapeutas"
+}

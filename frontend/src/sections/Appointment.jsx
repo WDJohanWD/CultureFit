@@ -37,7 +37,7 @@ export default function Appointment() {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
   const [services, setServices] = useState([])
   const [selectedService, setSelectedService] = useState("")
-  const [notes, setNotes] = useState("")
+  const [note, setnote] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(false)
@@ -84,9 +84,9 @@ export default function Appointment() {
       }
 
       const data = await response.json()
-      
+
       window.location.href = data.checkoutUrl
-      
+
     } catch (error) {
       console.error("Error purchasing coupons:", error)
       setPaymentError(t("errorPurchasing"))
@@ -194,7 +194,7 @@ export default function Appointment() {
         appointmentType: selectedService,
         date: format(date, "yyyy-MM-dd"),
         time: `${selectedTimeSlot}:00`,
-        notes: notes || ""
+        note: note || ""
       }
 
       const response = await fetch(`${API_URL}/create-appointment`, {
@@ -217,7 +217,7 @@ export default function Appointment() {
       setError(null)
       setSelectedTimeSlot(null)
       setSelectedService("")
-      setNotes("")
+      setnote("")
       if (newAppointment) {
         setUserAppointments((prev) => [...prev, newAppointment])
       }
@@ -312,7 +312,7 @@ export default function Appointment() {
               </Alert>
             )}
 
-            <Button 
+            <Button
               onClick={() => handlePurchaseCoupons(selectedCouponAmount)}
               disabled={!selectedCouponAmount || isProcessing}
             >
@@ -350,160 +350,403 @@ export default function Appointment() {
     <div className="container mx-auto py-10 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
         {user.role == "USER" || user.role == "ANONYMOUS" ? <div className="flex text-xl md:text-2xl items-center mx-auto text-center font-bold uppercase w-80 sm:w-130 lg:w-170">{t("noRole")}</div> : <>
-        <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl mb-8">
-          {t("appointmentsTitle") || "Appointments"}
-        </h1>
-        
+          <h1 className="text-4xl font-semibold tracking-tight text-balance text-gray-900 sm:text-5xl mb-8">
+            {t("appointmentsTitle") || "Appointments"}
+          </h1>
 
 
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="buy-coupons">
-              <CreditCard className="h-4 w-4 mr-2" />
-              {t("buyCoupons") || "Buy Coupons"}
-            </TabsTrigger>
-            <TabsTrigger value="book">
-              <CalendarIcon className="h-4 w-4 mr-2" />
-              {t("bookAppointment") || "Book Appointment"}
-            </TabsTrigger>
-            <TabsTrigger value="my-appointments">
-              <Clock className="h-4 w-4 mr-2" />
-              {t("myAppointments") || "My Appointments"}
-            </TabsTrigger>
-          </TabsList>
 
-          {/* Book Appointment Tab */}
-          <TabsContent value="book">
-            {typeof user?.appointmentsAvailables === "number" && (
-              <div className="mb-4 text-sm text-muted-foreground font-medium">
-                {t("appointmentsRemaining") || "Appointments remaining"}:{" "}
-                <span className="font-semibold text-foreground">{user.appointmentsAvailables}</span>
-              </div>
-            )}
-            <Card className="border-muted/40 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold">
-                  {t("bookNewAppointment") || "Book a New Appointment"}
-                </CardTitle>
-                <CardDescription>
-                  {t("bookingDescription") || "Select a date, time and service to schedule your appointment."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {error && (
-                  <Alert variant="destructive" className="mb-6">
-                    <AlertTitle>{t("error") || "Error"}</AlertTitle>
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
-                )}
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="buy-coupons">
+                <CreditCard className="h-4 w-4 mr-2" />
+                <p className="hidden sm:block">{t("buyCoupons") || "Buy Coupons"}</p>
+              </TabsTrigger>
+              <TabsTrigger value="book">
+                <CalendarIcon className="h-4 w-4 mr-2" />
+                <p className="hidden sm:block">{t("bookAppointment") || "Book Appointment"}</p>
+              </TabsTrigger>
+              <TabsTrigger value="my-appointments">
+                <Clock className="h-4 w-4 mr-2" />
+                <p className="hidden sm:block">{t("myAppointments") || "My Appointments"}</p>
+              </TabsTrigger>
+            </TabsList>
 
-                {success && (
-                  <Alert className="mb-6 bg-green-50 border-green-200">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <AlertTitle className="text-green-800">{t("success") || "Success"}</AlertTitle>
-                    <AlertDescription className="text-green-700">
-                      {t("appointmentBooked") || "Your appointment has been booked successfully!"}
-                    </AlertDescription>
-                  </Alert>
-                )}
+            {/* Book Appointment Tab */}
+            <TabsContent value="book">
+              {typeof user?.appointmentsAvailables === "number" && (
+                <div className="mb-4 text-sm text-muted-foreground font-medium">
+                  {t("appointmentsRemaining") || "Appointments remaining"}:{" "}
+                  <span className="font-semibold text-foreground">{user.appointmentsAvailables}</span>
+                </div>
+              )}
+              <Card className="border-muted/40 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold">
+                    {t("bookNewAppointment") || "Book a New Appointment"}
+                  </CardTitle>
+                  <CardDescription>
+                    {t("bookingDescription") || "Select a date, time and service to schedule your appointment."}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {error && (
+                    <Alert variant="destructive" className="mb-6">
+                      <AlertTitle>{t("error") || "Error"}</AlertTitle>
+                      <AlertDescription>{error}</AlertDescription>
+                    </Alert>
+                  )}
 
-                <div className="grid gap-6 md:grid-cols-2">
-                  {/* Date Selection */}
-                  <div className="space-y-2">
-                    <Label className="text-base font-medium flex items-center gap-2">
-                      <CalendarIcon className="h-4 w-4 text-primary" />
-                      {t("selectDate") || "Select Date"}
-                    </Label>
-                    <div className="border rounded-md p-4">
-                      <Calendar
-                        mode="single"
-                        selected={date}
-                        onSelect={(newDate) => {
-                          setDate(newDate || startOfDay(new Date()))
-                          setSelectedTimeSlot(null)
-                        }}
-                        disabled={(date) =>
-                          isBefore(date, startOfDay(new Date())) || isAfter(date, addDays(new Date(), 30))
+                  {success && (
+                    <Alert className="mb-6 bg-green-50 border-green-200">
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <AlertTitle className="text-green-800">{t("success") || "Success"}</AlertTitle>
+                      <AlertDescription className="text-green-700">
+                        {t("appointmentBooked") || "Your appointment has been booked successfully!"}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {/* Date Selection */}
+                    <div className="space-y-2">
+                      <Label className="text-base font-medium flex items-center gap-2">
+                        <CalendarIcon className="h-4 w-4 text-primary" />
+                        {t("selectDate") || "Select Date"}
+                      </Label>
+                      <div className="border rounded-md p-4">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={(newDate) => {
+                            setDate(newDate || startOfDay(new Date()))
+                            setSelectedTimeSlot(null)
+                          }}
+                          disabled={(date) =>
+                            isBefore(date, startOfDay(new Date())) || isAfter(date, addDays(new Date(), 30))
+                          }
+                          className="mx-auto"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Time Slots */}
+                    <div className="space-y-2">
+                      <Label className="text-base font-medium flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-primary" />
+                        {t("selectTime") || "Select Time"}
+                      </Label>
+                      <div className="border rounded-md p-4 h-[350px] overflow-y-auto">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {timeSlots.map((slot, index) => (
+                            <Button
+                              key={index}
+                              variant={selectedTimeSlot === slot.time ? "default" : "outline"}
+                              className={cn("justify-center", !slot.available && "opacity-50 cursor-not-allowed")}
+                              disabled={!slot.available}
+                              onClick={() => setSelectedTimeSlot(slot.time)}
+                            >
+                              {slot.time}
+                            </Button>
+                          ))}
+                        </div>
+                        {timeSlots.length === 0 && (
+                          <p className="text-center text-muted-foreground py-4">
+                            {t("noTimeSlotsAvailable") || "No time slots available for this date"}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Service Selection */}
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="service" className="text-base font-medium">
+                        {t("selectService") || "Select Service"}
+                      </Label>
+                      <Select value={selectedService} onValueChange={setSelectedService}>
+                        <SelectTrigger id="service">
+                          <SelectValue placeholder={t("selectServicePlaceholder") || "Select a service"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {services.map((service) => (
+                            <SelectItem key={service} value={service}>
+                              <div className="flex justify-between items-center w-full">
+                                <span>{service}</span>
+                                <span className="text-muted-foreground text-sm ms-2">
+                                  30min - $15
+                                </span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* note */}
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="note" className="text-base font-medium">
+                        {t("note") || "Additional note"} ({t("optional") || "optional"})
+                      </Label>
+                      <Textarea
+                        id="note"
+                        placeholder={
+                          t("notePlaceholder") || "Any special requirements or information for your appointment"
                         }
-                        className="mx-auto"
+                        value={note}
+                        onChange={(e) => setnote(e.target.value)}
+                        className="min-h-[100px]"
                       />
                     </div>
                   </div>
+                </CardContent>
+                <CardFooter className="flex justify-end space-x-2">
+                  <Button
+                    disabled={!selectedTimeSlot || !selectedService || isLoading}
+                    onClick={openConfirmDialog}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("processing") || "Processing"}
+                      </>
+                    ) : (
+                      <>
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {t("bookAppointment") || "Book Appointment"}
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
 
-                  {/* Time Slots */}
-                  <div className="space-y-2">
-                    <Label className="text-base font-medium flex items-center gap-2">
-                      <Clock className="h-4 w-4 text-primary" />
-                      {t("selectTime") || "Select Time"}
-                    </Label>
-                    <div className="border rounded-md p-4 h-[350px] overflow-y-auto">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        {timeSlots.map((slot, index) => (
-                          <Button
-                            key={index}
-                            variant={selectedTimeSlot === slot.time ? "default" : "outline"}
-                            className={cn("justify-center", !slot.available && "opacity-50 cursor-not-allowed")}
-                            disabled={!slot.available}
-                            onClick={() => setSelectedTimeSlot(slot.time)}
-                          >
-                            {slot.time}
-                          </Button>
-                        ))}
-                      </div>
-                      {timeSlots.length === 0 && (
-                        <p className="text-center text-muted-foreground py-4">
-                          {t("noTimeSlotsAvailable") || "No time slots available for this date"}
-                        </p>
-                      )}
+            {/* My Appointments Tab */}
+            <TabsContent value="my-appointments">
+              <Card className="border-muted/40 shadow-md overflow-hidden">
+                <CardHeader className="bg-background/50 backdrop-blur-sm border-b">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-2xl font-bold">{t("myAppointments") || "My Appointments"}</CardTitle>
+                      <CardDescription>
+                        {t("myAppointmentsDescription") || "View and manage your upcoming appointments."}
+                      </CardDescription>
                     </div>
+                    <CalendarIcon className="h-6 w-6 text-primary opacity-80" />
                   </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {isLoadingAppointments ? (
+                    <div className="flex items-center justify-center h-64 bg-muted/10">
+                      <div className="flex flex-col items-center space-y-3 p-6 rounded-lg bg-background/80 shadow-sm">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        <p className="text-lg font-medium">{t("loading") || "Loading"}...</p>
+                      </div>
+                    </div>
+                  ) : userAppointments.length > 0 ? (
+                    <div className="divide-y divide-border/50">
+                      {userAppointments
+                        .filter((appointment) => {
+                          const now = new Date()
+                          const [hours, minutes, seconds] = appointment.time.split(":").map(Number)
 
-                  {/* Service Selection */}
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="service" className="text-base font-medium">
-                      {t("selectService") || "Select Service"}
-                    </Label>
-                    <Select value={selectedService} onValueChange={setSelectedService}>
-                      <SelectTrigger id="service">
-                        <SelectValue placeholder={t("selectServicePlaceholder") || "Select a service"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {services.map((service) => (
-                          <SelectItem key={service} value={service}>
-                            <div className="flex justify-between items-center w-full">
-                              <span>{service}</span>
-                              <span className="text-muted-foreground text-sm ms-2">
-                                30min - $15
-                              </span>
+                          const appointmentDateTime = new Date(appointment.date)
+                          appointmentDateTime.setHours(hours, minutes, seconds || 0, 0)
+
+                          return appointmentDateTime >= now
+                        })
+                        .map((appointment) => (
+                          <div key={appointment.id} className="group hover:bg-muted/20 transition-colors">
+                            <div className="flex flex-col sm:flex-row p-1">
+                              <div className="bg-primary/5 rounded-lg m-3 p-4 flex flex-col justify-center items-center sm:w-1/5 border border-primary/10">
+                                <p className="text-sm font-medium text-muted-foreground">
+                                  {formatAppointmentDate(appointment.date)}
+                                </p>
+                                <p className="text-2xl font-bold text-primary">{appointment.time}</p>
+                              </div>
+                              <div className="p-4 flex-1 flex flex-col justify-center">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                  <div>
+                                    <h3 className="text-xl font-bold text-foreground">{appointment.appointmentType}</h3>
+                                    <p className="text-sm text-muted-foreground flex items-center mt-1">
+                                      <Clock className="h-3.5 w-3.5 mr-1 opacity-70" />
+                                      {t("scheduledFor") || "Scheduled for"} {appointment.time}
+                                    </p>
+                                  </div>
+
+                                  <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                                    <Badge
+                                      className={cn(
+                                        "px-3 py-1 rounded-full text-sm font-medium transition-colors",
+                                        appointment.canceled
+                                          ? "bg-destructive/10 text-destructive border border-destructive/20"
+                                          : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/30",
+                                      )}
+                                    >
+                                      {appointment.canceled ? t("canceled") || "Canceled" : t("active") || "Active"}
+                                    </Badge>
+
+                                    {!appointment.canceled && (
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-destructive hover:bg-destructive/10 hover:text-destructive dark:hover:bg-destructive/20 border border-muted hover:border-destructive/30 transition-colors"
+                                        onClick={() => handleCancelAppointment(appointment.id)}
+                                      >
+                                        <X className="h-4 w-4 mr-1" />
+                                        {t("cancel") || "Cancel"}
+                                      </Button>
+                                    )}
+
+                                    <Button
+                                      variant="secondary"
+                                      size="sm"
+                                      className="ml-2"
+                                      onClick={() => navigate(`/appointment/${appointment.id}`)}
+                                    >
+                                      {t("seeMore")}
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                          </SelectItem>
+                          </div>
                         ))}
-                      </SelectContent>
-                    </Select>
+                    </div>
+                  ) : (
+                    <div className="text-center py-16 px-4 bg-muted/5">
+                      <div className="max-w-md mx-auto">
+                        <div className="bg-primary/5 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/10">
+                          <CalendarIcon className="h-10 w-10 text-primary opacity-80" />
+                        </div>
+                        <h3 className="text-xl font-semibold">{t("noAppointments") || "No appointments found"}</h3>
+                        <p className="mt-2 text-muted-foreground max-w-sm mx-auto">
+                          {t("noAppointmentsDescription") || "You don't have any appointments scheduled yet."}
+                        </p>
+                        <Button
+                          variant="default"
+                          className="mt-6"
+                          onClick={() => document.querySelector('[data-state="inactive"][value="book"]')?.click()}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {t("bookNow") || "Book Now"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Buy Coupons Tab */}
+            <TabsContent value="buy-coupons">
+              {typeof user?.appointmentsAvailables === "number" && (
+                <div className="mb-4 text-sm text-muted-foreground font-medium">
+                  {t("appointmentsRemaining") || "Appointments remaining"}:{" "}
+                  <span className="font-semibold text-foreground">{user.appointmentsAvailables}</span>
+                </div>
+              )}
+              <Card className="border-muted/40 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold">{t("buyCoupons") || "Buy Appointment Coupons"}</CardTitle>
+                  <CardDescription>
+                    {t("buyCouponsDescription") || "Increase your available appointments by purchasing extra coupons."}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid sm:grid-cols-3 gap-4">
+                    {[1, 3, 5, 10].map((count) => (
+                      <Button
+                        key={count}
+                        variant={selectedCouponAmount === count ? "default" : "outline"}
+                        onClick={() => setSelectedCouponAmount(count)}
+                        className="flex flex-col items-center p-6 h-full"
+                      >
+                        <span className="text-3xl font-bold">{count}</span>
+                        <span className="text-muted-foreground text-sm mt-1">
+                          {count * 15}€
+                        </span>
+                      </Button>
+                    ))}
                   </div>
 
-                  {/* Notes */}
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="notes" className="text-base font-medium">
-                      {t("notes") || "Additional Notes"} ({t("optional") || "optional"})
-                    </Label>
-                    <Textarea
-                      id="notes"
-                      placeholder={
-                        t("notesPlaceholder") || "Any special requirements or information for your appointment"
-                      }
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      className="min-h-[100px]"
-                    />
+                  {paymentError && (
+                    <Alert variant="destructive">
+                      <AlertTitle>{t("error") || "Error"}</AlertTitle>
+                      <AlertDescription>{paymentError}</AlertDescription>
+                    </Alert>
+                  )}
+
+                  {paymentSuccess && (
+                    <Alert>
+                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <AlertTitle className="text-green-800">{t("success") || "Success"}</AlertTitle>
+                      <AlertDescription className="text-green-700">
+                        {t("couponsAdded") || "Coupons purchased successfully!"}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </CardContent>
+                <CardFooter className="justify-end">
+                  <Button
+                    disabled={!selectedCouponAmount || isProcessing}
+                    onClick={() => handlePurchaseCoupons(selectedCouponAmount)}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        {t("processing") || "Processing"}
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="mr-2 h-4 w-4" />
+                        {t("buyNow") || "Buy Now"}
+                      </>
+                    )}
+                  </Button>
+                </CardFooter>
+              </Card>
+            </TabsContent>
+
+          </Tabs>
+
+          {/* Confirmation Dialog */}
+          <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t("confirmAppointment") || "Confirm Your Appointment"}</DialogTitle>
+                <DialogDescription>
+                  {t("confirmAppointmentDescription") || "Please review your appointment details before confirming."}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 py-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">{t("date") || "Date"}</p>
+                    <p className="text-base">{format(date, "PPP", { locale: es })}</p>
                   </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">{t("time") || "Time"}</p>
+                    <p className="text-base">{selectedTimeSlot}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-sm font-medium text-muted-foreground">{t("service") || "Service"}</p>
+                    <p className="text-base">{services.find((s) => s === selectedService) || ""}</p>
+                  </div>
+                  {note && (
+                    <div className="col-span-2">
+                      <p className="text-sm font-medium text-muted-foreground">{t("note") || "note"}</p>
+                      <p className="text-base">{note}</p>
+                    </div>
+                  )}
                 </div>
-              </CardContent>
-              <CardFooter className="flex justify-end space-x-2">
-                <Button
-                  disabled={!selectedTimeSlot || !selectedService || isLoading}
-                  onClick={openConfirmDialog}
-                >
+              </div>
+
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setConfirmDialog(false)}>
+                  {t("cancel") || "Cancel"}
+                </Button>
+                <Button onClick={handleBookAppointment} disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -511,257 +754,14 @@ export default function Appointment() {
                     </>
                   ) : (
                     <>
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {t("bookAppointment") || "Book Appointment"}
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      {t("confirm") || "Confirm"}
                     </>
                   )}
                 </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-
-          {/* My Appointments Tab */}
-          <TabsContent value="my-appointments">
-            <Card className="border-muted/40 shadow-md overflow-hidden">
-              <CardHeader className="bg-background/50 backdrop-blur-sm border-b">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-2xl font-bold">{t("myAppointments") || "My Appointments"}</CardTitle>
-                    <CardDescription>
-                      {t("myAppointmentsDescription") || "View and manage your upcoming appointments."}
-                    </CardDescription>
-                  </div>
-                  <CalendarIcon className="h-6 w-6 text-primary opacity-80" />
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                {isLoadingAppointments ? (
-                  <div className="flex items-center justify-center h-64 bg-muted/10">
-                    <div className="flex flex-col items-center space-y-3 p-6 rounded-lg bg-background/80 shadow-sm">
-                      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                      <p className="text-lg font-medium">{t("loading") || "Loading"}...</p>
-                    </div>
-                  </div>
-                ) : userAppointments.length > 0 ? (
-                  <div className="divide-y divide-border/50">
-                    {userAppointments
-                      .filter((appointment) => {
-                        const now = new Date()
-                        const [hours, minutes, seconds] = appointment.time.split(":").map(Number)
-
-                        const appointmentDateTime = new Date(appointment.date)
-                        appointmentDateTime.setHours(hours, minutes, seconds || 0, 0)
-
-                        return appointmentDateTime >= now
-                      })
-                      .map((appointment) => (
-                        <div key={appointment.id} className="group hover:bg-muted/20 transition-colors">
-                          <div className="flex flex-col sm:flex-row p-1">
-                            <div className="bg-primary/5 rounded-lg m-3 p-4 flex flex-col justify-center items-center sm:w-1/5 border border-primary/10">
-                              <p className="text-sm font-medium text-muted-foreground">
-                                {formatAppointmentDate(appointment.date)}
-                              </p>
-                              <p className="text-2xl font-bold text-primary">{appointment.time}</p>
-                            </div>
-                            <div className="p-4 flex-1 flex flex-col justify-center">
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div>
-                                  <h3 className="text-xl font-bold text-foreground">{appointment.appointmentType}</h3>
-                                  <p className="text-sm text-muted-foreground flex items-center mt-1">
-                                    <Clock className="h-3.5 w-3.5 mr-1 opacity-70" />
-                                    {t("scheduledFor") || "Scheduled for"} {appointment.time}
-                                  </p>
-                                </div>
-
-                                <div className="flex items-center gap-2 mt-2 sm:mt-0">
-                                  <Badge
-                                    className={cn(
-                                      "px-3 py-1 rounded-full text-sm font-medium transition-colors",
-                                      appointment.canceled
-                                        ? "bg-destructive/10 text-destructive border border-destructive/20"
-                                        : "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/30",
-                                    )}
-                                  >
-                                    {appointment.canceled ? t("canceled") || "Canceled" : t("active") || "Active"}
-                                  </Badge>
-
-                                  {!appointment.canceled && (
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="text-destructive hover:bg-destructive/10 hover:text-destructive dark:hover:bg-destructive/20 border border-muted hover:border-destructive/30 transition-colors"
-                                      onClick={() => handleCancelAppointment(appointment.id)}
-                                    >
-                                      <X className="h-4 w-4 mr-1" />
-                                      {t("cancel") || "Cancel"}
-                                    </Button>
-                                  )}
-
-                                  <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    className="ml-2"
-                                    onClick={() => navigate(`/appointment/${appointment.id}`)}
-                                  >
-                                    {t("seeMore")}
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-16 px-4 bg-muted/5">
-                    <div className="max-w-md mx-auto">
-                      <div className="bg-primary/5 h-20 w-20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/10">
-                        <CalendarIcon className="h-10 w-10 text-primary opacity-80" />
-                      </div>
-                      <h3 className="text-xl font-semibold">{t("noAppointments") || "No appointments found"}</h3>
-                      <p className="mt-2 text-muted-foreground max-w-sm mx-auto">
-                        {t("noAppointmentsDescription") || "You don't have any appointments scheduled yet."}
-                      </p>
-                      <Button
-                        variant="default"
-                        className="mt-6"
-                        onClick={() => document.querySelector('[data-state="inactive"][value="book"]')?.click()}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {t("bookNow") || "Book Now"}
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          {/* Buy Coupons Tab */}
-          <TabsContent value="buy-coupons">
-            {typeof user?.appointmentsAvailables === "number" && (
-              <div className="mb-4 text-sm text-muted-foreground font-medium">
-                {t("appointmentsRemaining") || "Appointments remaining"}:{" "}
-                <span className="font-semibold text-foreground">{user.appointmentsAvailables}</span>
-              </div>
-            )}
-            <Card className="border-muted/40 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold">{t("buyCoupons") || "Buy Appointment Coupons"}</CardTitle>
-                <CardDescription>
-                  {t("buyCouponsDescription") || "Increase your available appointments by purchasing extra coupons."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid sm:grid-cols-3 gap-4">
-                  {[1, 3, 5, 10].map((count) => (
-                    <Button
-                      key={count}
-                      variant={selectedCouponAmount === count ? "default" : "outline"}
-                      onClick={() => setSelectedCouponAmount(count)}
-                      className="flex flex-col items-center p-6 h-full"
-                    >
-                      <span className="text-3xl font-bold">{count}</span>
-                      <span className="text-muted-foreground text-sm mt-1">
-                        {count * 15}€
-                      </span>
-                    </Button>
-                  ))}
-                </div>
-
-                {paymentError && (
-                  <Alert variant="destructive">
-                    <AlertTitle>{t("error") || "Error"}</AlertTitle>
-                    <AlertDescription>{paymentError}</AlertDescription>
-                  </Alert>
-                )}
-
-                {paymentSuccess && (
-                  <Alert>
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <AlertTitle className="text-green-800">{t("success") || "Success"}</AlertTitle>
-                    <AlertDescription className="text-green-700">
-                      {t("couponsAdded") || "Coupons purchased successfully!"}
-                    </AlertDescription>
-                  </Alert>
-                )}
-              </CardContent>
-              <CardFooter className="justify-end">
-                <Button
-                  disabled={!selectedCouponAmount || isProcessing}
-                  onClick={() => handlePurchaseCoupons(selectedCouponAmount)}
-                >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      {t("processing") || "Processing"}
-                    </>
-                  ) : (
-                    <>
-                      <CreditCard className="mr-2 h-4 w-4" />
-                      {t("buyNow") || "Buy Now"}
-                    </>
-                  )}
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-
-        </Tabs>
-
-        {/* Confirmation Dialog */}
-        <Dialog open={confirmDialog} onOpenChange={setConfirmDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t("confirmAppointment") || "Confirm Your Appointment"}</DialogTitle>
-              <DialogDescription>
-                {t("confirmAppointmentDescription") || "Please review your appointment details before confirming."}
-              </DialogDescription>
-            </DialogHeader>
-
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">{t("date") || "Date"}</p>
-                  <p className="text-base">{format(date, "PPP", { locale: es })}</p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">{t("time") || "Time"}</p>
-                  <p className="text-base">{selectedTimeSlot}</p>
-                </div>
-                <div className="col-span-2">
-                  <p className="text-sm font-medium text-muted-foreground">{t("service") || "Service"}</p>
-                  <p className="text-base">{services.find((s) => s === selectedService) || ""}</p>
-                </div>
-                {notes && (
-                  <div className="col-span-2">
-                    <p className="text-sm font-medium text-muted-foreground">{t("notes") || "Notes"}</p>
-                    <p className="text-base">{notes}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setConfirmDialog(false)}>
-                {t("cancel") || "Cancel"}
-              </Button>
-              <Button onClick={handleBookAppointment} disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t("processing") || "Processing"}
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle className="mr-2 h-4 w-4" />
-                    {t("confirm") || "Confirm"}
-                  </>
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </>}
       </div>
     </div>

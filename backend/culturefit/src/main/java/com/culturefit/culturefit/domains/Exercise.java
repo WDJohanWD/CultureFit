@@ -33,6 +33,11 @@ public class Exercise {
     @Schema(description = "Nombre del ejercicio en inglés", example = "Squats")
     private String nameEN;
 
+    @NotBlank
+    @Column(nullable = false, unique = true)
+    @Schema(description = "Nombre del ejercicio en gallego", example = "Squats")
+    private String nameGL;
+
     @Schema(description = "URL de la imagen del ejercicio", example = "https://example.com/squats.jpg")
     private String imageUrl;
 }

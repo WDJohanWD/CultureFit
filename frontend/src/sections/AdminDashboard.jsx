@@ -65,6 +65,7 @@ function AdminDashboard() {
   const [newExerciseData, setNewExerciseData] = useState({
     nameES: "",
     nameEN: "",
+    nameGL: "",
   })
   const [tempExerciseImage, setTempExerciseImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -243,6 +244,7 @@ function AdminDashboard() {
     setExerciseFormData({
       nameEs: exercise.nameEs,
       nameEn: exercise.nameEn,
+      nameGl: exercise.nameGl,
       idAttachment: exercise.idAttachment || "",
     })
   }
@@ -341,6 +343,7 @@ function AdminDashboard() {
       setNewExerciseData({
         nameES: "",
         nameEN: "",
+        nameGL: "",
       })
       fetchExercisesData()
     } catch (error) {
@@ -499,7 +502,8 @@ function AdminDashboard() {
     if (!exercise) return false;
     
     return safeStringIncludes(exercise.nameES, exerciseSearchQuery) ||
-           safeStringIncludes(exercise.nameEN, exerciseSearchQuery);
+           safeStringIncludes(exercise.nameEN, exerciseSearchQuery) ||
+           safeStringIncludes(exercise.nameGL, exerciseSearchQuery);
   }) || [];
 
   // --- Lógica de paginación ---
@@ -821,6 +825,7 @@ function AdminDashboard() {
                     <TableHead>{t("image") || "Image"}</TableHead>
                     <TableHead>{t("nameEs") || "Name (Spanish)"}</TableHead>
                     <TableHead>{t("nameEn") || "Name (English)"}</TableHead>
+                    <TableHead>{t("nameGl") || "Name (Galician)"}</TableHead>
                     <TableHead>{t("Actions") || "Actions"}</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -875,6 +880,15 @@ function AdminDashboard() {
                                 className="w-full"
                               />
                             </TableCell>
+                            <TableCell>
+                              <Input
+                                type="text"
+                                name="nameGL"
+                                value={exerciseFormData.nameGL}
+                                onChange={handleExerciseInputChange}
+                                className="w-full"
+                              />
+                            </TableCell>
 
                             <TableCell>
                               <div className="flex space-x-2">
@@ -915,6 +929,7 @@ function AdminDashboard() {
                             </TableCell>
                             <TableCell>{exercise.nameES}</TableCell>
                             <TableCell>{exercise.nameEN}</TableCell>
+                            <TableCell>{exercise.nameGL}</TableCell>
                             <TableCell>
                               <div className="flex space-x-2">
                                 <Button
@@ -1211,6 +1226,18 @@ function AdminDashboard() {
                 id="nameEN"
                 name="nameEN"
                 value={newExerciseData.nameEN}
+                onChange={handleNewExerciseInputChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="nameEn" className="text-right">
+                {t("nameGl") || "Name (Galician)"}
+              </label>
+              <Input
+                id="nameGL"
+                name="nameGL"
+                value={newExerciseData.nameGL}
                 onChange={handleNewExerciseInputChange}
                 className="col-span-3"
               />
