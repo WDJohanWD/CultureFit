@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   springboot:
     build:
@@ -11,26 +9,22 @@ services:
     environment:
       SERVER_PORT: ${SERVER_PORT}
 
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
+      DB_HOST: mysql
+      DB_PORT: 3306
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
 
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-
       MAIL_PASS: ${MAIL_PASS}
       JWT_SECRET_CONFIRMATION: ${JWT_SECRET_CONFIRMATION}
-
       JWT_SECRET: ${JWT_SECRET}
 
       DIRECTORY_EXERCISE_IMAGES: ${DIRECTORY_EXERCISE_IMAGES}
       DIRECTORY_PROFILE_IMAGES: ${DIRECTORY_PROFILE_IMAGES}
-      DIRECTORY_LESSON_VIDEOS: ${DIRECTORY_LESSON_VIDEOS}
       DIRECTORY_LESSON_THUMBNAILS: ${DIRECTORY_LESSON_THUMBNAILS}
-
+      DIRECTORY_LESSON_VIDEOS: ${DIRECTORY_LESSON_VIDEOS}
       API_URL_FRONT: ${API_URL_FRONT}
-
     networks:
       - app-network
     depends_on:
@@ -52,8 +46,7 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 5s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 10
 
 networks:
   app-network:
